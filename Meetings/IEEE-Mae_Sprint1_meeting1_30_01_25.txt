@@ -23,6 +23,7 @@ Step 3: Decompose Sprint 1 US into tasks and assign them - set up Sprint Plan wi
 We created the general US for the entire project in the Burndown Chart
 
 Post-meeting actionables:
+- assign team roles (scrum master, etc.)
 - ask if roles must be assigned upon login or if they can be assigned after channel creation (teams or discord)
 - select which US to tackle in Sprint 1
 - subdivide Sprint 1 US into tasks & assign responsibles
