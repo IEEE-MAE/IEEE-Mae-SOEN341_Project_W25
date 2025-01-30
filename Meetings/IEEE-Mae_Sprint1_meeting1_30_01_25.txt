@@ -1,0 +1,34 @@
+Date: 30-Jan-2025
+
+Present participants:
+Maelle - React, Node.js, web and gamedev experience
+Malcolm - OOP
+Yara - Python web dev
+Alex - CSS, React, React Native
+Abu - CSS, databases
+Camila - HTML, CSS, React, React Native
+
+How do we want to build it?
+
+Development Technologies: React and Firebase
+IDE: Webstorm (for unified development) - everyone needs to learn to use it
+Hosting: IEEE lab or Cami's hosting site or directly through github or web server (if needed)
+
+Fourth feature: stickers, etc. 
+
+Step 1: Create User Stories (US) for entire project for backlog
+Step 2: Select which US for Sprint 1  - set up the Burndown Chart
+Step 3: Decompose Sprint 1 US into tasks and assign them - set up Sprint Plan within Burndown Chart
+
+We created the general US for the entire project in the Burndown Chart
+
+Post-meeting actionables:
+- ask if roles must be assigned upon login or if they can be assigned after channel creation (teams or discord)
+- select which US to tackle in Sprint 1
+- subdivide Sprint 1 US into tasks & assign responsibles
+- complete tasks (code!)
+
+
+
+
+
