@@ -1,4 +1,5 @@
 Date: 30-Jan-2025
+Total time: 1h 15min
 
 Present participants:
 Maelle - React, Node.js, web and gamedev experience
