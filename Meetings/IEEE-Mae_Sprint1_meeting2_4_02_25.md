@@ -6,7 +6,7 @@ Participants: Yara, Malcolm, Maelle, Abu, Alex, Cami
 - We can use bootstrap library for formatting CSS (prebuilt items)
 - Using Projects tab on Github to track issues progress
 
-###Discussion About Login Roles: 
+### Discussion About Login Roles: 
 - every Admin is a member, not every member is an admin
 - Team has channels (can only be created by Admins)
 - SuperAdmins and Admins of teams can add members, create channels, make members admins
@@ -21,7 +21,7 @@ Participants: Yara, Malcolm, Maelle, Abu, Alex, Cami
 become member of a team // accept/deny members to the team
 
 
-##Post meeting actionables:
+## Post meeting actionables:
 - Camila is going to create the signup and authentication (backend) and integrate it with the UI Malcolm did + check if we can add fields to user
 - Malcolm will make the login UI (just email and password, no username)
 - Yara is making a home page with "create team" and "join team" as well as the teampage UI (admin and member)
