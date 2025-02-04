@@ -14,8 +14,8 @@ Participants: Yara, Malcolm, Maelle, Abu, Alex, Cami
 - user can only be part of ONE team (becomes their entire team)
 - UI flow: login/signup -> homepage add/create team screen -> teampage for admin//member
 
-                   signup/login
-                         |
+  signup/login
+        |
           see all teams // create team
  request to join a team // become SuperAdmin of team
 become member of a team // accept/deny members to the team
