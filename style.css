@@ -38,6 +38,9 @@ body{
     justify-content: center;
     box-shadow: 0px 10px 30px rgba(0,0,0,0.15);
 }
+
+
+
 h1{
     font-size: 3rem;
     font-weight: 900;
@@ -100,7 +103,7 @@ div:has(input:focus) > label{
 form input::placeholder{
     color: var(--text-color);
 }
-form button{
+ button{
     margin-top: 10px;
     border: none;
     border-radius: 1000px;
@@ -114,10 +117,18 @@ form button{
     transition: 150ms ease;
     background: linear-gradient(135deg, var(--accent-color), #1f472f);
 }
-form button:hover{
+
+ .join-button {
+    border-radius: 10px;
+    padding: 0.5em 1em;
+}
+ 
+
+
+  button:hover{
     background-color: var(--text-color);
 }
-form button:focus{
+  button:focus{
     outline: none;
     background-color: var(--text-color);
     color: var(--accent-color);
@@ -129,6 +140,43 @@ a{
 a:hover{
     text-decoration: underline;
 }
+
+#list {
+    overflow-y: auto;
+    background-color: var(--input-color);
+    height: 40vh; /* Adjust the height as needed */
+    width: max(40%, 300px);
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.team-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.team-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: var(--input-color);
+    border-radius: 10px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.team-name {
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+
+
+
+
 @media(max-width: 1100px){ /* adjustments for mobile/tablet viewing */
     .wrapper{
         width: min(600px, 100%);
