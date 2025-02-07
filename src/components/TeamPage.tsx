@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
-import "../style.css"; // Ensure this matches your SignUp and LogIn styles
+import {useNavigate, useParams} from "react-router-dom";
+import "../style.css";
+import {SignOutAuth} from "../backend/auth.tsx"; // Ensure this matches your SignUp and LogIn styles
 
 const TeamPage = () => {
   const { teamId } = useParams<{ teamId: string }>();
@@ -9,6 +10,7 @@ const TeamPage = () => {
   const [channelName, setChannelName] = useState("");
   const [username, setUsername] = useState("");
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = (type: "admin" | "channel") => {
     if (type === "admin" && !adminUsername.trim()) {
@@ -45,6 +47,17 @@ const TeamPage = () => {
     closeModal();
   };
 
+  // example sign out function (can be put wherever user will sign out)
+  const onSignOut = async () => {
+      try {
+          await SignOutAuth();
+          navigate("/");
+      }
+      catch(error){
+          alert("Error during sign out: " + error);
+      }
+  }
+
   return (
     <div className="wrapper">
       <h1>Team Page</h1>
@@ -53,6 +66,7 @@ const TeamPage = () => {
       <div className="button-group">
         <button onClick={() => setActiveModal("admin")}>Add Admin</button>
         <button onClick={() => setActiveModal("channel")}>Make Channel</button>
+        <button onClick={() => onSignOut()}>Log out</button>
       </div>
 
       {/* MODAL */}
