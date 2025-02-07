@@ -1,5 +1,3 @@
-/* stylesheet used for LogIn and SignUp pages*/
-
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 :root{
     --accent-color: #317442;
@@ -27,6 +25,7 @@ body{
     background-position: right;
     overflow: hidden;
 }
+
 .wrapper{
     box-sizing: border-box;
     background-color: var(--base-color);
@@ -40,6 +39,9 @@ body{
     justify-content: center;
     box-shadow: 0px 10px 30px rgba(0,0,0,0.15);
 }
+
+
+
 h1{
     font-size: 3rem;
     font-weight: 900;
@@ -102,7 +104,7 @@ div:has(input:focus) > label{
 form input::placeholder{
     color: var(--text-color);
 }
-form button{
+button{
     margin-top: 10px;
     border: none;
     border-radius: 1000px;
@@ -116,10 +118,18 @@ form button{
     transition: 150ms ease;
     background: linear-gradient(135deg, var(--accent-color), #1f472f);
 }
-form button:hover{
+
+.join-button {
+    border-radius: 10px;
+    padding: 0.5em 1em;
+}
+
+
+
+button:hover{
     background-color: var(--text-color);
 }
-form button:focus{
+button:focus{
     outline: none;
     background-color: var(--text-color);
     color: var(--accent-color);
@@ -131,6 +141,39 @@ a{
 a:hover{
     text-decoration: underline;
 }
+
+#list {
+    overflow-y: auto;
+    background-color: var(--input-color);
+    height: 40vh; /* Adjust the height as needed */
+    width: max(40%, 300px);
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.team-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.team-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: var(--input-color);
+    border-radius: 10px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.team-name {
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
 @media(max-width: 1100px){ /* adjustments for mobile/tablet viewing */
     .wrapper{
         width: min(600px, 100%);

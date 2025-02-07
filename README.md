@@ -1,7 +1,7 @@
 # IEEE-Mae-SOEN341_Project_W25
 
 ### Description of the Project
-ChatHaven is a communication platform that includes channels (owned by Admins and joined by Members) and direct messaging between users. 
+ChatHaven is a communication platform that allows teams to message via channels and direct messaging between users. 
 
 ### Team Members and Roles
 
