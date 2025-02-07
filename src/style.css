@@ -1,85 +1,129 @@
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-:root{
+
+:root {
     --accent-color: #317442;
     --base-color: white;
     --text-color: #1f472f;
     --input-color: #F3F0FF;
 }
-*{
+
+* {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
-html{
+
+html {
     font-family: Poppins, Segoe UI, sans-serif;
     font-size: 12pt;
     color: var(--text-color);
     text-align: center;
 }
-body{
+
+body {
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: 100vh;
     background-image: url(assets/background.jpg);
     background-size: cover;
-    background-position: right;
+    background-position: center;
     overflow: hidden;
 }
 
-.wrapper{
+.wrapper {
     box-sizing: border-box;
     background-color: var(--base-color);
-    height: 80vh;
+    height: auto;
+    min-height: 70vh;
     width: max(40%, 600px);
-    padding: 10px;
-    border-radius: 20px 20px 20px 20px;
+    padding: 30px 20px;
+    border-radius: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    box-shadow: 0px 10px 30px rgba(0,0,0,0.15);
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.15);
 }
 
-
-
-h1{
+h1 {
     font-size: 3rem;
     font-weight: 900;
     text-transform: uppercase;
 }
-form{
+
+/* Button Group (Fixes Button Layout) */
+.button-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px; /* Ensure space between buttons */
+    margin-top: 20px;
+}
+
+/* Button Styling */
+button {
+    border: none;
+    border-radius: 12px; /* Make buttons rounded */
+    padding: 12px 30px;
+    background: linear-gradient(135deg, var(--accent-color), #1f472f);
+    color: var(--base-color);
+    font: inherit;
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 150ms ease;
+    width: 260px; /* Fix button width */
+    text-align: center;
+}
+
+button:hover {
+    background-color: var(--text-color);
+}
+
+button:focus {
+    outline: none;
+    background-color: var(--text-color);
+    color: var(--accent-color);
+}
+
+/* Input Fields */
+form {
     width: min(400px, 100%);
     margin-top: 20px;
     margin-bottom: 50px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
-form > div{
+
+form > div {
     width: 100%;
     display: flex;
     justify-content: center;
 }
-form label{
+
+form label {
     flex-shrink: 0;
     height: 50px;
     width: 50px;
     background-color: var(--accent-color);
-    fill: var(--base-color); /* person and lock symbol color */
-    color: var(--base-color); /* @ symbol color */
+    fill: var(--base-color);
+    color: var(--base-color);
     border-radius: 10px 0 0 10px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.5rem; /* @ symbol font size */
-    font-weight: 500; /* @ symbol font weight */
+    font-size: 1.5rem;
+    font-weight: 500;
 }
+
 form label svg {
     fill: var(--base-color) !important;
 }
-form input{
-    box-sizing: border-box;
+
+form input {
     flex-grow: 1;
     min-width: 0;
     height: 50px;
@@ -89,63 +133,109 @@ form input{
     border: 2px solid var(--input-color);
     border-left: none;
     background-color: var(--input-color);
-    transition: 150ms ease;
+    transition: border-color 150ms ease;
 }
-form input:hover{
+
+form input:hover {
     border-color: var(--accent-color);
 }
-form input:focus{
+
+form input:focus {
     outline: none;
     border-color: var(--text-color);
 }
-div:has(input:focus) > label{
+
+div:has(input:focus) > label {
     background-color: var(--text-color);
 }
-form input::placeholder{
+
+form input::placeholder {
     color: var(--text-color);
 }
-button{
-    margin-top: 10px;
+
+/* Modal Styling */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+.modal {
+    background: var(--base-color);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    color: var(--text-color);
+    position: relative;
+}
+
+/* Input Fields Inside Modal */
+.input-group {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--input-color);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--base-color);
+    margin-bottom: 12px;
+}
+
+.input-group label {
+    background: var(--accent-color);
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+
+.input-group input {
     border: none;
-    border-radius: 1000px;
-    padding: .85em 4em;
-    background-color: var(--accent-color);
-    color: var(--base-color);
-    font: inherit;
-    font-weight: 600;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: 150ms ease;
-    background: linear-gradient(135deg, var(--accent-color), #1f472f);
-}
-
-.join-button {
-    border-radius: 10px;
-    padding: 0.5em 1em;
-}
-
-
-
-button:hover{
-    background-color: var(--text-color);
-}
-button:focus{
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    background: var(--input-color);
     outline: none;
-    background-color: var(--text-color);
-    color: var(--accent-color);
-}
-a{
-    text-decoration: none;
-    color: var(--accent-color);
-}
-a:hover{
-    text-decoration: underline;
 }
 
+/* Ensure confirmation modal does not overflow */
+.confirmation-modal {
+    max-width: 350px;
+    width: 90%;
+    padding: 20px;
+    text-align: center;
+    background: var(--base-color);
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 20;
+}
+
+/* Fix Button Alignment */
+.text-white {
+    color: white !important;
+}
+
+button {
+    margin-right: 5px;
+}
+
+/* Ensure List Styling in Team Page */
 #list {
     overflow-y: auto;
     background-color: var(--input-color);
-    height: 40vh; /* Adjust the height as needed */
+    height: 40vh;
     width: max(40%, 300px);
     padding: 10px;
     border-radius: 10px;
@@ -174,17 +264,10 @@ a:hover{
     font-weight: 500;
 }
 
-@media(max-width: 1100px){ /* adjustments for mobile/tablet viewing */
-    .wrapper{
+/* Responsive Fixes */
+@media (max-width: 1100px) {
+    .wrapper {
         width: min(600px, 100%);
         border-radius: 0;
     }
-}
-
-/* Styles for TeamPage*/
-.text-white {
-    color:white !important;
-}
-button {
-    margin-right: 5px;
 }
