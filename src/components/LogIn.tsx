@@ -1,10 +1,12 @@
-import {useState} from "react";
+import { useState } from "react";
 import * as React from "react";
-import {SignInAuth} from "../backend/auth.tsx";
+import { SignInAuth } from "../backend/auth.tsx";
 import { useNavigate } from "react-router-dom";
-import "../style.css"
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../config/firebase.tsx";
+import "../style.css";
 
-function LogIn(){
+function LogIn() {
     // holds user input email and password
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -14,24 +16,34 @@ function LogIn(){
 
     // form submission
     const onSubmit = async (e: React.FormEvent) => {
-        // stops passing inputs to browser and clearing form
         e.preventDefault();
 
-        // check if email and password are filled out
-        if(email && password){
+        if (email && password) {
             try {
-                // firebase sign in authentication and navigate to join team page
-                await SignInAuth(email, password);
-                navigate("/CreateTeam");
-            }
-            catch(error){
+                const user = await SignInAuth(email, password);
+
+                // Fetch user document from Firestore
+                const userDocRef = doc(db, "users", user.uid);
+                const userDocSnap = await getDoc(userDocRef);
+
+                if (userDocSnap.exists()) {
+                    const userData = userDocSnap.data();
+                    if (userData.team && Object.keys(userData.team).length > 0) {
+                        navigate("/TeamPage"); // Redirect to team page if user has a team
+                    } else {
+                        navigate("/CreateTeam"); // Redirect to create team page otherwise
+                    }
+                } else {
+                    console.log("User document not found.");
+                    navigate("/CreateTeam");
+                }
+            } catch (error) {
                 alert("Error during sign in: " + error);
             }
-        }
-        else{
+        } else {
             alert("Please fill in the fields.");
         }
-    }
+    };
 
     // return display for login page
     return (
@@ -63,7 +75,7 @@ function LogIn(){
             {/* navigate to sign up*/}
             <p>Don't have an account? <a onClick={() => navigate("/")}>Signup</a></p>
         </div>
-    )
+    );
 }
 
 export default LogIn;
