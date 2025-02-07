@@ -1,5 +1,5 @@
-import {getFirestore, collection, addDoc, getDocs, QuerySnapshot, where, query, orderBy} from 'firebase/firestore';
-import {db} from '@/Configurations/FirebaseConfig'
+import { collection, getDocs,} from 'firebase/firestore';
+import {db} from "../config/firebase.tsx";
 //import {getAuth} from 'firebase/auth'
 
 interface ItemType{
