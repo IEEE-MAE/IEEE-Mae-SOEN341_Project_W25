@@ -1,9 +1,8 @@
-import { db, auth } from "../config/firebase.tsx";
+import { db} from "../config/firebase.tsx";
 import firebase from "firebase/app";
-import {getFirestore, collection, addDoc, getDocs, QuerySnapshot, where, query, serverTimestamp,doc,updateDoc} from 'firebase/firestore';
+import {collection, addDoc,doc,updateDoc} from 'firebase/firestore';
 import {getAuth} from "firebase/auth";
-//import firestore = firebase.firestore;
-//import firestore = firebase.firestore;
+
 
 interface teamData {
     teamName: string;
@@ -13,7 +12,7 @@ interface teamData {
     channelIds: string[];
 }
 
-export async function createTeam({teamName, superUserId, adminId, memberId, channelIds}: teamData) {
+export async function createTeam({teamName, adminId, memberId, channelIds}: teamData) {
     try {
         const auth = getAuth()
         const user = auth.currentUser
@@ -22,7 +21,7 @@ export async function createTeam({teamName, superUserId, adminId, memberId, chan
             return [];
         }
         //const teamDoc =
-       await addDoc(collection(db, 'teams'), {
+       const teamDoc = await addDoc(collection(db, 'teams'), {
             teamName: teamName,
             superUserId: user.uid,
             adminId: adminId,
@@ -36,9 +35,11 @@ export async function createTeam({teamName, superUserId, adminId, memberId, chan
 
         // Update the document
         await updateDoc(userDocRef, {
+            team: teamDoc.id,
             role: "superUser",
         });
         //return teamDoc;
+        return teamDoc;
     } catch (error) {
         console.error("Error creating team:", error);
         throw error;
