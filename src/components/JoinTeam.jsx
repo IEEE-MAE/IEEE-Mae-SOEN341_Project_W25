@@ -5,8 +5,9 @@ import "../style.css";
 import {useEffect, useState} from "react";
 import {pullItem} from "../backend/queryTeam.tsx";
 import './TeamPage';
-import {doc, updateDoc} from "firebase/firestore";
+import {doc, getDoc, updateDoc, arrayUnion} from "firebase/firestore";
 import {db} from "../config/firebase.js";
+import {SignInAuth} from "../backend/auth.js";
 
 // default join team page
 function JoinTeam(){
@@ -37,35 +38,52 @@ function JoinTeam(){
         return;
     }
 
-    // example sign out function (can be put wherever user will sign out)
-    // const onSignOut = async () => {
-    //     try {
-    //         await SignOutAuth();
-    //         navigate("/");
-    //     }
-    //     catch(error){
-    //         alert("Error during sign out: " + error);
-    //     }
-    // }
-
-    // temporary array for testing dynamic list creation. replace with team query from firebase
-    //const teams = [ {name: "Team1", id: "1"}, {name: "Team2", id: "2"}, {name: "Team3", id: "3"}, {name: "Cami", id: "2pos"}];
 
     // this should send a request to superuser to join team/let user in by default
-    // + assign team and status to the user
-    // + add user to team member array
-
     const handleJoinTeam = async (id) => {
-        alert("THIS IS THE ID: " + id);
-        console.log(id);
 
+        // add the team id to the user's document and update their role to "member"
         const userDocRef = doc(db, 'users', user.uid);
-
-        // Update the document
         await updateDoc(userDocRef, {
             team: id,
             role: "member",
         });
+
+        console.log("user " + user.uid + " joined team " + id);
+
+        // add the user's id to the team document
+        const teamDocRef = doc(db, 'teams', id);
+        await updateDoc(teamDocRef, {
+            memberId: arrayUnion(user.uid)
+        });
+
+        // if user got team, navigate to the team page
+        try {
+            const auth = getAuth()
+            const user = auth.currentUser
+
+            if (!user || !user.uid) {
+                throw new Error("User authentication failed.");
+            }
+
+            // Fetch user document from Firestore
+            const userDocRef = doc(db, "users", user.uid);
+            const userDocSnap = await getDoc(userDocRef);
+
+            if (userDocSnap.exists()) {
+                const userData = userDocSnap.data();
+                if (userData.team && Object.keys(userData.team).length > 0) {
+                    navigate("/TeamPage"); // Redirect to team page if user has a team
+                } else {
+                    navigate("/CreateTeam"); // Redirect to create team page otherwise
+                }
+            } else {
+                console.log("User document not found.");
+                navigate("/CreateTeam");
+            }
+        } catch (error) {
+            alert("Error during sign in: " + error);
+        }
 
 
     }
