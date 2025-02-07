@@ -14,12 +14,12 @@ function ChannelList() {
     return (
         <div className="wrapper"> {/*use wrapper styling from css file*/}
             <h1>Channels</h1>
-            <div id="list">
-                <ul className="team-list">
+            <div id="list" style={{ width: "max(80%, 500px)" }}>
+            <ul className="team-list">
                     {channels.map((channel) => (
                         <li key={channel.id} className="team-item">
                             <span className="team-name">{channel.name}</span> {/*use team-name class css styling*/}
-                            <button className="join-button">Open</button> {/*needs onClick function to connect to channel (Sprint 2)*/}
+                            <button className="open-button">Open</button> {/*needs onClick function to connect to channel (Sprint 2)*/}
                         </li>
                     ))}
                 </ul>
