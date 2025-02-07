@@ -22,7 +22,7 @@ function LogIn(){
             try {
                 // firebase sign in authentication and navigate to join team page
                 await SignInAuth(email, password);
-                navigate("/JoinTeam");
+                navigate("/CreateTeam");
             }
             catch(error){
                 alert("Error during sign in: " + error);

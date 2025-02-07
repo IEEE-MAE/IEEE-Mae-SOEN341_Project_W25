@@ -38,7 +38,7 @@ function SignUp() {
             try {
                 // sign up authentication with firebase and navigate to join team page
                 await SignUpAuth(email, password, username);
-                navigate("/JoinTeam");
+                navigate("/CreateTeam");
             }
             catch(error){
                 alert("Error during signup: " + error);
