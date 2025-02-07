@@ -21,7 +21,7 @@ export async function createTeam({teamName, adminId, memberId, channelIds}: team
             return [];
         }
         //const teamDoc =
-       await addDoc(collection(db, 'teams'), {
+       const teamDoc = await addDoc(collection(db, 'teams'), {
             teamName: teamName,
             superUserId: user.uid,
             adminId: adminId,
@@ -35,9 +35,11 @@ export async function createTeam({teamName, adminId, memberId, channelIds}: team
 
         // Update the document
         await updateDoc(userDocRef, {
+            team: teamDoc.id,
             role: "superUser",
         });
         //return teamDoc;
+        return teamDoc;
     } catch (error) {
         console.error("Error creating team:", error);
         throw error;
