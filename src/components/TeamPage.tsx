@@ -1,103 +1,102 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
+import "../style.css"; // Ensuring it matches your SignUp and LogIn styles
 
 const TeamPage = () => {
   const { teamId } = useParams<{ teamId: string }>();
   const [activeModal, setActiveModal] = useState<"none" | "admin" | "channel">("none");
-  const [adminName, setAdminName] = useState("");
+  const [adminUsername, setAdminUsername] = useState("");
   const [channelName, setChannelName] = useState("");
-  const [teamMembers, setTeamMembers] = useState("");
+  const [username, setUsername] = useState("");
 
   const handleSubmit = (type: "admin" | "channel") => {
     if (type === "admin") {
-      console.log("Adding admin:", adminName);
+      console.log("Adding admin:", adminUsername);
     } else {
-      console.log("Creating channel:", channelName, "with members:", teamMembers);
+      console.log("Creating channel:", channelName, "for user:", username);
     }
     closeModal();
   };
 
   const closeModal = () => {
     setActiveModal("none");
-    setAdminName("");
+    setAdminUsername("");
     setChannelName("");
-    setTeamMembers("");
+    setUsername("");
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-green-700">
-      <h1 className="text-white text-4xl font-bold">Team Page</h1>
-      
-      <div className="mt-4 space-x-4">
-        <button
-          onClick={() => setActiveModal("admin")}
-          className="px-6 py-2 bg-green-900 text-white rounded-lg"
-        >
-          Add Admin
-        </button>
-        <button
-          onClick={() => setActiveModal("channel")}
-          className="px-6 py-2 bg-green-900 text-white rounded-lg"
-        >
-          Make Channel
-        </button>
+    <div className="wrapper">
+      <h1>Team Page</h1>
+
+      {/* Buttons to trigger modals */}
+      <div className="button-group">
+        <button onClick={() => setActiveModal("admin")}>Add Admin</button>
+        <button onClick={() => setActiveModal("channel")}>Make Channel</button>
       </div>
 
+      {/* MODAL */}
       {activeModal !== "none" && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold">
-                {activeModal === "admin" ? "Add Admin" : "Create Channel"}
-              </h2>
-              <button
-                onClick={closeModal}
-                className="text-gray-500 hover:text-gray-700 text-xl"
-              >
-                ×
-              </button>
-            </div>
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2>{activeModal === "admin" ? "Add Admin" : "Create Channel"}</h2>
+            
+            {/* Form */}
+            <form onSubmit={(e) => { e.preventDefault(); handleSubmit(activeModal); }}>
+              {activeModal === "admin" ? (
+                <div className="input-group">
+                  <label htmlFor="adminUsernameInput">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
+                      <path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Z"/>
+                    </svg>
+                  </label>
+                  <input 
+                    required 
+                    type="text" 
+                    id="adminUsernameInput" 
+                    placeholder="Admin Username" 
+                    value={adminUsername} 
+                    onChange={(e) => setAdminUsername(e.target.value)} 
+                  />
+                </div>
+              ) : (
+                <>
+                  <div className="input-group">
+                    <label htmlFor="channelNameInput">
+                      <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
+                        <path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Z"/>
+                      </svg>
+                    </label>
+                    <input 
+                      required 
+                      type="text" 
+                      id="channelNameInput" 
+                      placeholder="Channel Name" 
+                      value={channelName} 
+                      onChange={(e) => setChannelName(e.target.value)} 
+                    />
+                  </div>
 
-            {activeModal === "admin" ? (
-              <div className="space-y-4">
-                <input
-                  type="text"
-                  value={adminName}
-                  onChange={(e) => setAdminName(e.target.value)}
-                  placeholder="Admin Name"
-                  className="w-full p-2 border rounded"
-                />
-                <button
-                  onClick={() => handleSubmit("admin")}
-                  className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                >
-                  OK
-                </button>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <input
-                  type="text"
-                  value={channelName}
-                  onChange={(e) => setChannelName(e.target.value)}
-                  placeholder="Channel Name"
-                  className="w-full p-2 border rounded"
-                />
-                <input
-                  type="text"
-                  value={teamMembers}
-                  onChange={(e) => setTeamMembers(e.target.value)}
-                  placeholder="Team Members"
-                  className="w-full p-2 border rounded"
-                />
-                <button
-                  onClick={() => handleSubmit("channel")}
-                  className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                >
-                  OK
-                </button>
-              </div>
-            )}
+                  <div className="input-group">
+                    <label htmlFor="usernameInput">
+                      <span>@</span>
+                    </label>
+                    <input 
+                      required 
+                      type="text" 
+                      id="usernameInput" 
+                      placeholder="Username" 
+                      value={username} 
+                      onChange={(e) => setUsername(e.target.value)} 
+                    />
+                  </div>
+                </>
+              )}
+
+              <button type="submit">OK</button>
+            </form>
+
+            <p className="close-text" onClick={closeModal}>Cancel</p>
           </div>
         </div>
       )}
