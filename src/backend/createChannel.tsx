@@ -31,7 +31,6 @@ export const createChannel = async ({channelName,createdByUserId}: channelData) 
             return [];
         }
 
-
         //This gets the snapshot of the users doc
         const userDocSnapshot = await firestore.collection('users').doc(user.uid).get();
         const teamID = userDocSnapshot.data.team(); //this pulls the team ID from the user doc
