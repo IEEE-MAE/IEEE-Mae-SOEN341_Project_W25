@@ -5,6 +5,8 @@ import "../style.css";
 import {useEffect, useState} from "react";
 import {pullItem} from "../backend/queryTeam.tsx";
 import './TeamPage';
+import {doc, updateDoc} from "firebase/firestore";
+import {db} from "../config/firebase.js";
 
 // default join team page
 function JoinTeam(){
@@ -53,9 +55,19 @@ function JoinTeam(){
     // + assign team and status to the user
     // + add user to team member array
 
-    const handleJoinTeam = (id) => {
+    const handleJoinTeam = async (id) => {
         alert("THIS IS THE ID: " + id);
         console.log(id);
+
+        const userDocRef = doc(db, 'users', user.uid);
+
+        // Update the document
+        await updateDoc(userDocRef, {
+            team: id,
+            role: "member",
+        });
+
+
     }
 
     return (
