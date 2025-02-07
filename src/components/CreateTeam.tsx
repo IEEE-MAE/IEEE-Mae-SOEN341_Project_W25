@@ -3,6 +3,9 @@ import "../style.css";
 import * as React from "react";
 import {useState} from "react";
 import {createTeam} from "../backend/createTeam.tsx";
+import {getAuth} from "firebase/auth";
+import {doc, getDoc} from "firebase/firestore";
+import {db} from "../config/firebase.tsx";
 
 function CreateTeam() {
     const navigate = useNavigate();
@@ -24,6 +27,34 @@ function CreateTeam() {
             //navigate(`/team/${teamDoc.id}`);
         } catch (error) {
             console.error("Error creating team:", error);
+        }
+
+        // if user got team, navigate to the team page
+        try {
+            const auth = getAuth()
+            const user = auth.currentUser
+
+            if (!user || !user.uid) {
+                throw new Error("User authentication failed.");
+            }
+
+            // Fetch user document from Firestore
+            const userDocRef = doc(db, "users", user.uid);
+            const userDocSnap = await getDoc(userDocRef);
+
+            if (userDocSnap.exists()) {
+                const userData = userDocSnap.data();
+                if (userData.team && Object.keys(userData.team).length > 0) {
+                    navigate("/TeamPage"); // Redirect to team page if user has a team
+                } else {
+                    navigate("/CreateTeam"); // Redirect to create team page otherwise
+                }
+            } else {
+                console.log("User document not found.");
+                navigate("/CreateTeam");
+            }
+        } catch (error) {
+            alert("Error during sign in: " + error);
         }
     }
 
