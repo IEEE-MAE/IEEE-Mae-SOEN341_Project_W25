@@ -30,44 +30,34 @@ function JoinTeam(){
     //     }
     // }
 
-    // placeholder for join team page UI
+    // temporary array for testing dynamic list creation. replace with team query from firebase
+    const teams = [ {name: "Team1", id: "1"}, {name: "Team2", id: "2"}, {name: "Team3", id: "3"}, {name: "Cami", id: "2pos"}];
 
-    //i would have acces to items or teams, and the team in teams.
+    // this should send a request to superuser to join team/let user in by default
+    // + assign team and status to the user
+    // + add user to team member array
+    const handleJoinTeam = (teamId : string) => {
+        alert("team selected: " + teamId);
+    }
+
     return (
         <div className="wrapper">
             <h1>Find a Team</h1>
             <div id="list">
-                <ul className="team-list">
-                    <li className="team-item">
-                        <span className="team-name">Team Alpha</span>
-                        <button className="join-button">Join</button>
-                    </li>
-                    <li className="team-item">
-                        <span className="team-name">Team Beta</span>
-                        <button className="join-button">Join</button>
-                    </li>
-                    <li className="team-item">
-                        <span className="team-name">Team Beta</span>
-                        <button className="join-button">Join</button>
-                    </li>
-                    <li className="team-item">
-                        <span className="team-name">Team Beta</span>
-                        <button className="join-button">Join</button>
-                    </li>
-                    <li className="team-item">
-                        <span className="team-name">Team Beta</span>
-                        <button className="join-button">Join</button>
-                    </li>
-                    <li className="team-item">
-                        <span className="team-name">Team Beta</span>
-                        <button className="join-button">Join</button>
-                    </li>
-                    <li className="team-item">
-                        <span className="team-name">Team Beta</span>
-                        <button className="join-button">Join</button>
-                    </li>
-                    {/*Add more team items here*/}
-                </ul>
+                {teams.length === 0 ? ( <p>No teams available. <a onClick={()=> navigate("/CreateTeam")}> Create a team</a> </p>
+                ) : (
+                    <ul className="team-list">
+                        {teams.map(team =>
+                            <li key={team.id}
+                                className="team-item"
+                                onClick={() => handleJoinTeam(team.id)}
+                                style ={{cursor:"pointer"}}
+                            >
+                                <span className="team-name">{team.name}</span>
+                            </li>)}
+                        {/*Add more team items here*/}
+                    </ul>
+                )}
             </div>
             <p>Wanna create a team Instead? <a onClick={()=> navigate("/CreateTeam")}> Create a team</a></p>
         </div>
