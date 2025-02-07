@@ -20,7 +20,11 @@ function LogIn() {
 
         if (email && password) {
             try {
-                const user = await SignInAuth(email, password);
+                const user = await SignInAuth(email, password); // SignInAuth returns a user object
+
+                if (!user || !user.uid) {
+                    throw new Error("User authentication failed.");
+                }
 
                 // Fetch user document from Firestore
                 const userDocRef = doc(db, "users", user.uid);
@@ -57,12 +61,12 @@ function LogIn() {
                     </label>
                     {/* get email from input */}
                     <input required type="email" name="email" id="emailInput" autoCapitalize="off" onChange={(e) => setEmail(e.target.value)}
-                           placeholder="Email" />
+                            placeholder="Email" />
                 </div>
                 <div>
                     <label htmlFor="passwordInput">
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
-                             fill="#000000">
+                            fill="#000000">
                             <path
                                 d="M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h40v-80q0-83 58.5-141.5T480-920q83 0 141.5 58.5T680-720v80h40q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Zm240-200q33 0 56.5-23.5T560-360q0-33-23.5-56.5T480-440q-33 0-56.5 23.5T400-360q0 33 23.5 56.5T480-280ZM360-640h240v-80q0-50-35-85t-85-35q-50 0-85 35t-35 85v80Z"/>
                         </svg>
