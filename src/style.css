@@ -180,3 +180,11 @@ a:hover{
         border-radius: 0;
     }
 }
+
+/* Styles for TeamPage*/
+.text-white {
+    color:white !important;
+}
+button {
+    margin-right: 5px;
+}

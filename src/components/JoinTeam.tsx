@@ -2,6 +2,7 @@
 import {getAuth} from "firebase/auth";
 import {useNavigate} from "react-router-dom";
 import "../style.css";
+import './TeamPage';
 
 // default join team page
 function JoinTeam(){
@@ -38,6 +39,7 @@ function JoinTeam(){
     // + add user to team member array
     const handleJoinTeam = (teamId : string) => {
         alert("team selected: " + teamId);
+        // navigate(`/team/${teamId}`);
     }
 
     return (
