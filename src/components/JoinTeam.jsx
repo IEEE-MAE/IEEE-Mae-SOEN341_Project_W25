@@ -11,8 +11,9 @@ import {SignInAuth} from "../backend/auth.js";
 
 // default join team page
 function JoinTeam(){
-    const [teams, setTeams] = useState([]);
+
     const navigate = useNavigate();
+    const [teams, setTeams] = useState([]);
 
     const fetchData = async () => {
         try {
