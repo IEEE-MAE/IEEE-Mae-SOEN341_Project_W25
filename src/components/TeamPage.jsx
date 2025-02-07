@@ -21,7 +21,80 @@ const TeamPage = () => {
   const navigate = useNavigate();
 
 
-  const handleSubmit = async () => {
+  // const handleSubmit = async () => {
+  //     const auth = getAuth();
+  //     const user = auth.currentUser;
+  //
+  //     if (!user) {
+  //         return []
+  //     }
+  //
+  //     const userDocRef = doc(db, "users", user.uid);
+  //     const userDocSnapshot = await getDoc(userDocRef);
+  //
+  //     const teamId = userDocSnapshot.data().team;
+  //     const userRole = userDocSnapshot.data().role;
+  //
+  //     console.log("userRole", userRole);
+  //
+  //     if (activeModal === "admin") {
+  //
+  //         if (userRole === "superUser") {
+  //             const teamDocRef = doc(db, 'teams', teamId);
+  //             await updateDoc(teamDocRef, {
+  //                 adminId: arrayUnion(user.uid)
+  //             });
+  //         }
+  //         else{
+  //             alert("you are not the superUser, cry about it")
+  //         }
+  //     }
+  //     if (activeModal === "channel") {
+  //         if (userRole === "admin" || userRole === "superUser") {
+  //
+  //             //------ Create Channel -----
+  //             try {
+  //                 setUserId(user.uid);
+  //                 const channelDoc = await createChannel({channelName, createdByUserId});
+  //                 console.log("Successfully created channel");
+  //                 alert("Your channel has been created");
+  //                 // Optionally, navigate to the newly created team or show a success message.
+  //                 //console.log("Team created with ID:", teamDoc.id);
+  //                 //navigate(`/team/${teamDoc.id}`);
+  //             } catch (error) {
+  //                 console.error("Error creating team:", error);
+  //             }
+  //
+  //
+  //
+  //             //------- updates team with channel ID -------
+  //             const teamDocRef = doc(db, 'teams', teamId);
+  //             await updateDoc(teamDocRef, {
+  //                     channelId: arrayUnion("channel id filler")
+  //                 });
+  //
+  //         } else{
+  //             alert("you are not an admin")
+  //         }
+  //         navigate("/Channels");
+  //     }
+  //
+  //   console.log("Form submitted!");
+  //   closeModal();
+  // };
+
+  const closeModal = () => {
+    setActiveModal("none");
+    setAdminUsername("");
+    setChannelName("");
+    setUsername("");
+  };
+
+  const handleConfirmation = () => {
+    setShowConfirmationModal(true);
+  };
+
+  const handleConfirmSubmit = async () => {
       const auth = getAuth();
       const user = auth.currentUser;
 
@@ -70,38 +143,17 @@ const TeamPage = () => {
               //------- updates team with channel ID -------
               const teamDocRef = doc(db, 'teams', teamId);
               await updateDoc(teamDocRef, {
-                      channelId: arrayUnion("channel id filler")
-                  });
+                  channelId: arrayUnion("channel id filler")
+              });
 
           } else{
               alert("you are not an admin")
           }
-
+          navigate("/Channels");
       }
 
-    console.log("Form submitted!");
-    closeModal();
-  };
-
-  const closeModal = () => {
-    setActiveModal("none");
-    setAdminUsername("");
-    setChannelName("");
-    setUsername("");
-  };
-
-  const handleConfirmation = () => {
-    setShowConfirmationModal(true);
-  };
-
-  const handleConfirmSubmit = () => {
-    if (activeModal === "admin") {
-      console.log("Adding admin:", adminUsername);
-    } else if (activeModal === "channel") {
-      console.log("Creating channel:", channelName, "for user:", username);
-    }
-    setShowConfirmationModal(false);
-    closeModal();
+      console.log("Form submitted!");
+      closeModal();
   };
 
   // example sign out function (can be put wherever user will sign out)
@@ -137,7 +189,7 @@ const TeamPage = () => {
               onSubmit={(e) => {
                 e.preventDefault();
                 handleConfirmation();
-                handleSubmit();
+                // handleSubmit();
               }}
             >
               {activeModal === "admin" ? (
