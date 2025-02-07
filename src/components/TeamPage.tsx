@@ -10,13 +10,19 @@ const TeamPage = () => {
   const [username, setUsername] = useState("");
 
   const handleSubmit = (type: "admin" | "channel") => {
-    if (type === "admin") {
-      console.log("Adding admin:", adminUsername);
-    } else {
-      console.log("Creating channel:", channelName, "for user:", username);
+    if (type === "admin" && !adminUsername.trim()) {
+      alert("Please enter an admin username.");
+      return;
     }
+    if (type === "channel" && (!channelName.trim() || !username.trim())) {
+      alert("Please fill in all fields.");
+      return;
+    }
+  
+    console.log("Form submitted!");
     closeModal();
   };
+  
 
   const closeModal = () => {
     setActiveModal("none");
@@ -51,13 +57,14 @@ const TeamPage = () => {
                     </svg>
                   </label>
                   <input 
-                    required 
-                    type="text" 
-                    id="adminUsernameInput" 
-                    placeholder="Admin Username" 
-                    value={adminUsername} 
-                    onChange={(e) => setAdminUsername(e.target.value)} 
-                  />
+                required 
+                type="text" 
+                id="adminUsernameInput" 
+                placeholder="Admin Username" 
+                aria-label="Enter admin username" 
+                value={adminUsername} 
+                onChange={(e) => setAdminUsername(e.target.value)} 
+                />
                 </div>
               ) : (
                 <>
