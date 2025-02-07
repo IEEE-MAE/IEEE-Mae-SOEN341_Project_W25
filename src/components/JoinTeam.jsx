@@ -2,12 +2,27 @@
 import {getAuth} from "firebase/auth";
 import {useNavigate} from "react-router-dom";
 import "../style.css";
+import {useEffect, useState} from "react";
+import {pullItem} from "../backend/queryTeam.tsx";
 
 // default join team page
 function JoinTeam(){
-
+    const [teams, setTeams] = useState([]);
     const navigate = useNavigate();
 
+    const fetchData = async () => {
+        try {
+            const retrievedItems = await pullItem();
+            setTeams(retrievedItems);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+
+    useEffect(() => {
+        fetchData();
+    }, []);
     // to check if user is signed in
     const auth = getAuth();
     const user = auth.currentUser;
@@ -31,13 +46,15 @@ function JoinTeam(){
     // }
 
     // temporary array for testing dynamic list creation. replace with team query from firebase
-    const teams = [ {name: "Team1", id: "1"}, {name: "Team2", id: "2"}, {name: "Team3", id: "3"}, {name: "Cami", id: "2pos"}];
+    //const teams = [ {name: "Team1", id: "1"}, {name: "Team2", id: "2"}, {name: "Team3", id: "3"}, {name: "Cami", id: "2pos"}];
 
     // this should send a request to superuser to join team/let user in by default
     // + assign team and status to the user
     // + add user to team member array
-    const handleJoinTeam = (teamId : string) => {
-        alert("team selected: " + teamId);
+
+    const handleJoinTeam = (id) => {
+        alert("THIS IS THE ID: " + id);
+        console.log(id);
     }
 
     return (
@@ -47,13 +64,13 @@ function JoinTeam(){
                 {teams.length === 0 ? ( <p>No teams available. <a onClick={()=> navigate("/CreateTeam")}> Create a team</a> </p>
                 ) : (
                     <ul className="team-list">
-                        {teams.map(team =>
-                            <li key={team.id}
+                        {teams.map((teams) =>
+                            <li key={teams.id}
                                 className="team-item"
-                                onClick={() => handleJoinTeam(team.id)}
+                                onClick={() => handleJoinTeam(teams.id)}
                                 style ={{cursor:"pointer"}}
                             >
-                                <span className="team-name">{team.name}</span>
+                                <span className="team-name">{teams.teamName}</span>
                             </li>)}
                         {/*Add more team items here*/}
                     </ul>
