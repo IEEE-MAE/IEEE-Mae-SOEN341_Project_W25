@@ -1,8 +1,9 @@
 import { db, auth } from "../config/firebase.tsx";
 import firebase from "firebase/app";
-import {getFirestore, collection, addDoc, getDocs, QuerySnapshot, where, query, serverTimestamp,doc} from 'firebase/firestore';
+import {getFirestore, collection, addDoc, getDocs, QuerySnapshot, where, query, serverTimestamp,doc,updateDoc} from 'firebase/firestore';
 import {getAuth} from "firebase/auth";
-import firestore = firebase.firestore;
+//import firestore = firebase.firestore;
+//import firestore = firebase.firestore;
 
 interface teamData {
     teamName: string;
@@ -20,7 +21,8 @@ export async function createTeam({teamName, superUserId, adminId, memberId, chan
         if(!user){
             return [];
         }
-        const teamDoc = await addDoc(collection(db, 'teams'), {
+        //const teamDoc =
+       await addDoc(collection(db, 'teams'), {
             teamName: teamName,
             superUserId: user.uid,
             adminId: adminId,
@@ -30,11 +32,13 @@ export async function createTeam({teamName, superUserId, adminId, memberId, chan
         console.log("stuff was sent")
 
 
-        await firestore.collection('users').doc(user.uid).update({
-            team : teamDoc.id,
-            role : "superUser",
+        const userDocRef = doc(db, 'users', user.uid);
+
+        // Update the document
+        await updateDoc(userDocRef, {
+            role: "superUser",
         });
-        return teamDoc;
+        //return teamDoc;
     } catch (error) {
         console.error("Error creating team:", error);
         throw error;

@@ -31,6 +31,8 @@ function JoinTeam(){
     // }
 
     // placeholder for join team page UI
+
+    //i would have acces to items or teams, and the team in teams.
     return (
         <div className="wrapper">
             <h1>Find a Team</h1>
