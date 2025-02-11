@@ -22,7 +22,9 @@ Participants: Abu, Alex, Yara, Mae, Mac, Cami
 ### For friday:
 - Abu will make an explanation of backend code from Sprint 1
 - Alex and Cami will flesh out implementation of messaging (DM and Channels)
+- Cami will re-structure US and tasks (issues) for Sprint 1 and create ones for Sprint 2
 - Mae will design admin functionalities, create channel, accept request, logout, delete and edit message
+- Mae will finish team page flowchart
 - Mac will make team page user and channel assets + superadmin functionality and redo look of login/signup
 - Yara will design how direct messaging and channel messaging will look 
 
