@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import "../style.css";
 import {getAuth} from "firebase/auth";
 import {doc, getDoc, updateDoc, arrayUnion} from "firebase/firestore";
@@ -7,8 +8,13 @@ import {createTeam} from "../backend/createTeam.tsx";
 import {createChannel} from "../backend/createChannel.tsx";
  // Ensure this matches your SignUp and LogIn styles
 import {useNavigate, useParams} from "react-router-dom";
-import "../style.css";
 import {SignOutAuth} from "../backend/auth.tsx"; // Ensure this matches your SignUp and LogIn styles
+
+const pageVariants = { //animation setup
+    hidden: {opacity: 0, y: 50, scale: 0.95},
+    visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.6, ease: "easeOut" } },
+    exit: { opacity: 0, y: 50, scale: 0.95, transition: { duration: 0.4, ease: "easeIn" } },
+}
 
 const TeamPage = () => {
   //const { teamId } = useParams<{ teamId: string }>();
@@ -168,45 +174,61 @@ const TeamPage = () => {
   }
 
   return (
-    <div className="wrapper">
-      <h1>Team Page</h1>
+      <motion.div
+          className="wrapper"
+          variants={pageVariants}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+      >
+        <h1>Team Page</h1>
 
-      {/* Buttons to trigger modals */}
-      <div className="button-group">
-        <button onClick={() => setActiveModal("admin")}>Add Admin</button>
-        <button onClick={() => setActiveModal("channel")}>Make Channel</button>
-        <button onClick={() => onSignOut()}>Log out</button>
-      </div>
+        {/* Buttons to trigger modals */}
+        <div className="button-group">
+            <button onClick={() => setActiveModal("admin")}>Add Admin</button>
+            <button onClick={() => setActiveModal("channel")}>Make Channel</button>
+            <button onClick={() => onSignOut()}>Log out</button>
+        </div>
 
-      {/* MODAL */}
-      {activeModal !== "none" && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h2>{activeModal === "admin" ? "Add Admin" : "Create Channel"}</h2>
-
-            {/* Form */}
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleConfirmation();
-                // handleSubmit();
-              }}
+         {/* MODAL */}
+          {activeModal !== "none" && (
+            <motion.div
+                className = "modal-overlay"
+                initial = {{ opacity: 0 }}
+                animate = {{ opacity: 1, transition: { duration: 0.3} }}
+                exit = {{ opacity: 0, transition: {duration: 0.3} }}
+          >
+            <motion.div
+                className = "modal"
+                initial = {{ y: -20, opacity: 0 }}
+                animate = {{y: 0, opacity:1, transition: { duration: 0.4, ease: "easeOut" } }}
+                exit = {{y: -20, opacity: 0, transition: {duration: 0.3, ease: "easeIn"} }}
             >
-              {activeModal === "admin" ? (
-                <div className="input-group">
-                  <label htmlFor="adminUsernameInput">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
-                      <path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Z"/>
-                    </svg>
-                  </label>
-                  <input
-                    required
-                    type="text"
-                    id="adminUsernameInput"
-                    placeholder="Admin Username"
-                    aria-label="Enter admin username"
-                    value={adminUsername}
-                    onChange={(e) => setAdminUsername(e.target.value)}
+                <h2>{activeModal === "admin" ? "Add Admin" : "Create Channel"}</h2>
+
+                {/* Form */}
+                <form
+                    onSubmit={(e) => {
+                    e.preventDefault();
+                    handleConfirmation();
+                    // handleSubmit();
+                }}
+                >
+                {activeModal === "admin" ? (
+                    <div className="input-group">
+                    <label htmlFor="adminUsernameInput">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
+                        <path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Z"/>
+                        </svg>
+                    </label>
+                    <input
+                        required
+                        type="text"
+                        id="adminUsernameInput"
+                        placeholder="Admin Username"
+                        aria-label="Enter admin username"
+                        value={adminUsername}
+                        onChange={(e) => setAdminUsername(e.target.value)}
                   />
                 </div>
               ) : (
@@ -247,25 +269,35 @@ const TeamPage = () => {
             </form>
 
             <p className="close-text" onClick={closeModal}>Cancel</p>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
 
       {/* Confirmation Modal */}
       {showConfirmationModal && (
-        <div className="modal-overlay">
-          <div className="modal">
+        <motion.div
+            className = "modal-overlay"
+            initial = {{ scale: 0.8, opacity: 0}}
+            animate = {{ opacity: 1, transition: { duration: 0.4, ease: "easeIn" }}}
+            exit = {{ opacity: 0, transition: {duration: 0.4, ease: "easeIn" }}}
+        >
+            <motion.div
+                className = "modal"
+                initial = {{ scale: 0.8, opacity: 0 }}
+                animate = {{ opacity: 1, transition: { duration: 0.4, ease: "easeIn" }}}
+                exit = {{ opacity: 0, transition: {duration: 0.4, ease: "easeIn" }}}
+            >
             <h2>Are you sure?</h2>
             <p>This action cannot be undone.</p>
             <div className="modal-actions">
               <button onClick={() => setShowConfirmationModal(false)}>Cancel</button>
               <button onClick={handleConfirmSubmit}>Confirm</button>
             </div>
-          </div>
-        </div>
+            </motion.div>
+        </motion.div>
       )}
-    </div>
-  );
+    </motion.div>
+    );
 };
 
 export default TeamPage;
