@@ -1,0 +1,239 @@
+.team-page {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    color: white;
+    font-family: Poppins, Segoe UI, sans-serif;
+}
+
+.sidebar { /* users sidebar */
+    width: 80px;  /* collapsed width */
+    background: #220044;
+    padding: 15px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: width 0.3s ease-in-out;
+    overflow: hidden;
+    position: relative;
+}
+
+.sidebar.expanded {
+    width: 200px; /* expanded width */
+}
+
+.user-list { /* user list */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    padding-top: 15px;
+}
+
+.user-item { /* users in user list */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.user-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: white;
+    transition: transform 0.2s ease;
+}
+
+.user-item:hover .user-icon {
+    transform: scale(1.1);
+}
+
+.username { /* usernames (appears only when expanded!) */
+    font-size: 14px;
+    transition: opacity 0.3s ease-in-out;
+    white-space: nowrap;
+}
+
+.sidebar:not(.expanded) .username { /*  hide usernames when not expanded */
+    opacity: 0;
+}
+
+.toggle-arrow { /* arrow to expand user list */
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #4d3174;
+    border: none;
+    color: white;
+    padding: 5px;
+    border-radius: 50%;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toggle-arrow:hover {
+    background: white;
+    color: #4d3174;
+}
+
+.channel-sidebar {
+    width: 15%;
+    backdrop-filter: blur(10px);
+    background: rgba(46, 0, 95, 0.3);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.channel-list {
+    flex-grow: 1;
+    list-style: none;
+    padding: 0;
+    width: 100%;
+    margin-bottom: 10px;
+    overflow-y: auto;
+    max-height: calc(100vh - 120px);
+    padding-right: 8px;
+    padding-left: 4px;
+}
+
+::-webkit-scrollbar {
+    width: 2px;
+    background: transparent;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: white;
+    border-radius: 1px;
+    transition: background 0.3s ease-in-out;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.channel-item {
+    background: rgba(75, 0, 130, 0.3);
+    padding: 10px;
+    margin: 5px 2px;
+    text-align: center;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    backdrop-filter: blur(5px);
+    width: calc(100% - 4px);
+}
+
+.channel-item:hover {
+    background: rgba(106, 13, 173, 0.5);
+    transform: scale(1.05);
+    transform-origin: center;
+    overflow: visible;
+}
+
+.top-nav {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.top-nav button{
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid white;
+    padding: 8px 16px;
+    color: white;
+    font-size: 1rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    text-align: center;
+    min-width: 120px;
+}
+
+.top-nav button:hover{
+    background: white;
+    color: #4b0082;
+}
+
+.add-channel-button {
+    background: white;
+    color: #4d3174;
+    padding: 10px;
+    width: auto;
+    min-width: 200px;
+    border: none;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.3s ease;
+}
+
+.add-channel-button:hover {
+    background: #4d3174;
+    color: white;
+}
+
+.logout-button {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid white;
+    width: auto;
+    min-width: 100px;
+    padding: 8px 16px;
+    color: white;
+    font-size: 1rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    backdrop-filter: blur(10px);
+    text-align: center;
+}
+
+.check-requests-button {
+    background: white;
+    color: #4d3174;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.3s ease;
+}
+
+.add-admin-button {
+    background: white;
+    color: #4d3174;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.3s ease;
+}
+
+
