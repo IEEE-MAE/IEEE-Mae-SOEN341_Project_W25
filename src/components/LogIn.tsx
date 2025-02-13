@@ -91,7 +91,7 @@ function LogIn() {
                     <button type="submit">Login</button>
                 </form>
                 {/* navigate to sign up*/}
-                <p>Don't have an account? <a onClick={() => navigate("/")}>Signup</a></p>
+                <p>Don't have an account? <a onClick={() => navigate("/SignUp")}>Signup</a></p>
             </div>
         </motion.div>
     );

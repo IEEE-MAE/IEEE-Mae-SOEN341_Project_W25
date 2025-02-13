@@ -13,8 +13,8 @@ function AnimatedRoutes(){
     return(
         <AnimatePresence mode="sync">
             <Routes>
-                <Route path="/" element={<SignUp />} />
-                <Route path="/LandingPage" element={<LandingPage />} />
+                <Route path="/SignUp" element={<SignUp />} />
+                <Route path="/" element={<LandingPage />} />
                 <Route path="/LogIn" element={<LogIn />} />
                 <Route path="/JoinTeam" element={<JoinTeam />} />
                 <Route path="/CreateTeam" element={<CreateTeam />} />

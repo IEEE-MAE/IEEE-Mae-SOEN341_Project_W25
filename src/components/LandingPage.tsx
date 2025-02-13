@@ -26,7 +26,7 @@ function LandingPage() {
                     <img src="public/vite.svg" alt="ChatHaven Logo" className="landing-logo" />
                     <h1>WELCOME TO CHATHAVEN</h1>
                     <p>Your team space to message, collaborate, and communicate.</p>
-                    <button className="landing-button" onClick={() => navigate("/")}>Get Started</button>
+                    <button className="landing-button" onClick={() => navigate("/SignUp")}>Get Started</button>
                 </div>
             </div>
         </motion.div>
