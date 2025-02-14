@@ -1,11 +1,27 @@
 import {useNavigate} from "react-router-dom";
 import "../style.css";
 import * as React from "react";
+import { motion } from "framer-motion";
 import {useState} from "react";
 import {createTeam} from "../backend/createTeam.jsx";
 import {getAuth} from "firebase/auth";
 import {doc, getDoc} from "firebase/firestore";
 import {db} from "../config/firebase.jsx";
+
+const pageVariants = { //transition settings
+    initial: { opacity: 0, scale: 0.95 },
+    animate: { opacity: 1, scale: 1, transition: { duration: 0.6, ease: "easeOut" } },
+    exit: { opacity: 0, scale: 0.95, transition: { duration: 0.4, ease: "easeIn" } },
+};
+
+const buttonVariants = {
+    hover: { scale: 1.05, transition: { duration: 0.2} ,
+    tap: { scale: 0.95}, }
+};
+
+const inputVariants = {
+    focus: { borderColor: "#4d3174", transition: { duration: 0.3 } },
+};
 
 function CreateTeam() {
     const navigate = useNavigate();
@@ -59,21 +75,41 @@ function CreateTeam() {
     }
 
     return (
-        <div className="wrapper">
+        <motion.div
+            className = "wrapper"
+            variants = {pageVariants}
+            initial = "hidden"
+            animate = "visible"
+            exit = "exit"
+        >
             <h1>Create A team</h1>
-            <form onSubmit={onSubmit}>
-                <div>
+            <motion.form onSubmit={onSubmit} className={"form-container"}>
+                <motion.div className = "input-group">
                     <label htmlFor="TeamName">
-                        <span></span>
+                        <span>#</span>
                     </label>
-                    <input name="TeamName" id="TeamName" placeholder="enter your team name" onChange={(e) => setTeam(e.target.value)}/>
-                </div>
+                    <motion.input
+                        name = "TeamName"
+                        id = "TeamName"
+                        placeholder = "Enter your team name"
+                        onChange = {(e) => setTeam(e.target.value)}
+                        whileFocus = "focus"
+                        variants= {inputVariants}
+                    />
+                </motion.div>
 
-                <button type="submit">Create Team</button>
-            </form>
+                <motion.button
+                    type = "submit"
+                    className = "submit-button"
+                    variants = {buttonVariants}
+                    whileHover = "hover"
+                    whileTap = "tap"
+                >
+                    Create Team
+                </motion.button>
+            </motion.form>
             <p>Wanna join a team Instead? <a onClick={()=> navigate("/JoinTeam")}> Join a team</a></p>
-        </div>
+        </motion.div>
     )
-
 }
 export default CreateTeam;

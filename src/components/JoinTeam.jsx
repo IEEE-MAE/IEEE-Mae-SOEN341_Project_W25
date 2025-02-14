@@ -1,5 +1,6 @@
 // import {SignOutAuth} from "../backend/auth.jsx";
 import {getAuth} from "firebase/auth";
+import { motion } from "framer-motion";
 import {useNavigate} from "react-router-dom";
 import "../style.css";
 import {useEffect, useState} from "react";
@@ -8,6 +9,17 @@ import './TeamPage';
 import {doc, getDoc, updateDoc, arrayUnion} from "firebase/firestore";
 import {db} from "../config/firebase.jsx";
 import {SignInAuth} from "../backend/auth.jsx";
+
+const pageVariants = { //transition settings
+    initial: { opacity: 0, scale: 0.95 },
+    animate: { opacity: 1, scale: 1, transition: { duration: 0.6, ease: "easeOut" } },
+    exit: { opacity: 0, scale: 0.95, transition: { duration: 0.4, ease: "easeIn" } },
+};
+
+const listItemVariants = {
+    hidden: { opacity: 0, y:10 },
+    visible: { opacity: 1, y:0, transition: {duration: 0.3}}
+}
 
 // default join team page
 function JoinTeam(){
@@ -90,26 +102,40 @@ function JoinTeam(){
     }
 
     return (
-        <div className="wrapper">
+        <motion.div
+            className = "wrapper"
+            variants = {pageVariants}
+            initial = "hidden"
+            animate = "visible"
+            exit = "exit"
+        >
             <h1>Find a Team</h1>
             <div id="list">
                 {teams.length === 0 ? ( <p>No teams available. <a onClick={()=> navigate("/CreateTeam")}> Create a team</a> </p>
                 ) : (
-                    <ul className="team-list">
-                        {teams.map((teams) =>
-                            <li key={teams.id}
+                    <motion.ul
+                        className = "team-list"
+                        initial = "hidden"
+                        animate = "visible"
+                    >
+                        {teams.map((teams) => (
+                            <motion.li key={teams.id}
                                 className="team-item"
                                 onClick={() => handleJoinTeam(teams.id)}
                                 style ={{cursor:"pointer"}}
+                                variants = {listItemVariants}
+                                whileHover = {{ scale: 1.05}}
+                                whileTap = {{ scale: 0.95 }}
                             >
                                 <span className="team-name">{teams.teamName}</span>
-                            </li>)}
+                            </motion.li>
+                        ))}
                         {/*Add more team items here*/}
-                    </ul>
+                    </motion.ul>
                 )}
             </div>
             <p>Wanna create a team Instead? <a onClick={()=> navigate("/CreateTeam")}> Create a team</a></p>
-        </div>
+        </motion.div>
     )
 }
 
