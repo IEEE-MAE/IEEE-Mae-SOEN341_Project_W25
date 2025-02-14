@@ -22,7 +22,7 @@ function SignUp() {
     }
 
     // upon form submission
-    const onSubmit = async (e: React.FormEvent) => {
+    const onSubmit = async (e) => {
         // stops passing inputs to browser and clearing form
         e.preventDefault();
 

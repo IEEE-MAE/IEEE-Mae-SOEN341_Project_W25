@@ -15,7 +15,7 @@ function LogIn() {
     const navigate = useNavigate();
 
     // form submission
-    const onSubmit = async (e: React.FormEvent) => {
+    const onSubmit = async (e) => {
         e.preventDefault();
 
         if (email && password) {

@@ -6,7 +6,7 @@ import {
 } from "@firebase/auth";
 
 // from sign up page
-export const SignUpAuth= async (email : string, password : string, username :string)=>{
+export const SignUpAuth= async (email, password, username)=>{
     try{
         // create account using firebase authentication
         const {user} = await createUserWithEmailAndPassword(auth, email, password);
@@ -15,6 +15,7 @@ export const SignUpAuth= async (email : string, password : string, username :str
         //
         await setDoc(doc(db, "users", user.uid), {
                 displayName: username,
+                email: user.email,
                 team: {},
                 channel: {},
                 role: ""
@@ -29,7 +30,7 @@ export const SignUpAuth= async (email : string, password : string, username :str
 }
 
 // from log in page
-export const SignInAuth= async (email : string, password: string)=>{
+export const SignInAuth= async (email, password)=>{
     try{
         // log into account using firebase authentication
         const {user} = await signInWithEmailAndPassword(auth, email, password);

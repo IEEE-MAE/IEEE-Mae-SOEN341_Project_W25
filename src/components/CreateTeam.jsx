@@ -13,11 +13,11 @@ function CreateTeam() {
     // States for storing arrays of IDs
 
     const [superUserId, setSuperUserId] = useState("");
-    const adminId: string[] = [];
-    const memberId: string[] = [];
-    const channelIds: string[] = [];
+    const adminId = [];
+    const memberId = [];
+    const channelIds = [];
 
-    const onSubmit = async (e: React.FormEvent) => {
+    const onSubmit = async (e) => {
         e.preventDefault();
         try {
             await createTeam({teamName, superUserId, adminId, memberId, channelIds});

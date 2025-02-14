@@ -45,13 +45,23 @@ const TeamPage = () => {
           if (userRole === "superUser") {
 
               //gets the new admins ID from the admin username
-              const newAdminId = pullUser(adminUsername);
+              console.log("admin Username: " + adminUsername);
+              const newAdminId = await pullUser(adminUsername);
+              console.log("adminID:" + newAdminId);
 
               //This uses the team of the current user to pull up that teams ducment so it can be updated with the new admin (adminUsername)
               const teamDocRef = doc(db, 'teams', teamId);
               await updateDoc(teamDocRef, {
                   adminId: arrayUnion(newAdminId),
+
               });
+
+              const userDocRef = doc(db, 'users', newAdminId);
+              await updateDoc(userDocRef, {
+                  role: "admin",
+
+              });
+              console.log("adminID:" + newAdminId);
 
               //add the user as an admin to there document
 
