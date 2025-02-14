@@ -1,5 +1,5 @@
 import { collection, getDocs,} from 'firebase/firestore';
-import {db} from "../config/firebase.tsx";
+import {db} from "../config/firebase.jsx";
 //import {getAuth} from 'firebase/auth'
 
 // interface ItemType{

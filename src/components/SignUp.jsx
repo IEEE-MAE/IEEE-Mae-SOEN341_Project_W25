@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {SignUpAuth} from "../backend/auth.tsx";
+import {SignUpAuth} from "../backend/auth.jsx";
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import "../style.css"

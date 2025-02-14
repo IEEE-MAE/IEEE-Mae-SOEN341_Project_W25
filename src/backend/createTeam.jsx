@@ -1,4 +1,4 @@
-import { db} from "../config/firebase.tsx";
+import { db} from "../config/firebase.jsx";
 import firebase from "firebase/app";
 import {collection, addDoc,doc,updateDoc} from 'firebase/firestore';
 import {getAuth} from "firebase/auth";

@@ -2,13 +2,13 @@ import { useState } from "react";
 import "../style.css";
 import {getAuth} from "firebase/auth";
 import {doc, getDoc, updateDoc, arrayUnion} from "firebase/firestore";
-import {db} from "../config/firebase.tsx";
+import {db} from "../config/firebase.jsx";
 import {createTeam} from "../backend/createTeam.jsx";
 import {createChannel} from "../backend/createChannel.jsx";
  // Ensure this matches your SignUp and LogIn styles
 import {useNavigate, useParams} from "react-router-dom";
 import "../style.css";
-import {SignOutAuth} from "../backend/auth.tsx"; // Ensure this matches your SignUp and LogIn styles
+import {SignOutAuth} from "../backend/auth.jsx"; // Ensure this matches your SignUp and LogIn styles
 import {pullUser} from "../backend/QueryUsers/basicqueryUsers.jsx";
 
 const TeamPage = () => {

@@ -1,7 +1,7 @@
-import SignUp from "./components/SignUp";
-import LogIn from "./components/LogIn";
+import SignUp from "./components/SignUp.jsx";
+import LogIn from "./components/LogIn.jsx";
 import JoinTeam from "./components/JoinTeam";
-import CreateTeam from "./components/CreateTeam";
+import CreateTeam from "./components/CreateTeam.jsx";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Channels from "./components/Channels.tsx";
 import TeamPage from "./components/TeamPage.jsx";

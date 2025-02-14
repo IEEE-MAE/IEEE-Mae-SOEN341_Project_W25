@@ -1,9 +1,9 @@
 import { useState } from "react";
 import * as React from "react";
-import { SignInAuth } from "../backend/auth.tsx";
+import { SignInAuth } from "../backend/auth.jsx";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "../config/firebase.tsx";
+import { db } from "../config/firebase.jsx";
 import "../style.css";
 
 function LogIn() {

@@ -5,7 +5,7 @@ import {useState} from "react";
 import {createTeam} from "../backend/createTeam.jsx";
 import {getAuth} from "firebase/auth";
 import {doc, getDoc} from "firebase/firestore";
-import {db} from "../config/firebase.tsx";
+import {db} from "../config/firebase.jsx";
 
 function CreateTeam() {
     const navigate = useNavigate();
