@@ -2,7 +2,7 @@ import {useNavigate} from "react-router-dom";
 import "../style.css";
 import * as React from "react";
 import {useState} from "react";
-import {createTeam} from "../backend/createTeam.tsx";
+import {createTeam} from "../backend/createTeam.jsx";
 import {getAuth} from "firebase/auth";
 import {doc, getDoc} from "firebase/firestore";
 import {db} from "../config/firebase.tsx";

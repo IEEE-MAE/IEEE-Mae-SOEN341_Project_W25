@@ -3,8 +3,8 @@ import "../style.css";
 import {getAuth} from "firebase/auth";
 import {doc, getDoc, updateDoc, arrayUnion} from "firebase/firestore";
 import {db} from "../config/firebase.tsx";
-import {createTeam} from "../backend/createTeam.tsx";
-import {createChannel} from "../backend/createChannel.tsx";
+import {createTeam} from "../backend/createTeam.jsx";
+import {createChannel} from "../backend/createChannel.jsx";
  // Ensure this matches your SignUp and LogIn styles
 import {useNavigate, useParams} from "react-router-dom";
 import "../style.css";

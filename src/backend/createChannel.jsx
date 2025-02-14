@@ -7,12 +7,12 @@ import {getAuth} from "firebase/auth";
 
 
 
-interface channelData {
-    channelName: string;
-    createdByUserId: string;
-}
+// interface channelData {
+//     channelName: string;
+//     createdByUserId: string;
+// }
 
-export const createChannel = async ({channelName,createdByUserId}: channelData) => {
+export const createChannel = async ({channelName,createdByUserId}) => {
     try {
         const auth = getAuth()
         const user = auth.currentUser

@@ -4,15 +4,15 @@ import {collection, addDoc,doc,updateDoc} from 'firebase/firestore';
 import {getAuth} from "firebase/auth";
 
 
-interface teamData {
-    teamName: string;
-    superUserId: string;
-    adminId: string[];
-    memberId: string[];
-    channelIds: string[];
-}
+// interface teamData {
+//     teamName: string;
+//     superUserId: string;
+//     adminId: string[];
+//     memberId: string[];
+//     channelIds: string[];
+// }
 
-export async function createTeam({teamName, adminId, memberId, channelIds}: teamData) {
+export async function createTeam({teamName, adminId, memberId, channelIds}) {
     try {
         const auth = getAuth()
         const user = auth.currentUser
