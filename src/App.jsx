@@ -21,7 +21,6 @@ function AnimatedRoutes(){
                 <Route path="/CreateTeam" element={<CreateTeam />} />
                 <Route path="/TeamPage" element={<TeamPage />} />
                 <Route path="/Channels" element={<Channels />} />
-                <Route path="/DemoTeamPage" element={<DemoTeamPage />} />
             </Routes>
         </AnimatePresence>
     )
