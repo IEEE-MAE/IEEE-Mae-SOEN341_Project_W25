@@ -1,5 +1,6 @@
 import { collection, getDocs, where, query} from 'firebase/firestore';
-import { db, auth } from "../config/firebase.tsx";
+import {db} from "../../config/firebase.jsx";
+
 
 
 // interface userType{
