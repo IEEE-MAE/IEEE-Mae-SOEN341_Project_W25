@@ -1,5 +1,6 @@
-import { collection, getDocs,} from 'firebase/firestore';
-import {db} from "../config/firebase.tsx";
+import { collection, getDocs, where, query} from 'firebase/firestore';
+import { db, auth } from "../config/firebase.tsx";
+
 
 // interface userType{
 //     id?: string;
@@ -9,27 +10,27 @@ import {db} from "../config/firebase.tsx";
 //    role: string;
 // }
 
-export async function pullItem() {
+export async function pullUser(targetName) {
     try {
         //this pulls the collection
         const itemsRef = collection(db, 'teams');
         //pulls a snapshot of the collection
-        const querySnapshot = await getDocs(itemsRef);
+
+        const q = query(collection(db, 'users'), where('displayName', '==', targetName));
+
+        const querySnapshot = await getDocs(q);
 
         const docs = querySnapshot.docs;
 
         const items = [];
 
         //querySnapshot.forEach((doc) => {
-        for(const doc of docs){
-            const data = doc.data();
-            items.push({
-                id: doc.id,
-                ...data,
-            });
-        }
+        let userId = null;
+        querySnapshot.docs.forEach((doc) => {
+            userId = doc.id;
+        })
         console.log('Retrieved Items:', items);
-        return items;
+        return userId;
 
     } catch (error) {
         console.log('error pulling document', error);
@@ -37,3 +38,35 @@ export async function pullItem() {
     }
 
 }
+
+
+// export async function pullUser() {
+//     try {
+//         //this pulls the collection
+//         const itemsRef = collection(db, 'teams');
+//         //pulls a snapshot of the collection
+//
+//
+//         const querySnapshot = await getDocs(itemsRef);
+//
+//         const docs = querySnapshot.docs;
+//
+//         const items = [];
+//
+//         //querySnapshot.forEach((doc) => {
+//         for(const doc of docs){
+//             const data = doc.data();
+//             items.push({
+//                 id: doc.id,
+//                 ...data,
+//             });
+//         }
+//         console.log('Retrieved Items:', items);
+//         return items;
+//
+//     } catch (error) {
+//         console.log('error pulling document', error);
+//         return [];
+//     }
+//
+// }

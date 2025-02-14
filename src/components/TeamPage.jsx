@@ -9,6 +9,7 @@ import {createChannel} from "../backend/createChannel.jsx";
 import {useNavigate, useParams} from "react-router-dom";
 import "../style.css";
 import {SignOutAuth} from "../backend/auth.tsx"; // Ensure this matches your SignUp and LogIn styles
+import {pullUser} from "../backend/QueryUsers/basicqueryUsers.jsx";
 
 const TeamPage = () => {
   //const { teamId } = useParams<{ teamId: string }>();
@@ -29,21 +30,32 @@ const TeamPage = () => {
           return []
       }
 
+      //----  This pulls the current users document snapshot into "userDocSnapshot" ----
       const userDocRef = doc(db, "users", user.uid);
       const userDocSnapshot = await getDoc(userDocRef);
 
+      //---- the users document is then used to aquire his team and role ----
       const teamId = userDocSnapshot.data().team;
       const userRole = userDocSnapshot.data().role;
 
       console.log("userRole", userRole);
 
+      //------ This is the adding an admin block --------
       if (activeModal === "admin") {
-
           if (userRole === "superUser") {
+
+              //gets the new admins ID from the admin username
+              const newAdminId = pullUser(adminUsername);
+
+              //This uses the team of the current user to pull up that teams ducment so it can be updated with the new admin (adminUsername)
               const teamDocRef = doc(db, 'teams', teamId);
               await updateDoc(teamDocRef, {
-                  adminId: arrayUnion(user.uid)
+                  adminId: arrayUnion(newAdminId),
               });
+
+              //add the user as an admin to there document
+
+
           }
           else{
               alert("you are not the superUser, cry about it")
@@ -72,6 +84,7 @@ const TeamPage = () => {
               await updateDoc(teamDocRef, {
                       channelId: arrayUnion("channel id filler")
                   });
+
 
           } else{
               alert("you are not an admin")
