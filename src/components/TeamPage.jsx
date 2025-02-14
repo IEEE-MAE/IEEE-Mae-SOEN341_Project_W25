@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import "../style.css";
 import {getAuth} from "firebase/auth";
 import {doc, getDoc, updateDoc, arrayUnion} from "firebase/firestore";
-import {db} from "../config/firebase.jsx";
+import {db} from "../config/firebase.tsx";
 import {createTeam} from "../backend/createTeam.jsx";
 import {createChannel} from "../backend/createChannel.jsx";
  // Ensure this matches your SignUp and LogIn styles

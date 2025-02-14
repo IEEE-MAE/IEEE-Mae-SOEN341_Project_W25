@@ -1,6 +1,7 @@
-import { db, auth } from "../config/firebase.jsx";
+import { db, auth } from "../config/firebase.tsx";
 import {
     doc,
+    setDoc, getDoc
     setDoc, getDoc, updateDoc
 } from 'firebase/firestore';
 import {getAuth} from "firebase/auth";
@@ -12,6 +13,7 @@ import {getUserTeam} from "./Queries/getUserTeam.jsx";
 //     channelName: string;
 //     createdByUserId: string;
 // }
+
 
 export const createChannel = async ({channelName,createdByUserId, users}) => {
     try {
@@ -31,8 +33,18 @@ export const createChannel = async ({channelName,createdByUserId, users}) => {
         const auth = getAuth()
         const user = auth.currentUser
 
+        if(!user){
+            return [];
+        }
         const teamID = getUserTeam();
 
+        //This gets the snapshot of the users doc
+        const userDocRef = doc(db, "users", user.uid);
+        const userDocSnapshot = await getDoc(userDocRef);
+        //const teamID = userDocSnapshot.data.id;
+
+        const userData = userDocSnapshot.data();
+        const teamID = userData ? userData.id : null;
         console.log("Team Id:" + teamID);
 
         //combines teamID and channelName to make channel ID
