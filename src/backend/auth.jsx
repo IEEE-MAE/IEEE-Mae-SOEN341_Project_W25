@@ -14,7 +14,7 @@ export const SignUpAuth= async (email, password, username)=>{
         // store account's username in firebase collections/'users'
         //
         await setDoc(doc(db, "users", user.uid), {
-                email: user.email,
+                displayName: username,
                 team: {},
                 channel: {},
                 role: "",

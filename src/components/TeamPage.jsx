@@ -8,6 +8,8 @@ import {createTeam} from "../backend/createTeam.jsx";
 import {createChannel} from "../backend/createChannel.jsx";
  // Ensure this matches your SignUp and LogIn styles
 import {useNavigate, useParams} from "react-router-dom";
+import {SignOutAuth} from "../backend/auth.tsx"; // Ensure this matches your SignUp and LogIn styles
+import {pullUser} from "../backend/QueryUsers/basicqueryUsers.jsx";
 import "../style.css";
 import {SignOutAuth} from "../backend/auth.jsx"; // Ensure this matches your SignUp and LogIn styles
 import {pullUser} from "../backend/Queries/basicqueryUsers.jsx";
@@ -125,6 +127,10 @@ const TeamPage = () => {
       if (activeModal === "admin") {
           if (userRole === "superUser") {
 
+
+
+              //This uses the team of the current user to pull up that teams ducment so it can be updated with the new admin (adminUsername)
+
               //gets the new admins ID from the admin username
               console.log("admin Username: " + adminUsername);
               const newAdminId = await pullUser(adminUsername);
@@ -136,6 +142,10 @@ const TeamPage = () => {
                   adminId: arrayUnion(newAdminId),
 
               });
+
+              //add the user as an admin to there document
+
+
 
               const userDocRef = doc(db, 'users', newAdminId);
               await updateDoc(userDocRef, {
@@ -195,6 +205,7 @@ const TeamPage = () => {
               await updateDoc(channelDocRef, {
                   users: arrayUnion(newUserId),
               });
+
 
 
           } else{
