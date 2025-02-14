@@ -1,15 +1,17 @@
 import { collection, getDocs,} from 'firebase/firestore';
 import {db} from "../config/firebase.tsx";
+//import {getAuth} from 'firebase/auth'
 
-interface userType{
-    id?: string;
-   displayName: string;
-   team: string;
-   channel: string;
-   role: string;
-}
+// interface ItemType{
+//     id?: string;
+//     teamName: string;
+//     superUserId: string;
+//     adminId: string[];
+//     memberId: string[];
+//     channelIds: string[];
+// }
 
-export async function pullItem(): Promise<userType[]> {
+export async function pullItem()  {
     try {
         //this pulls the collection
         const itemsRef = collection(db, 'teams');
@@ -18,14 +20,14 @@ export async function pullItem(): Promise<userType[]> {
 
         const docs = querySnapshot.docs;
 
-        const items: userType[] = [];
+        const items= [];
 
         //querySnapshot.forEach((doc) => {
         for(const doc of docs){
-            const data = doc.data() as userType;
+            const data = doc.data();
             items.push({
-                id: doc.id,
-                ...data,
+                id: doc.id,  //this lets me pull the doc id specifically
+                ...data,     //this categorizes the rest of the data
             });
         }
         console.log('Retrieved Items:', items);
