@@ -144,6 +144,13 @@ const TeamPage = () => {
 
               });
 
+              const userDocRef = doc(db, 'users', newAdminId);
+              await updateDoc(userDocRef, {
+                  role: "admin",
+
+              });
+              console.log("adminID:" + newAdminId);
+
               //add the user as an admin to there document
 
 

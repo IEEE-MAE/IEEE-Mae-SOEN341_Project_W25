@@ -15,6 +15,7 @@ export const SignUpAuth= async (email, password, username)=>{
         //
         await setDoc(doc(db, "users", user.uid), {
                 displayName: username,
+                email: user.email,
                 team: {},
                 channel: {},
                 role: "",
