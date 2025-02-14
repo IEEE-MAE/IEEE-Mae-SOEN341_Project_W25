@@ -8,7 +8,6 @@ import TeamPage from "./components/TeamPage";
 import Channels from "./components/Channels.tsx";
 import LandingPage from "./components/LandingPage.tsx";
 import Iridescence from "./assets/Iridescence.tsx";
-import DemoTeamPage from "./components/DemoTeamPage.tsx";
 
 function AnimatedRoutes(){
     return(
@@ -21,7 +20,6 @@ function AnimatedRoutes(){
                 <Route path="/CreateTeam" element={<CreateTeam />} />
                 <Route path="/TeamPage" element={<TeamPage />} />
                 <Route path="/Channels" element={<Channels />} />
-                <Route path="/DemoTeamPage" element={<DemoTeamPage />} />
             </Routes>
         </AnimatePresence>
     )
