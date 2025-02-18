@@ -7,6 +7,7 @@ Participants: Mac, Yara, Mae, Alex, Abu, Cami
 - making a new page to display direct messages
 
 DB Collections:
+
   users:
   - username
   - team
