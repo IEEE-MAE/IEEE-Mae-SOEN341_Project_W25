@@ -36,15 +36,15 @@ export const createChannel = async ({channelName,createdByUserId, users}) => {
         }
         const teamID = getUserTeam();
 
-        console.log("Team Id:" + teamID);
-        //This gets the snapshot of the users doc
-        const userDocRef = doc(db, "users", user.uid);
-        const userDocSnapshot = await getDoc(userDocRef);
-        //const teamID = userDocSnapshot.data.id;
-
-        const userData = userDocSnapshot.data();
-        const teamID = userData ? userData.id : null;
-        console.log("Team Id:" + teamID);
+        // console.log("Team Id:" + teamID);
+        // //This gets the snapshot of the users doc
+        // const userDocRef = doc(db, "users", user.uid);
+        // const userDocSnapshot = await getDoc(userDocRef);
+        // //const teamID = userDocSnapshot.data.id;
+        //
+        // const userData = userDocSnapshot.data();
+        // const teamID = userData ? userData.id : null;
+        // console.log("Team Id:" + teamID);
 
         //combines teamID and channelName to make channel ID
         const makeChannelId = [teamID, channelName].sort().join('_');
