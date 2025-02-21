@@ -1,7 +1,6 @@
 import { db, auth } from "../config/firebase.jsx";
 import {
     doc,
-    setDoc, getDoc
     setDoc, getDoc, updateDoc
 } from 'firebase/firestore';
 import {getAuth} from "firebase/auth";
@@ -13,7 +12,6 @@ import {getUserTeam} from "./Queries/getUserTeam.jsx";
 //     channelName: string;
 //     createdByUserId: string;
 // }
-
 
 export const createChannel = async ({channelName,createdByUserId, users}) => {
     try {
@@ -38,6 +36,7 @@ export const createChannel = async ({channelName,createdByUserId, users}) => {
         }
         const teamID = getUserTeam();
 
+        console.log("Team Id:" + teamID);
         //This gets the snapshot of the users doc
         const userDocRef = doc(db, "users", user.uid);
         const userDocSnapshot = await getDoc(userDocRef);

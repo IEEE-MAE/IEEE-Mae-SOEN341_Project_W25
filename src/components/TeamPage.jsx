@@ -16,6 +16,7 @@ import {SignOutAuth} from "../backend/auth.jsx"; // Ensure this matches your Sig
 import {pullUser} from "../backend/Queries/basicqueryUsers.jsx";
 import {getUserTeam} from "../backend/Queries/getUserTeam.jsx";
 
+
 const pageVariants = { //animation setup
     hidden: {opacity: 0, y: 50, scale: 0.95},
     visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.6, ease: "easeOut" } },
@@ -204,6 +205,14 @@ const TeamPage = () => {
               const userDocRef = doc(db, 'users', newUserId);
               await updateDoc(userDocRef, {
                   channel: arrayUnion(channelName)
+              });
+
+              console.log("newUserId:" + newUserId);
+              console.log("channelName:" + channelName);
+              //------ add the user to the channel ----
+              const channelDocRef = doc(db, 'channels', channelName);
+              await updateDoc(channelDocRef, {
+                  users: arrayUnion(newUserId),
               });
 
               console.log("newUserId:" + newUserId);

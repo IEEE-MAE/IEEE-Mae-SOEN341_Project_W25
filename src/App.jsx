@@ -7,7 +7,6 @@ import {AnimatePresence} from "framer-motion";
 import TeamPage from "./components/TeamPage";
 import Channels from "./components/Channels.tsx";
 import LandingPage from "./components/LandingPage.tsx";
-import DemoTeamPage from "./components/DemoTeamPage.tsx";
 import Iridescence from "./assets/Iridescence.jsx";
 
 function AnimatedRoutes(){
