@@ -9,8 +9,8 @@ import {createChannel} from "../backend/createChannel.jsx";
  // Ensure this matches your SignUp and LogIn styles
 import {useNavigate, useParams} from "react-router-dom";
 import "../style.css";
-import {SignOutAuth} from "../backend/auth.jsx"; // Ensure this matches your SignUp and LogIn styles
-import {pullUser} from "../backend/QueryUsers/basicqueryUsers.jsx";
+//import {SignOutAuth} from "../backend/auth.jsx"; // Ensure this matches your SignUp and LogIn styles
+//import {pullUser} from "../backend/QueryUsers/basicqueryUsers.jsx";
 import "../style.css";
 import {SignOutAuth} from "../backend/auth.jsx"; // Ensure this matches your SignUp and LogIn styles
 import {pullUser} from "../backend/Queries/basicqueryUsers.jsx";
@@ -156,16 +156,6 @@ const TeamPage = () => {
 
 
 
-              const userDocRef = doc(db, 'users', newAdminId);
-              await updateDoc(userDocRef, {
-                  role: "admin",
-
-              });
-              console.log("adminID:" + newAdminId);
-
-              //add the user as an admin to there document
-
-
           }
           else{
               alert("you are not the superUser, cry about it")
@@ -215,13 +205,6 @@ const TeamPage = () => {
                   users: arrayUnion(newUserId),
               });
 
-              console.log("newUserId:" + newUserId);
-              console.log("channelName:" + channelName);
-              //------ add the user to the channel ----
-              const channelDocRef = doc(db, 'channels', channelName);
-              await updateDoc(channelDocRef, {
-                  users: arrayUnion(newUserId),
-              });
 
 
 
