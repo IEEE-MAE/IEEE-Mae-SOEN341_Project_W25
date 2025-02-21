@@ -1,14 +1,14 @@
-// import {SignOutAuth} from "../backend/auth.tsx";
+// import {SignOutAuth} from "../backend/auth.jsx";
 import {getAuth} from "firebase/auth";
 import { motion } from "framer-motion";
 import {useNavigate} from "react-router-dom";
 import "../style.css";
 import {useEffect, useState} from "react";
-import {pullItem} from "../backend/queryTeam.tsx";
+import {pullItem} from "../backend/queryTeam.jsx";
 import './TeamPage';
 import {doc, getDoc, updateDoc, arrayUnion} from "firebase/firestore";
-import {db} from "../config/firebase.js";
-import {SignInAuth} from "../backend/auth.js";
+import {db} from "../config/firebase.jsx";
+import {SignInAuth} from "../backend/auth.jsx";
 
 const pageVariants = { //transition settings
     initial: { opacity: 0, scale: 0.95 },

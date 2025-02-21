@@ -3,12 +3,19 @@ import { motion } from "framer-motion";
 import "../style.css";
 import {getAuth} from "firebase/auth";
 import {doc, getDoc, updateDoc, arrayUnion} from "firebase/firestore";
-import {db} from "../config/firebase.tsx";
-import {createTeam} from "../backend/createTeam.tsx";
-import {createChannel} from "../backend/createChannel.tsx";
+import {db} from "../config/firebase.jsx";
+import {createTeam} from "../backend/createTeam.jsx";
+import {createChannel} from "../backend/createChannel.jsx";
  // Ensure this matches your SignUp and LogIn styles
 import {useNavigate, useParams} from "react-router-dom";
-import {SignOutAuth} from "../backend/auth.tsx"; // Ensure this matches your SignUp and LogIn styles
+import "../style.css";
+import {SignOutAuth} from "../backend/auth.jsx"; // Ensure this matches your SignUp and LogIn styles
+import {pullUser} from "../backend/QueryUsers/basicqueryUsers.jsx";
+import "../style.css";
+import {SignOutAuth} from "../backend/auth.jsx"; // Ensure this matches your SignUp and LogIn styles
+import {pullUser} from "../backend/Queries/basicqueryUsers.jsx";
+import {getUserTeam} from "../backend/Queries/getUserTeam.jsx";
+
 
 const pageVariants = { //animation setup
     hidden: {opacity: 0, y: 50, scale: 0.95},
@@ -25,7 +32,7 @@ const TeamPage = () => {
   const [createdByUserId,setUserId] = useState("");
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const navigate = useNavigate();
-
+  const users = [];
 
   // const handleSubmit = async () => {
   //     const auth = getAuth();
@@ -108,21 +115,57 @@ const TeamPage = () => {
           return []
       }
 
+      //----  This pulls the current users document snapshot into "userDocSnapshot" ----
       const userDocRef = doc(db, "users", user.uid);
       const userDocSnapshot = await getDoc(userDocRef);
 
+      //---- the users document is then used to aquire his team and role ----
       const teamId = userDocSnapshot.data().team;
       const userRole = userDocSnapshot.data().role;
 
       console.log("userRole", userRole);
 
+      //------ This is the adding an admin block --------
       if (activeModal === "admin") {
-
           if (userRole === "superUser") {
+
+
+
+              //This uses the team of the current user to pull up that teams ducment so it can be updated with the new admin (adminUsername)
+
+              //gets the new admins ID from the admin username
+              console.log("admin Username: " + adminUsername);
+              const newAdminId = await pullUser(adminUsername);
+              console.log("adminID:" + newAdminId);
+
+              //This uses the team of the current user to pull up that teams ducment so it can be updated with the new admin (adminUsername)
               const teamDocRef = doc(db, 'teams', teamId);
               await updateDoc(teamDocRef, {
-                  adminId: arrayUnion(user.uid)
+                  adminId: arrayUnion(newAdminId),
+
               });
+
+              const userDocRef = doc(db, 'users', newAdminId);
+              await updateDoc(userDocRef, {
+                  role: "admin",
+
+              });
+              console.log("adminID:" + newAdminId);
+
+              //add the user as an admin to there document
+
+
+
+              const userDocRef = doc(db, 'users', newAdminId);
+              await updateDoc(userDocRef, {
+                  role: "admin",
+
+              });
+              console.log("adminID:" + newAdminId);
+
+              //add the user as an admin to there document
+
+
           }
           else{
               alert("you are not the superUser, cry about it")
@@ -134,23 +177,53 @@ const TeamPage = () => {
               //------ Create Channel -----
               try {
                   setUserId(user.uid);
-                  const channelDoc = await createChannel({channelName, createdByUserId});
+                  const channelDoc = await createChannel({channelName, createdByUserId, users});
                   console.log("Successfully created channel");
                   alert("Your channel has been created");
                   // Optionally, navigate to the newly created team or show a success message.
                   //console.log("Team created with ID:", teamDoc.id);
                   //navigate(`/team/${teamDoc.id}`);
               } catch (error) {
-                  console.error("Error creating team:", error);
+                  console.error("Error creating channel:", error);
               }
 
+              //---- pulls the channel id ---
+              const newUserId = await pullUser(username);
 
+              //--- pulls the channel name
+              const teamID = getUserTeam();
+              const makeChannelId = [teamID, channelName].sort().join('_');
 
-              //------- updates team with channel ID -------
+              //------- add channel to team -------
               const teamDocRef = doc(db, 'teams', teamId);
               await updateDoc(teamDocRef, {
-                  channelId: arrayUnion("channel id filler")
+                  channelId: arrayUnion(channelName)
               });
+
+
+              //----- add channel to user -----
+              const userDocRef = doc(db, 'users', newUserId);
+              await updateDoc(userDocRef, {
+                  channel: arrayUnion(channelName)
+              });
+
+              console.log("newUserId:" + newUserId);
+              console.log("channelName:" + channelName);
+              //------ add the user to the channel ----
+              const channelDocRef = doc(db, 'channels', channelName);
+              await updateDoc(channelDocRef, {
+                  users: arrayUnion(newUserId),
+              });
+
+              console.log("newUserId:" + newUserId);
+              console.log("channelName:" + channelName);
+              //------ add the user to the channel ----
+              const channelDocRef = doc(db, 'channels', channelName);
+              await updateDoc(channelDocRef, {
+                  users: arrayUnion(newUserId),
+              });
+
+
 
           } else{
               alert("you are not an admin")
