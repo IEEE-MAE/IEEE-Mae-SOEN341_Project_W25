@@ -28,11 +28,17 @@ function CreateTeam() {
     const [teamName, setTeam] = useState("");
     // States for storing arrays of IDs
 
+    const auth = getAuth()
+    const user = auth.currentUser
+
+
     const [superUserId, setSuperUserId] = useState("");
     const adminId = [];
-    const memberId = [];
+    const memberId = [user.uid];
     const channelIds = [];
 
+
+    //create team is made
     const onSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -47,8 +53,8 @@ function CreateTeam() {
 
         // if user got team, navigate to the team page
         try {
-            const auth = getAuth()
-            const user = auth.currentUser
+            // const auth = getAuth()
+            // const user = auth.currentUser
 
             if (!user || !user.uid) {
                 throw new Error("User authentication failed.");

@@ -10,7 +10,8 @@ import {createChannel} from "../backend/createChannel.jsx";
 import {useNavigate, useParams} from "react-router-dom";
 import "../style.css";
 import {SignOutAuth} from "../backend/auth.jsx"; // Ensure this matches your SignUp and LogIn styles
-import {pullUser} from "../backend/QueryUsers/basicqueryUsers.jsx";
+import {pullUser} from "../backend/Queries/basicqueryUsers.jsx";
+import {getUserTeam} from "../backend/Queries/getUserTeam.jsx";
 
 const pageVariants = { //animation setup
     hidden: {opacity: 0, y: 50, scale: 0.95},
@@ -27,7 +28,7 @@ const TeamPage = () => {
   const [createdByUserId,setUserId] = useState("");
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const navigate = useNavigate();
-
+  const users = [];
 
   // const handleSubmit = async () => {
   //     const auth = getAuth();
@@ -157,22 +158,42 @@ const TeamPage = () => {
               //------ Create Channel -----
               try {
                   setUserId(user.uid);
-                  const channelDoc = await createChannel({channelName, createdByUserId});
+                  const channelDoc = await createChannel({channelName, createdByUserId, users});
                   console.log("Successfully created channel");
                   alert("Your channel has been created");
                   // Optionally, navigate to the newly created team or show a success message.
                   //console.log("Team created with ID:", teamDoc.id);
                   //navigate(`/team/${teamDoc.id}`);
               } catch (error) {
-                  console.error("Error creating team:", error);
+                  console.error("Error creating channel:", error);
               }
 
+              //---- pulls the channel id ---
+              const newUserId = await pullUser(username);
 
+              //--- pulls the channel name
+              const teamID = getUserTeam();
+              const makeChannelId = [teamID, channelName].sort().join('_');
 
-              //------- updates team with channel ID -------
+              //------- add channel to team -------
               const teamDocRef = doc(db, 'teams', teamId);
               await updateDoc(teamDocRef, {
-                  channelId: arrayUnion("channel id filler")
+                  channelId: arrayUnion(channelName)
+              });
+
+
+              //----- add channel to user -----
+              const userDocRef = doc(db, 'users', newUserId);
+              await updateDoc(userDocRef, {
+                  channel: arrayUnion(channelName)
+              });
+
+              console.log("newUserId:" + newUserId);
+              console.log("channelName:" + channelName);
+              //------ add the user to the channel ----
+              const channelDocRef = doc(db, 'channels', channelName);
+              await updateDoc(channelDocRef, {
+                  users: arrayUnion(newUserId),
               });
 
 
