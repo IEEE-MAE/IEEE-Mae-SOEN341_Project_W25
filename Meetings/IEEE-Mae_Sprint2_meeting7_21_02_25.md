@@ -1,7 +1,10 @@
 Date: 21-Feb-2025
+
 Participants: Abu, Mac, Alex, Mae, Cami
+
 Start: 6:40pm
-End: 
+
+End: 7:15pm
 
 Lab Scrum meeting
 
