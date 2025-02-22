@@ -17,7 +17,7 @@ export async function pullUser(targetName) {
         const itemsRef = collection(db, 'teams');
         //pulls a snapshot of the collection
 
-        const q = query(collection(db, 'users'), where('displayName', '==', targetName));
+        const q = query(collection(db, 'users'), where('username', '==', targetName));
 
         const querySnapshot = await getDocs(q);
 

@@ -1,28 +1,33 @@
 import { db, auth } from "../config/firebase.jsx";
-import { doc, setDoc  } from "firebase/firestore"
+import {collection, doc, setDoc, query, getDocs} from "firebase/firestore"
 import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
 } from "@firebase/auth";
 
-// from sign up page
-export const SignUpAuth= async (email, password, username)=>{
+// query to see if username is taken
+export const doesUserExist = async (userName) => {
+    const usernameQuery = query(collection(db, "users", userName));
+    const querySnapshot = await getDocs(usernameQuery);
+    return querySnapshot.size !== 0; // return true if user exists (username is taken)
+}
+
+
+// create user in auth database and firestore database
+export const createUser= async (email, password, userName)=>{
     try{
         // create account using firebase authentication
         const {user} = await createUserWithEmailAndPassword(auth, email, password);
 
         // store account's username in firebase collections/'users'
-        //
-        await setDoc(doc(db, "users", user.uid), {
-                displayName: username,
-                email: user.email,
-                team: {},
-                channel: {},
+        await setDoc(doc(db, "users", userName), {
+                username: userName,
+                team: "",
                 role: "",
-                dms: {}
+                channels: [],
+                dms: []
         });
         console.log("sign up: " + user.email);
-        return user;
     }
     catch(error){
         console.log("Error during signup: " + error);
@@ -30,13 +35,12 @@ export const SignUpAuth= async (email, password, username)=>{
     }
 }
 
-// from log in page
+// sign in authentication
 export const SignInAuth= async (email, password)=>{
     try{
         // log into account using firebase authentication
         const {user} = await signInWithEmailAndPassword(auth, email, password);
         console.log("sign in: " + user.email);
-        return user;
     }
     catch(error){
         console.log("Error during sign in: " + error);
@@ -44,7 +48,7 @@ export const SignInAuth= async (email, password)=>{
     }
 }
 
-// from wherever user can log out
+// log out
 export const SignOutAuth= async ()=>{
     try{
         // logout using firebase
