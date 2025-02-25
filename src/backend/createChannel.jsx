@@ -1,77 +1,54 @@
 import { db, auth } from "../config/firebase.jsx";
 import {
     doc,
-    setDoc, getDoc, updateDoc
+    setDoc, getDoc, updateDoc, query, collection, where, getDocs, arrayUnion
 } from 'firebase/firestore';
-import {getAuth} from "firebase/auth";
-import {getUserTeam} from "./Queries/getUserTeam.jsx";
+import {getUserTeam} from "./Queries/getUserFields.jsx";
+import {getCurrentUser} from "./auth.jsx";
 
 
 
-// interface channelData {
-//     channelName: string;
-//     createdByUserId: string;
-// }
+export const createChannel = async (channelName) => {
 
-export const createChannel = async ({channelName,createdByUserId, users}) => {
     try {
-        // const auth = getAuth();
-        // const user = auth.currentUser;
-        //
-        // if(!user){
-        //     return [];
-        // }
-        //
-        // //This gets the snapshot of the users doc
-        // const userDocRef = doc(db, "users", user.uid);
-        // const userDocSnapshot = await getDoc(userDocRef);
-        // //const teamID = userDocSnapshot.id;
-        //
-        // const userData = userDocSnapshot.data();
-        const auth = getAuth()
-        const user = auth.currentUser
+        const user = getCurrentUser();
 
-        if(!user){
-            return [];
+        const teamID = await getUserTeam();
+        if (!teamID) {
+            console.log("ERROR: No team ID found.");
+            return;
         }
-        const teamID = getUserTeam();
 
-        // console.log("Team Id:" + teamID);
-        // //This gets the snapshot of the users doc
-        // const userDocRef = doc(db, "users", user.uid);
-        // const userDocSnapshot = await getDoc(userDocRef);
-        // //const teamID = userDocSnapshot.data.id;
-        //
-        // const userData = userDocSnapshot.data();
-        // const teamID = userData ? userData.id : null;
-        // console.log("Team Id:" + teamID);
-
-        //combines teamID and channelName to make channel ID
-        const makeChannelId = [teamID, channelName].sort().join('_');
-
-        //uses makeChannelId to give each doc in channels this custom ID
-        const channelDoc = setDoc(doc(db, "channels", makeChannelId), {
-            channelName: channelName,
-            createdByUserId: user.uid,
-            users: users,
+        const channelID = teamID.concat(channelName);
+        await updateDoc(doc(db, "users", user.uid), {
+            channels: arrayUnion(channelID),
         });
 
-        const userDocRef = doc(db, 'users', user.uid);
+        console.log("Successfully created channel: ", channelID);
 
-        // Update the document
-        await updateDoc(userDocRef, {
-            channel: channelDoc.id,
-        });
-
-
-        console.log("stuff was sent")
-
-        return channelDoc;
     } catch (error) {
-        console.error("Error creating team:", error);
+        console.error("Error creating channel:", error);
         throw error;
     }
+}
 
+
+// for this, when the user clicks on the channel being displayed on the UI, it records the corresponding channelID
+export const addUserToChannel = async (channelID, username) => {
+    try {
+        const currentUser = getCurrentUser();
+
+        // how do we get the channel the user is currently in?
+        const channelID = teamID.concat(channelName);
+
+        await updateDoc(doc(db, "users", user.uid), {
+            channels: arrayUnion(channelID),
+        });
+
+    } catch (error) {
+        console.error("Error creating channel:", error);
+        throw error;
+    }
 }
 
 

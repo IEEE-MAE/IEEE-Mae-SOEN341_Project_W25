@@ -7,6 +7,7 @@ import {createTeam} from "../backend/createTeam.jsx";
 import {getAuth} from "firebase/auth";
 import {doc, getDoc} from "firebase/firestore";
 import {db} from "../config/firebase.jsx";
+import {getCurrentUser} from "../backend/auth.jsx";
 
 const pageVariants = { //transition settings
     initial: { opacity: 0, scale: 0.95 },
@@ -28,33 +29,19 @@ function CreateTeam() {
     const [teamName, setTeam] = useState("");
     // States for storing arrays of IDs
 
-    const auth = getAuth()
-    const user = auth.currentUser
+    const user = getCurrentUser();
 
 
-    const [superUserId, setSuperUserId] = useState("");
-    const adminId = [];
-    const memberId = [user.uid];
-    const channelIds = [];
-
-
-    //create team is made
     const onSubmit = async (e) => {
         e.preventDefault();
         try {
-            await createTeam({teamName, superUserId, adminId, memberId, channelIds});
-            console.log("Successfully created team");
-            // Optionally, navigate to the newly created team or show a success message.
-            //console.log("Team created with ID:", teamDoc.id);
-            //navigate(`/team/${teamDoc.id}`);
+            await createTeam(teamName);
         } catch (error) {
             console.error("Error creating team:", error);
         }
 
-        // if user got team, navigate to the team page
+        // if user has team, navigate to the team page
         try {
-            // const auth = getAuth()
-            // const user = auth.currentUser
 
             if (!user || !user.uid) {
                 throw new Error("User authentication failed.");

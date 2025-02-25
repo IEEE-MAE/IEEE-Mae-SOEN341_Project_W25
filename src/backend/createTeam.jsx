@@ -1,44 +1,20 @@
 import { db} from "../config/firebase.jsx";
-import {collection, addDoc,doc,updateDoc} from 'firebase/firestore';
-import {getAuth} from "firebase/auth";
+import {doc, updateDoc} from 'firebase/firestore';
+import {getCurrentUser} from "./auth.jsx";
 
 
-// interface teamData {
-//     teamName: string;
-//     superUserId: string;
-//     adminId: string[];
-//     memberId: string[];
-//     channelIds: string[];
-// }
-
-export async function createTeam({teamName, adminId, memberId, channelIds}) {
+export async function createTeam(teamName) {
     try {
-        const auth = getAuth()
-        const user = auth.currentUser
+        const user = getCurrentUser()
+        const teamID = user.uid.concat(teamName);
 
-        if(!user){
-            return [];
-        }
-        //const teamDoc =
-       const teamDoc = await addDoc(collection(db, 'teams'), {
-            teamName: teamName,
-            superUserId: user.uid,
-            adminId: adminId,
-            memberId: memberId,
-            channelIds: channelIds,
-    });
-        console.log("stuff was sent")
-
-
-        const userDocRef = doc(db, 'users', user.uid);
-
-        // Update the document
-        await updateDoc(userDocRef, {
-            team: teamDoc.id,
+        await updateDoc(doc(db, "users", user.uid), {
+            team: teamID,
             role: "superUser",
         });
-        //return teamDoc;
-        return teamDoc;
+
+        console.log("Team created: ", teamID);
+
     } catch (error) {
         console.error("Error creating team:", error);
         throw error;
