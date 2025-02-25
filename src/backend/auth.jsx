@@ -85,9 +85,11 @@ export const createUser= async (email, password, userName)=>{
 // sign in authentication
 export const SignInAuth= async (email, password)=>{
     try{
+        console.log("email " + email + "password " + password);
         // log into account using firebase authentication
         const {user} = await signInWithEmailAndPassword(auth, email, password);
         console.log("sign in: " + user.email);
+        return user;
     }
     catch(error){
         console.log("Error during sign in: " + error);

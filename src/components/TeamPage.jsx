@@ -6,13 +6,12 @@ import {doc, getDoc, updateDoc, arrayUnion} from "firebase/firestore";
 import {db} from "../config/firebase.jsx";
 import {createTeam} from "../backend/createTeam.jsx";
 import {createChannel} from "../backend/createChannel.jsx";
- // Ensure this matches your SignUp and LogIn styles
 import {useNavigate, useParams} from "react-router-dom";
 import "../style.css";
-//import {SignOutAuth} from "../backend/auth.jsx"; // Ensure this matches your SignUp and LogIn styles
+//import {SignOutAuth} from "../backend/auth.jsx";
 //import {pullUser} from "../backend/QueryUsers/basicqueryUsers.jsx";
 import "../style.css";
-import {doesChannelExist, getCurrentUser, SignOutAuth} from "../backend/auth.jsx"; // Ensure this matches your SignUp and LogIn styles
+import {doesChannelExist, getCurrentUser, SignOutAuth} from "../backend/auth.jsx";
 import {pullUser} from "../backend/Queries/basicqueryUsers.jsx";
 import {getUserTeam} from "../backend/Queries/getUserFields.jsx";
 

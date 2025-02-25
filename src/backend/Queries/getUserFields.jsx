@@ -6,6 +6,29 @@ import {
 import {getCurrentUser} from "../auth.jsx";
 
 
+export async function getUserChannels() {
+    const user = getCurrentUser()
+
+    try{
+        //This gets the snapshot of the users doc
+        const userDocRef = doc(db, "users", user.uid);
+        const userDocSnapshot = await getDoc(userDocRef);
+
+        //puts the channels IDs from the user
+        const userData = userDocSnapshot.data();
+        const channels =  userData ? userData.channels : [];
+        if(!channels || channels.length === 0) {
+            console.log("no channels found");
+            return [];
+        }
+        console.log("********** CHANNELS FOUND: ", channels);
+        return channels;
+    }
+    catch(error){
+        console.log("error fetching user's channels: " + error);
+    }
+}
+
 export async function getUsername() {
     const user = getCurrentUser()
 
@@ -14,7 +37,7 @@ export async function getUsername() {
         const userDocRef = doc(db, "users", user.uid);
         const userDocSnapshot = await getDoc(userDocRef);
 
-        //puts the team ID from the user into const teamID
+        //puts the username from the user into const username
         const userData = userDocSnapshot.data();
         const username =  userData ? userData.username : null;
         if(!username) {
