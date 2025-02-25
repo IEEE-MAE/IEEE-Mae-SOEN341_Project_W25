@@ -6,15 +6,14 @@ import {doc, getDoc, updateDoc, arrayUnion} from "firebase/firestore";
 import {db} from "../config/firebase.jsx";
 import {createTeam} from "../backend/createTeam.jsx";
 import {createChannel} from "../backend/createChannel.jsx";
- // Ensure this matches your SignUp and LogIn styles
 import {useNavigate, useParams} from "react-router-dom";
 import "../style.css";
-//import {SignOutAuth} from "../backend/auth.jsx"; // Ensure this matches your SignUp and LogIn styles
+//import {SignOutAuth} from "../backend/auth.jsx";
 //import {pullUser} from "../backend/QueryUsers/basicqueryUsers.jsx";
 import "../style.css";
-import {SignOutAuth} from "../backend/auth.jsx"; // Ensure this matches your SignUp and LogIn styles
+import {doesChannelExist, getCurrentUser, SignOutAuth} from "../backend/auth.jsx";
 import {pullUser} from "../backend/Queries/basicqueryUsers.jsx";
-import {getUserTeam} from "../backend/Queries/getUserTeam.jsx";
+import {getUserTeam} from "../backend/Queries/getUserFields.jsx";
 
 
 const pageVariants = { //animation setup
@@ -29,72 +28,10 @@ const TeamPage = () => {
   const [adminUsername, setAdminUsername] = useState("");
   const [channelName, setChannelName] = useState("");
   const [username, setUsername] = useState("");
-  const [createdByUserId,setUserId] = useState("");
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const navigate = useNavigate();
   const users = [];
 
-  // const handleSubmit = async () => {
-  //     const auth = getAuth();
-  //     const user = auth.currentUser;
-  //
-  //     if (!user) {
-  //         return []
-  //     }
-  //
-  //     const userDocRef = doc(db, "users", user.uid);
-  //     const userDocSnapshot = await getDoc(userDocRef);
-  //
-  //     const teamId = userDocSnapshot.data().team;
-  //     const userRole = userDocSnapshot.data().role;
-  //
-  //     console.log("userRole", userRole);
-  //
-  //     if (activeModal === "admin") {
-  //
-  //         if (userRole === "superUser") {
-  //             const teamDocRef = doc(db, 'teams', teamId);
-  //             await updateDoc(teamDocRef, {
-  //                 adminId: arrayUnion(user.uid)
-  //             });
-  //         }
-  //         else{
-  //             alert("you are not the superUser, cry about it")
-  //         }
-  //     }
-  //     if (activeModal === "channel") {
-  //         if (userRole === "admin" || userRole === "superUser") {
-  //
-  //             //------ Create Channel -----
-  //             try {
-  //                 setUserId(user.uid);
-  //                 const channelDoc = await createChannel({channelName, createdByUserId});
-  //                 console.log("Successfully created channel");
-  //                 alert("Your channel has been created");
-  //                 // Optionally, navigate to the newly created team or show a success message.
-  //                 //console.log("Team created with ID:", teamDoc.id);
-  //                 //navigate(`/team/${teamDoc.id}`);
-  //             } catch (error) {
-  //                 console.error("Error creating team:", error);
-  //             }
-  //
-  //
-  //
-  //             //------- updates team with channel ID -------
-  //             const teamDocRef = doc(db, 'teams', teamId);
-  //             await updateDoc(teamDocRef, {
-  //                     channelId: arrayUnion("channel id filler")
-  //                 });
-  //
-  //         } else{
-  //             alert("you are not an admin")
-  //         }
-  //         navigate("/Channels");
-  //     }
-  //
-  //   console.log("Form submitted!");
-  //   closeModal();
-  // };
 
   const closeModal = () => {
     setActiveModal("none");
@@ -103,23 +40,27 @@ const TeamPage = () => {
     setUsername("");
   };
 
+  // check that channel name is unique in the team
+  const validChannelName = async(channelName) =>{
+      const channelExists = await doesChannelExist(channelName);
+      if (channelExists) {
+          alert("Channel name is already taken");
+          setChannelName("");
+      }
+  }
+
   const handleConfirmation = () => {
     setShowConfirmationModal(true);
   };
 
   const handleConfirmSubmit = async () => {
-      const auth = getAuth();
-      const user = auth.currentUser;
-
-      if (!user) {
-          return []
-      }
+      const user = getCurrentUser()
 
       //----  This pulls the current users document snapshot into "userDocSnapshot" ----
       const userDocRef = doc(db, "users", user.uid);
       const userDocSnapshot = await getDoc(userDocRef);
 
-      //---- the users document is then used to aquire his team and role ----
+      //---- the users document is then used to acquire his team and role ----
       const teamId = userDocSnapshot.data().team;
       const userRole = userDocSnapshot.data().role;
 
@@ -128,84 +69,54 @@ const TeamPage = () => {
       //------ This is the adding an admin block --------
       if (activeModal === "admin") {
           if (userRole === "superUser") {
-
-
-
-              //This uses the team of the current user to pull up that teams ducment so it can be updated with the new admin (adminUsername)
-
               //gets the new admins ID from the admin username
               console.log("admin Username: " + adminUsername);
               const newAdminId = await pullUser(adminUsername);
               console.log("adminID:" + newAdminId);
 
-              //This uses the team of the current user to pull up that teams ducment so it can be updated with the new admin (adminUsername)
-              const teamDocRef = doc(db, 'teams', teamId);
-              await updateDoc(teamDocRef, {
-                  adminId: arrayUnion(newAdminId),
-
-              });
-
               const userDocRef = doc(db, 'users', newAdminId);
               await updateDoc(userDocRef, {
                   role: "admin",
-
               });
-              console.log("adminID:" + newAdminId);
-
-              //add the user as an admin to there document
-
-
-
+              console.log("new admin: " + newAdminId + " added to channel"); // how do we know which channel?
           }
           else{
               alert("you are not the superUser, cry about it")
           }
       }
+
+      //------ This is the create channel block --------
       if (activeModal === "channel") {
           if (userRole === "admin" || userRole === "superUser") {
 
               //------ Create Channel -----
               try {
-                  setUserId(user.uid);
-                  const channelDoc = await createChannel({channelName, createdByUserId, users});
+                  const channelDoc = await createChannel(channelName);
                   console.log("Successfully created channel");
                   alert("Your channel has been created");
-                  // Optionally, navigate to the newly created team or show a success message.
-                  //console.log("Team created with ID:", teamDoc.id);
-                  //navigate(`/team/${teamDoc.id}`);
               } catch (error) {
                   console.error("Error creating channel:", error);
               }
 
-              //---- pulls the channel id ---
-              const newUserId = await pullUser(username);
-
-              //--- pulls the channel name
-              const teamID = getUserTeam();
-              const makeChannelId = [teamID, channelName].sort().join('_');
-
-              //------- add channel to team -------
-              const teamDocRef = doc(db, 'teams', teamId);
-              await updateDoc(teamDocRef, {
-                  channelId: arrayUnion(channelName)
-              });
-
-
-              //----- add channel to user -----
-              const userDocRef = doc(db, 'users', newUserId);
-              await updateDoc(userDocRef, {
-                  channel: arrayUnion(channelName)
-              });
-
-              console.log("newUserId:" + newUserId);
-              console.log("channelName:" + channelName);
-              //------ add the user to the channel ----
-              const channelDocRef = doc(db, 'channels', channelName);
-              await updateDoc(channelDocRef, {
-                  users: arrayUnion(newUserId),
-              });
-
-
+              // // ------ add user to channel ----- (must be on same team)
+              //
+              // //---- pulls the channel id ---
+              // const newUserId = await pullUser(username);
+              //
+              //
+              // //----- add channel to user -----
+              // const userDocRef = doc(db, 'users', newUserId);
+              // await updateDoc(userDocRef, {
+              //     channel: arrayUnion(channelName)
+              // });
+              //
+              // console.log("newUserId:" + newUserId);
+              // console.log("channelName:" + channelName);
+              // //------ add the user to the channel ----
+              // const channelDocRef = doc(db, 'channels', channelName);
+              // await updateDoc(channelDocRef, {
+              //     users: arrayUnion(newUserId),
+              // });
 
 
           } else{
@@ -215,10 +126,11 @@ const TeamPage = () => {
       }
 
       console.log("Form submitted!");
+      setShowConfirmationModal(false);
       closeModal();
   };
 
-  // example sign out function (can be put wherever user will sign out)
+  // sign out function
   const onSignOut = async () => {
       try {
           await SignOutAuth();
@@ -302,6 +214,7 @@ const TeamPage = () => {
                       placeholder="Channel Name"
                       value={channelName}
                       onChange={(e) => setChannelName(e.target.value)}
+                      onBlur={() => validChannelName(channelName)}
                     />
                   </div>
 

@@ -5,7 +5,7 @@ import CreateTeam from "./components/CreateTeam.jsx";
 import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 import {AnimatePresence} from "framer-motion";
 import TeamPage from "./components/TeamPage";
-import Channels from "./components/Channels.tsx";
+import Channels from "./components/Channels.jsx";
 import LandingPage from "./components/LandingPage.tsx";
 import Iridescence from "./assets/Iridescence.jsx";
 import DemoTeamPage from "./components/DemoTeamPage.js";

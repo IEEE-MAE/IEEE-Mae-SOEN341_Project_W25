@@ -1,16 +1,31 @@
 import * as React from "react";
 import "../style.css";
+import {getUserChannels, getUserTeam} from "../backend/Queries/getUserFields.jsx";
 
 //temp page to show channels, uses team CSS styling for assets
-
-const channels = [ //sample channels, to be replaced with fetch
-    { name: "General", id: 143 },
-    { name: "Announcements", id: 22 },
-    { name: "Secret Project", id: 33 },
-    { name: "Super Secret Project", id: 45 }
-];
-
 function ChannelList() {
+    const [channels, setChannels] = React.useState([]);
+
+    React.useEffect(() => {
+        const getChannelNames = async () => {
+            const userChannels = await getUserChannels();
+            const teamID = await getUserTeam();
+            const channelList = [];
+
+            for (const userChannel of userChannels) {
+                if (userChannel.includes(teamID)) {
+                    const channelName = userChannel.replace(teamID, "");
+                    channelList.push({ name: channelName, id: userChannel });
+                }
+            }
+
+            setChannels(channelList);
+        };
+
+        getChannelNames();
+    }, []);
+
+
     return (
         <div className="wrapper"> {/*use wrapper styling from css file*/}
             <h1>Channels</h1>

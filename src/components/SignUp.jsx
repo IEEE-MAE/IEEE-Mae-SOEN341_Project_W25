@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {SignUpAuth} from "../backend/auth.jsx";
+import {doesUserExist, createUser} from "../backend/auth.jsx";
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import {motion} from "framer-motion";
@@ -10,6 +10,7 @@ const pageVariants ={
     animate: { opacity: 1, scale: 1, transition: { duration: 0.6, ease: "easeOut" } },
     exit: { opacity: 0, scale: 0.95, transition: { duration: 0.4, ease: "easeIn" } },
 }
+
 
 function SignUp() {
     // Holds user input username, email, password, and password verification
@@ -28,6 +29,15 @@ function SignUp() {
         }
     };
 
+    // checks that username is unique in database
+    const validUsername = async(userName) =>{
+        const userExists = await doesUserExist(userName);
+        if (userExists) {
+            alert("Username is already taken");
+            setUsername("");
+        }
+    }
+
     // upon form submission
     const onSubmit = async (e) => {
         // stops passing inputs to browser and clearing form
@@ -41,7 +51,7 @@ function SignUp() {
 
         if (username && email && password) {
             try {
-                await SignUpAuth(email, password, username);
+                await createUser(email, password, username);
                 navigate("/CreateTeam");
             } catch (error) {
                 alert("Error during signup: " + error);
@@ -72,7 +82,7 @@ function SignUp() {
                                     <path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Z" />
                                 </svg>
                             </label>
-                            <input required type="text" name="username" id="usernameInput" placeholder="Username" onChange={(e) => setUsername(e.target.value)} />
+                            <input required type="text" name="username" id="usernameInput" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} onBlur={() => validUsername(username)} />
                         </div>
                         <div>
                             <label htmlFor="emailInput"><span>@</span></label>

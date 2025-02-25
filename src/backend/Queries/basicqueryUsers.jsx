@@ -2,30 +2,15 @@ import { collection, getDocs, where, query} from 'firebase/firestore';
 import {db} from "../../config/firebase.jsx";
 
 
-
-// interface userType{
-//     id?: string;
-//    displayName: string;
-//    team: string;
-//    channel: string;
-//    role: string;
-// }
-
 export async function pullUser(targetName) {
     try {
-        //this pulls the collection
-        const itemsRef = collection(db, 'teams');
-        //pulls a snapshot of the collection
-
-        const q = query(collection(db, 'users'), where('displayName', '==', targetName));
+        const q = query(collection(db, 'users'), where('username', '==', targetName));
 
         const querySnapshot = await getDocs(q);
 
         const docs = querySnapshot.docs;
 
         const items = [];
-
-        //querySnapshot.forEach((doc) => {
         let userId = null;
         querySnapshot.docs.forEach((doc) => {
             userId = doc.id;
