@@ -1,20 +1,29 @@
 import "../DemoTeamPage.css";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { FaChevronRight, FaChevronLeft } from "react-icons/fa"; // arrow icons
+import { FaChevronRight, FaChevronLeft, FaUsers, FaComments } from "react-icons/fa"; // Icons
 
-const users = [
-    { id: 1, name: "Andrew", profilePic: "src/assets/person_24dp_E8EAED_FILL1_wght400_GRAD0_opsz24.svg" }, 
-    { id: 2, name: "Dallas", profilePic: "src/assets/person_24dp_E8EAED_FILL1_wght400_GRAD0_opsz24.svg" },
-    { id: 3, name: "Eric", profilePic: "src/assets/person_24dp_E8EAED_FILL1_wght400_GRAD0_opsz24.svg" },
+// Define Teams
+const teams = [
+    { id: 1, name: "Team A", icon: <FaUsers /> },
+    { id: 2, name: "Team B", icon: <FaUsers /> },
+    { id: 3, name: "Team C", icon: <FaUsers /> }
 ];
 
-const channels = [ 
-    "General", "Announcements", "Development"
-];
+// Define Channels by Team
+const channelsByTeam: Record<number, string[]> = {
+    1: ["General", "Development", "Announcements"],
+    2: ["Design", "Marketing", "Random"],
+    3: ["Support", "Feedback", "Off-topic"]
+};
+
+// Define Mock Direct Messages (DMs)
+const contacts: string[] = ["Alice", "Bob", "Charlie"];
 
 function DemoTeamPage() {
     const [isExpanded, setIsExpanded] = useState(false);
+    const [selectedTeam, setSelectedTeam] = useState<number | null>(1); // Default to first team
+    const [viewMode, setViewMode] = useState<"channels" | "dms">("channels"); // Sidebar mode
     const [userRole] = useState<"user" | "admin" | "superAdmin">("superAdmin");
 
     // 🌟 State for messages and input field
@@ -31,42 +40,64 @@ function DemoTeamPage() {
 
     return (
         <div className="team-page">
-            {/* Sidebar for user list */}
+            {/* Left Sidebar (Teams & DMs) */}
             <motion.div className={`sidebar ${isExpanded ? "expanded" : ""}`}
-                animate={{ width: isExpanded ? "200px" : "80px" }}
+                animate={{ width: isExpanded ? "100px" : "60px" }}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
             >
+                {/* DMs Icon (Switch to Direct Messages View) */}
+                <motion.div 
+                    className={`team-icon ${viewMode === "dms" ? "active" : ""}`} 
+                    onClick={() => setViewMode("dms")}
+                    whileHover={{ scale: 1.1 }}
+                >
+                    <FaComments size={24} />
+                </motion.div>
+
+                {/* Team Icons (Click to Show Team Channels) */}
+                {teams.map(team => (
+                    <motion.div 
+                        key={team.id} 
+                        className={`team-icon ${selectedTeam === team.id && viewMode === "channels" ? "active" : ""}`} 
+                        onClick={() => { 
+                            setSelectedTeam(team.id);
+                            setViewMode("channels"); 
+                        }}
+                        whileHover={{ scale: 1.1 }}
+                    >
+                        {team.icon}
+                    </motion.div>
+                ))}
+
+                {/* Sidebar Toggle Button */}
                 <motion.button className="toggle-arrow" onClick={() => setIsExpanded(!isExpanded)}
                     whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
                 >
                     {isExpanded ? <FaChevronLeft /> : <FaChevronRight />}
                 </motion.button>
-
-                <div className="user-list">
-                    {users.map(user => (
-                        <motion.div key={user.id} className="user-item" whileHover={{ scale: 1.1 }}>
-                            <img src={user.profilePic} alt={user.name} className="user-icon" />
-                            {isExpanded && <span className="username">{user.name}</span>}
-                        </motion.div>
-                    ))}
-                </div>
             </motion.div>
 
-            {/* Sidebar for channels */}
+            {/* Right Sidebar (Channels or DMs) */}
             <div className="channel-sidebar">
-                <h2>Channels</h2>
+                <h2>{viewMode === "dms" ? "Direct Messages" : ` ${teams.find(t => t.id === selectedTeam)?.name}`}</h2>
+
                 <ul className="channel-list">
-                    {channels.map((channel, index) => (
-                        <li key={index} className="channel-item">{channel}</li>
-                    ))}
+                    {viewMode === "channels" && selectedTeam !== null && channelsByTeam[selectedTeam]
+                        ? channelsByTeam[selectedTeam].map((channel: string, index: number) => (
+                            <li key={index} className="channel-item">{channel}</li>
+                          ))
+                        : contacts.map((contact: string, index: number) => (
+                            <li key={index} className="channel-item">{contact}</li>
+                          ))
+                    }
                 </ul>
 
-                {userRole !== "user" && (
+                {userRole !== "user" && viewMode === "channels" && (
                     <motion.button className="add-channel-button"> + Add Channel</motion.button>
                 )}
             </div>
 
-            {/* 🌟 Chat Space: Displays Messages & Input Box */}
+            {/*  Chat Space: Displays Messages & Input Box */}
             <div className="chat-container">
                 {/* Message Display Area */}
                 <div className="messages-box">
