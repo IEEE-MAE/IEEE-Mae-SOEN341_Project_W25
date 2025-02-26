@@ -153,6 +153,7 @@ const TeamPage = () => {
 
         {/* Buttons to trigger modals */}
         <div className="button-group">
+            <button onClick={() => navigate("/DemoTeamPage")}>Home Page</button>
             <button onClick={() => setActiveModal("admin")}>Add Admin</button>
             <button onClick={() => setActiveModal("channel")}>Make Channel</button>
             <button onClick={() => onSignOut()}>Log out</button>
