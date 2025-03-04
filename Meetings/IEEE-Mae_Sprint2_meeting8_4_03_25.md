@@ -2,7 +2,7 @@ Date: 04-mar-2024
 
 Start time: 2:50
 
-End time: 3:30
+End time: 3:50
 
 Participants: Alex, Mac, Yara, Cami, 
 
