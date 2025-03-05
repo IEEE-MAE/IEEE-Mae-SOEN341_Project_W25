@@ -19,33 +19,7 @@
     position: relative;
 }
 
-.sidebar.expanded {
-    width: 200px; /* expanded width */
-}
 
-.user-list { /* user list */
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    align-items: center;
-    padding-top: 15px;
-}
-
-.user-item { /* users in user list */
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    width: 100%;
-}
-
-.user-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: white;
-    transition: transform 0.2s ease;
-}
 
 .user-item:hover .user-icon {
     transform: scale(1.1);
@@ -57,34 +31,7 @@
     white-space: nowrap;
 }
 
-.sidebar:not(.expanded) .username { /*  hide usernames when not expanded */
-    opacity: 0;
-}
 
-.toggle-arrow { /* arrow to expand user list */
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: #4d3174;
-    border: none;
-    color: white;
-    padding: 5px;
-    border-radius: 50%;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.toggle-arrow:hover {
-    background: white;
-    color: #4d3174;
-}
 
 .channel-sidebar {
     width: 15%;

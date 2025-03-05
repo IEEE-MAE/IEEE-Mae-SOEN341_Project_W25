@@ -1,7 +1,7 @@
 import "../DemoTeamPage.css";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { FaChevronRight, FaChevronLeft, FaUsers, FaComments } from "react-icons/fa"; // Icons
+import {  FaUsers, FaComments } from "react-icons/fa"; // Icons
 
 // Define Teams
 const teams = [
@@ -20,7 +20,6 @@ const channelsByTeam: Record<number, string[]> = {
 const contacts: string[] = ["Alice", "Bob", "Charlie"];
 
 function DemoTeamPage() {
-    const [isExpanded, setIsExpanded] = useState(false);
     const [selectedTeam, setSelectedTeam] = useState<number | null>(1); // Default to first team
     const [viewMode, setViewMode] = useState<"channels" | "dms">("channels"); // Sidebar mode
     const [userRole] = useState<"user" | "admin" | "superAdmin">("superAdmin");
@@ -40,10 +39,7 @@ function DemoTeamPage() {
     return (
         <div className="team-page">
             {/* Left Sidebar (Teams & DMs) */}
-            <motion.div className={`sidebar ${isExpanded ? "expanded" : ""}`}
-                animate={{ width: isExpanded ? "100px" : "60px" }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
-            >
+            <motion.div  >
                 {/* DMs Icon (Switch to Direct Messages View) */}
                 <motion.div 
                     className={`team-icon ${viewMode === "dms" ? "active" : ""}`} 
@@ -68,12 +64,7 @@ function DemoTeamPage() {
                     </motion.div>
                 ))}
 
-                {/* Sidebar Toggle Button */}
-                <motion.button className="toggle-arrow" onClick={() => setIsExpanded(!isExpanded)}
-                    whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
-                >
-                    {isExpanded ? <FaChevronLeft /> : <FaChevronRight />}
-                </motion.button>
+
             </motion.div>
 
             {/* Right Sidebar (Channels or DMs) */}
