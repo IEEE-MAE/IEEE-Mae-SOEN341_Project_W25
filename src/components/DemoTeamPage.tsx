@@ -5,9 +5,8 @@ import { FaChevronRight, FaChevronLeft, FaUsers, FaComments } from "react-icons/
 
 // Define Teams
 const teams = [
-    { id: 1, name: "Team A", icon: <FaUsers /> },
-    { id: 2, name: "Team B", icon: <FaUsers /> },
-    { id: 3, name: "Team C", icon: <FaUsers /> }
+    { id: 1, name: "Channels", icon: <FaUsers /> }
+
 ];
 
 // Define Channels by Team
