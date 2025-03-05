@@ -4,11 +4,10 @@ import JoinTeam from "./components/JoinTeam";
 import CreateTeam from "./components/CreateTeam.jsx";
 import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 import {AnimatePresence} from "framer-motion";
-import TeamPage from "./components/TeamPage";
 import Channels from "./components/Channels.jsx";
-import LandingPage from "./components/LandingPage.tsx";
+import LandingPage from "./components/LandingPage.jsx";
 import Iridescence from "./assets/Iridescence.jsx";
-import DemoTeamPage from "./components/DemoTeamPage.js";
+import TeamPage from "./components/TeamPage.jsx";
 
 function AnimatedRoutes(){
     return(
@@ -21,7 +20,6 @@ function AnimatedRoutes(){
                 <Route path="/CreateTeam" element={<CreateTeam />} />
                 <Route path="/TeamPage" element={<TeamPage />} />
                 <Route path="/Channels" element={<Channels />} />
-                <Route path="/demoTeamPage" element={<DemoTeamPage />} />
             </Routes>
         </AnimatePresence>
     )

@@ -5,7 +5,7 @@ import {useNavigate} from "react-router-dom";
 import "../style.css";
 import {useEffect, useState} from "react";
 import {pullItem} from "../backend/queryTeam.jsx";
-import './TeamPage';
+import './TeamPage.jsx';
 import {doc, getDoc, updateDoc, arrayUnion} from "firebase/firestore";
 import {db} from "../config/firebase.jsx";
 import {SignInAuth} from "../backend/auth.jsx";

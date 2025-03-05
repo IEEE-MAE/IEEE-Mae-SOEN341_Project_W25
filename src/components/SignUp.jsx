@@ -52,7 +52,7 @@ function SignUp() {
         if (username && email && password) {
             try {
                 await createUser(email, password, username);
-                navigate("/CreateTeam");
+                navigate("/TeamPage");
             } catch (error) {
                 alert("Error during signup: " + error);
             }

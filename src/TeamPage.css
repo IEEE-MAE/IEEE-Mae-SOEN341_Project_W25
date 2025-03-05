@@ -282,6 +282,66 @@
     background: #5945c3;
 }
 
+.no-team {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 80%;
+    height: 80%;
+    margin: auto;
+    background-color: white;
+    border-radius: 30px;
+    padding: 40px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    color: #4d3174; /* Purple text */
+}
+
+.no-team h2 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: #4d3174; /* Purple color */
+}
+
+.no-team p {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    color: #4d3174;
+}
+
+.no-team .create-team-button {
+    background-color: #4d3174;
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 20px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.no-team .create-team-button:hover {
+    background-color: #6a45c3;
+    transform: scale(1.05);
+}
+
+.no-team a {
+    color: #4d3174;
+    text-decoration: none;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    display: block;
+    transition: color 0.3s;
+}
+
+.no-team a:hover {
+    color: #6a45c3;
+}
+
+
+
 /* option 2, needs fixing
 .team-page {
     display: flex;
