@@ -6,30 +6,12 @@
     font-family: Poppins, Segoe UI, sans-serif;
 }
 
-.sidebar { /* users sidebar */
-    width: 80px;  /* collapsed width */
-    background: #220044;
-    padding: 15px;
-    text-align: center;
+.toggle-btn
+{
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: width 0.3s ease-in-out;
-    overflow: hidden;
-    position: relative;
+    justify-content: right;
 }
 
-
-
-.user-item:hover .user-icon {
-    transform: scale(1.1);
-}
-
-.username { /* usernames (appears only when expanded!) */
-    font-size: 14px;
-    transition: opacity 0.3s ease-in-out;
-    white-space: nowrap;
-}
 
 
 
@@ -44,6 +26,12 @@
     border-radius: 10px;
     overflow: hidden;
 }
+.view-toggle-text
+{
+    font-size: small;
+    margin: 10px;
+}
+
 
 .channel-list {
     flex-grow: 1;

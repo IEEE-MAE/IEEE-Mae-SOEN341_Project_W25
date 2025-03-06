@@ -20,6 +20,7 @@ const channelsByTeam = {
 const contacts = ["Alice", "Bob", "Charlie"];
 
 function TeamPage() {
+    const [selectedTeam, setSelectedTeam] = useState(1); // start with first team
     const [viewMode, setViewMode] = useState("channels"); // sidebar mode
     const [userRole] = useState("superAdmin"); // user role (add backend implementation)
 
@@ -73,24 +74,28 @@ function TeamPage() {
 
     return ( // Content for if user is part of a team
         <div className="team-page">
-            {/* Left Sidebar (Teams & DMs) */}
-            <motion.div>
-
-                {/* Toggle Icon for Switching Views */}
-                <motion.div
-                    className="team-icon active"
-                    onClick={() => setViewMode(viewMode === "dms" ? "channels" : "dms")}
-                    whileHover={{ scale: 1.1 }}
-                >
-                    {viewMode === "dms" ? <FaComments size={24} /> : <FaUsers size={24} />}
-                </motion.div>
 
 
-            </motion.div>
 
             {/* Right Sidebar (Channels or DMs) */}
             <div className="channel-sidebar">
+                {/* Toggle Icon for Switching Views */}
+                <motion.div
+                    className="toggle-btn"
+                    onClick={() => setViewMode(viewMode === "dms" ? "channels" : "dms")}
+                    whileHover={{ scale: 1.4 }}
+                >
+                    {viewMode === "dms" ? <FaComments size={24} /> : <FaUsers size={24} />}
+                        <span className="view-toggle-text">
+                            Switch to {viewMode === "dms" ? "Channels" : "dms"}
+                         </span>
+                    </motion.div>
+
+
+
                 <h2>{viewMode === "dms" ? "Direct Messages" : ` ${teams.find(t => t.id === selectedTeam)?.name}`}</h2>
+
+
 
                 <ul className="channel-list">
                     {viewMode === "channels" && selectedTeam !== null && channelsByTeam[selectedTeam]
