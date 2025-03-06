@@ -182,12 +182,12 @@
     padding: 15px;
     position: absolute;
     top: 7%;
-    right: 3%; /* Moves the chat container closer to the right */
+    right: 3%;
     display: flex;
     justify-content: space-between;
 }
 
-/*  Messages Box is now inside Chat Space */
+
 .messages-box {
     flex-grow: 1;
     overflow-y: auto;
@@ -195,10 +195,10 @@
     border-radius: 10px;
     background: rgba(255, 255, 255, 0.1);
     display: flex;
-    flex-direction: column-reverse; /* always stay at the bottom */
+    flex-direction: column-reverse; 
 }
 
-/*  Individual Messages */
+
 .message {
     max-width: 60%;
     padding: 8px 12px;
@@ -209,21 +209,21 @@
     position: relative;
 }
 
-/*  Your Messages (Right-Aligned) */
+
 .message.you {
     align-self: flex-end;
     background: rgba(150, 80, 220, 0.7);
     color: white;
 }
 
-/*  Other Users' Messages (Left-Aligned) */
+
 .message.other {
     align-self: flex-start;
     background: rgba(255, 255, 255, 0.3);
     color: white;
 }
 
-/*  Message Timestamp */
+
 .time {
     font-size: 10px;
     color: white;
@@ -233,7 +233,7 @@
     right: 8px;
 }
 
-/*  Input Field & Send Button Correctly Placed */
+
 .message-input {
     display: flex;
     gap: 10px;
@@ -243,7 +243,7 @@
     border-radius: 10px;
 }
 
-/* Input Field */
+
 .input-field {
     flex-grow: 1;
     padding: 10px;
@@ -254,7 +254,7 @@
     color: white;
 }
 
-/*  Fixed Send Button */
+
 .send-button {
     padding: 10px 14px;
     background: #6A5ACD;
@@ -283,13 +283,13 @@
     padding: 40px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     text-align: center;
-    color: #4d3174; /* Purple text */
+    color: #4d3174; 
 }
 
 .no-team h2 {
     font-size: 2.5rem;
     margin-bottom: 20px;
-    color: #4d3174; /* Purple color */
+    color: #4d3174; 
 }
 
 .no-team p {
@@ -327,6 +327,104 @@
 .no-team a:hover {
     color: #6a45c3;
 }
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Matches your styles.css */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+/* Modal Box */
+.modal {
+    background: var(--base-color);
+    padding: 25px;
+    border-radius: 12px;
+    width: 400px;
+    max-width: 90%;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    color: var(--text-color);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1001;
+}
+
+/* Ensuring only one modal appears at a time */
+.modal-hidden {
+    display: none;
+}
+
+/* Modal Heading */
+.modal h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+/* Input Fields */
+.modal input {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: none;
+    font-size: 1rem;
+    background: var(--input-color);
+    color: var(--text-color);
+    text-align: center;
+}
+
+/* Buttons */
+.modal button {
+    width: 100%;
+    padding: 10px 14px;
+    margin: 5px 0;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+/* Cancel Button */
+.modal button:first-of-type {
+    background: white;
+    color: var(--accent-color);
+}
+
+.modal button:first-of-type:hover {
+    background: #6a45c3;
+    color: white;
+}
+
+/* Confirm Button */
+.modal button:last-of-type {
+    background: var(--accent-color);
+    color: white;
+}
+
+.modal button:last-of-type:hover {
+    background: #5d3bb0;
+}
+
+/* Prevents Background Interaction When Modal is Open */
+body.modal-open {
+    overflow: hidden;
+    pointer-events: none; /* Prevents clicks outside modal */
+}
+
+.modal {
+    pointer-events: all; /* Ensures modal buttons remain clickable */
+}
+
 
 
 
@@ -514,3 +612,165 @@
 .send-button:hover {
     background: #5945c3;
 } */
+/* -------------------------------------------------------------------------- */
+/* .team-page {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    color: white;
+    font-family: Poppins, Segoe UI, sans-serif;
+}
+
+.toggle-btn {
+    display: flex;
+    justify-content: right;
+}
+
+.channel-sidebar {
+    width: 15%;
+    backdrop-filter: blur(10px);
+    background: rgba(46, 0, 95, 0.3);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.view-toggle-text {
+    font-size: small;
+    margin: 10px;
+}
+
+.channel-list {
+    flex-grow: 1;
+    list-style: none;
+    padding: 0;
+    width: 100%;
+    margin-bottom: 10px;
+    overflow-y: auto;
+    max-height: calc(100vh - 120px);
+    padding-right: 8px;
+    padding-left: 4px;
+}
+
+::-webkit-scrollbar {
+    width: 2px;
+    background: transparent;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: white;
+    border-radius: 1px;
+    transition: background 0.3s ease-in-out;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.channel-item {
+    background: rgba(75, 0, 130, 0.3);
+    padding: 10px;
+    margin: 5px 2px;
+    text-align: center;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    backdrop-filter: blur(5px);
+    width: calc(100% - 4px);
+}
+
+.channel-item:hover {
+    background: rgba(106, 13, 173, 0.5);
+    transform: scale(1.05);
+    transform-origin: center;
+    overflow: visible;
+}
+
+.top-nav {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.top-nav button {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid white;
+    padding: 8px 16px;
+    color: white;
+    font-size: 1rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    text-align: center;
+    min-width: 120px;
+}
+
+.top-nav button:hover {
+    background: white;
+    color: #4b0082;
+}
+
+.add-channel-button {
+    background: white;
+    color: #4d3174;
+    padding: 10px;
+    width: auto;
+    min-width: 200px;
+    border: none;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.3s ease;
+}
+
+.add-channel-button:hover {
+    background: #4d3174;
+    color: white;
+}
+
+.logout-button {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid white;
+    width: auto;
+    min-width: 100px;
+    padding: 8px 16px;
+    color: white;
+    font-size: 1rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    backdrop-filter: blur(10px);
+    text-align: center;
+}
+
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    width: 72%;
+    height: 85vh;
+    background: rgba(30, 0, 60, 0.9);
+    border-radius: 15px;
+    padding: 15px;
+    position: absolute;
+    top: 7%;
+    right: 3%;
+    display: flex;
+    justify-content: space-between;
+} */
+
+/* --------------------------------------------------------- */
+
