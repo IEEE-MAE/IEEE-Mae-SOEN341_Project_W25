@@ -13,16 +13,13 @@ const teams = [ // test team array (replace with backend implementation)
 
 // test channels for team (replace with backend implementation)
 const channelsByTeam = {
-    1: ["General", "Development", "Announcements"],
-    2: ["Design", "Marketing", "Random"],
-    3: ["Support", "Feedback", "Off-topic"]
+    1: ["General", "Development", "Announcements"]
 };
 
 // example names for DM feature (replace with backend implementation)
 const contacts = ["Alice", "Bob", "Charlie"];
 
 function TeamPage() {
-    const [selectedTeam, setSelectedTeam] = useState(1); // start with first team
     const [viewMode, setViewMode] = useState("channels"); // sidebar mode
     const [userRole] = useState("superAdmin"); // user role (add backend implementation)
 
@@ -78,29 +75,17 @@ function TeamPage() {
         <div className="team-page">
             {/* Left Sidebar (Teams & DMs) */}
             <motion.div>
-                {/* DMs Icon (Switch to Direct Messages View) */}
+
+                {/* Toggle Icon for Switching Views */}
                 <motion.div
-                    className={`team-icon ${viewMode === "dms" ? "active" : ""}`}
-                    onClick={() => setViewMode("dms")}
+                    className="team-icon active"
+                    onClick={() => setViewMode(viewMode === "dms" ? "channels" : "dms")}
                     whileHover={{ scale: 1.1 }}
                 >
-                    <FaComments size={24} />
+                    {viewMode === "dms" ? <FaComments size={24} /> : <FaUsers size={24} />}
                 </motion.div>
 
-                {/* Team Icons (Click to Show Team Channels) */}
-                {teams.map((team) => (
-                    <motion.div
-                        key={team.id}
-                        className={`team-icon ${selectedTeam === team.id && viewMode === "channels" ? "active" : ""}`}
-                        onClick={() => {
-                            setSelectedTeam(team.id);
-                            setViewMode("channels");
-                        }}
-                        whileHover={{ scale: 1.1 }}
-                    >
-                        {team.icon}
-                    </motion.div>
-                ))}
+
             </motion.div>
 
             {/* Right Sidebar (Channels or DMs) */}
