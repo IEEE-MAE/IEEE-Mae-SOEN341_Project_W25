@@ -6,7 +6,6 @@ import { getCurrentUser } from "../backend/auth";
 import { getUserTeam } from "../backend/Queries/getUserFields.jsx";
 import { useNavigate } from "react-router-dom";
 
-
 const teams = [ // test team array (replace with backend implementation)
     { id: 1, name: "Channels", icon: <FaUsers /> }
 ];
@@ -27,8 +26,15 @@ function TeamPage() {
     // State for messages and input field
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
+
     // State to check if the user is part of a team
     const [isUserInTeam, setIsUserInTeam] = useState(null);
+
+    // State for modals
+    const [isAddMemberModalOpen, setAddMemberModalOpen] = useState(false);
+    const [isAddAdminModalOpen, setAddAdminModalOpen] = useState(false);
+    const [memberUsername, setMemberUsername] = useState("");
+    const [adminUsername, setAdminUsername] = useState("");
 
     const navigate = useNavigate();
 
@@ -74,9 +80,6 @@ function TeamPage() {
 
     return ( // Content for if user is part of a team
         <div className="team-page">
-
-
-
             {/* Right Sidebar (Channels or DMs) */}
             <div className="channel-sidebar">
                 {/* Toggle Icon for Switching Views */}
@@ -86,16 +89,12 @@ function TeamPage() {
                     whileHover={{ scale: 1.4 }}
                 >
                     {viewMode === "dms" ? <FaComments size={24} /> : <FaUsers size={24} />}
-                        <span className="view-toggle-text">
-                            Switch to {viewMode === "dms" ? "Channels" : "dms"}
-                         </span>
-                    </motion.div>
-
-
+                    <span className="view-toggle-text">
+                        Switch to {viewMode === "dms" ? "Channels" : "dms"}
+                    </span>
+                </motion.div>
 
                 <h2>{viewMode === "dms" ? "Direct Messages" : ` ${teams.find(t => t.id === selectedTeam)?.name}`}</h2>
-
-
 
                 <ul className="channel-list">
                     {viewMode === "channels" && selectedTeam !== null && channelsByTeam[selectedTeam]
@@ -107,17 +106,10 @@ function TeamPage() {
                         ))
                     }
                 </ul>
-
-                {userRole !== "user" && viewMode === "channels" && (
-                    <motion.button className="add-channel-button">
-                        + Add Channel
-                    </motion.button>
-                )}
             </div>
 
             {/* Chat Space: Displays Messages & Input Box */}
             <div className="chat-container">
-                {/* Message Display Area */}
                 <div className="messages-box">
                     {messages.map((msg, index) => (
                         <div key={index} className="message">
@@ -126,7 +118,6 @@ function TeamPage() {
                     ))}
                 </div>
 
-                {/* Input Field & Send Button */}
                 <div className="message-input">
                     <input
                         type="text"
@@ -141,25 +132,71 @@ function TeamPage() {
 
             {/* Top Navigation Bar */}
             <div className="top-nav">
-                <motion.button className="logout-button" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <motion.button 
+                    className="logout-button" 
+                    whileHover={{ scale: 1.05 }} 
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => navigate("/login")}
+                >
                     Logout
                 </motion.button>
 
-                {userRole !== "user" && (
-                    <motion.button className="check-requests-button" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                        Check Requests
-                    </motion.button>
-                )}
+                <motion.button 
+                    className="add-member-button" 
+                    whileHover={{ scale: 1.05 }} 
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setAddMemberModalOpen(true)}
+                >
+                    Add Member
+                </motion.button>
 
-                {userRole === "superAdmin" && (
-                    <motion.button className="add-admin-button" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                        Add Admin
-                    </motion.button>
-                )}
+                <motion.button 
+                    className="add-admin-button" 
+                    whileHover={{ scale: 1.05 }} 
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setAddAdminModalOpen(true)}
+                >
+                    Add Admin
+                </motion.button>
             </div>
+
+            {/* Add Member Modal */}
+            {isAddMemberModalOpen && (
+                <div className="modal">
+                    <h2>Add Member</h2>
+                    <input
+                        type="text"
+                        placeholder="Enter member username"
+                        value={memberUsername}
+                        onChange={(e) => setMemberUsername(e.target.value)}
+                    />
+                    <button onClick={() => setAddMemberModalOpen(false)}>Cancel</button>
+                    <button onClick={() => {
+                        console.log(`Adding member: ${memberUsername}`);
+                        setAddMemberModalOpen(false);
+                    }}>Confirm</button>
+                </div>
+            )}
+
+            {/* Add Admin Modal */}
+            {isAddAdminModalOpen && (
+                <div className="modal">
+                    <h2>Add Admin</h2>
+                    <input
+                        type="text"
+                        placeholder="Enter admin username"
+                        value={adminUsername}
+                        onChange={(e) => setAdminUsername(e.target.value)}
+                    />
+                    <button onClick={() => setAddAdminModalOpen(false)}>Cancel</button>
+                    <button onClick={() => {
+                        console.log(`Adding admin: ${adminUsername}`);
+                        setAddAdminModalOpen(false);
+                    }}>Confirm</button>
+                </div>
+            )}
         </div>
     );
 }
 
 export default TeamPage;
-
