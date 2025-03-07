@@ -19,7 +19,7 @@ export const createMessages= async (Message, Location)=>{
         };
 
         const docRef = await addDoc(collection(db,'messages'), messageData);
-        console.log("message stored" + docRef.id);
+        console.log("message stored: " + docRef.id);
 
         const realtimeRef = ref(realtimeDB, 'messages/' + docRef.id);
         await set(realtimeRef, messageData);

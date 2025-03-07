@@ -12,7 +12,7 @@ import {createMessages} from "../backend/messages.jsx";
 import {getAuth} from "firebase/auth";
 import {getMessages} from "../backend/Queries/getMessages.jsx";
 import {db, realtimeDB} from "../config/firebase.jsx";
-import {off, onValue, ref} from "firebase/database";
+import {off, onValue, ref, orderByChild, equalTo} from "firebase/database";
 import {collection, query, where} from "firebase/firestore";
 import * as React from "react";
 import {createChannel} from "../backend/createChannel.jsx";
@@ -90,6 +90,14 @@ function TeamPage() {
             const userChannels = await getUserChannels();
             const channelList = [];
 
+            const userTeam = await getUserTeam();
+            if (!team) {
+                console.error("Team is undefined. Please check your team data.");
+                return channelList; // Return empty or handle the error as needed
+            }
+
+
+
             for (const userChannel of userChannels) {
                 if (userChannel.includes(team)) { // if user has channels in another team they won't be shown in this one
                     const channelName = userChannel.replace(team, "");
@@ -106,37 +114,37 @@ function TeamPage() {
     }, [team]);
 
 
-
     //upon clicking a channel or a dm you would subscribe to the real time messages
-    const subscribeTo = ({location}) => {
 
-        useEffect(() => {
-            const messagesRef = ref(realtimeDB, 'messages');
-            const q = query(messagesRef, where('Location', '==', location));
+    useEffect(() => {
+        console.log("THIS CHAT IS: "+ selectedChat);
+        const messagesRef = ref(realtimeDB, 'messages');
+        const q = query(messagesRef, orderByChild('Location'), equalTo(selectedChat));
+        const unsubscribe = onValue(q, (snapshot) => {
+            const data = snapshot.val();
+            const messagesList = data
+                ? Object.entries(data).map(([id, msg]) => ({
+                    id,
+                    sender: msg.Sender,                  // assuming stored as "Sender"
+                    text: msg.Message,                   // assuming stored as "Message"
+                    time: new Date(msg.timestamp).toLocaleTimeString() // convert timestamp to human-readable time
+                }))
+                : [];
 
-            const unsubscribe = onValue(q, (snapshot) => {
-                const data = snapshot.val();
-                const messagesList = data
-                    ? Object.entries(data).map(([id, msg]) => ({
-                        id,
-                        sender: msg.Sender,                  // assuming stored as "Sender"
-                        text: msg.Message,                   // assuming stored as "Message"
-                        time: new Date(msg.timestamp).toLocaleTimeString() // convert timestamp to human-readable time
-                    }))
-                    : [];
-                setMessages(messagesList);
+            console.log("Messages list:", messagesList);
+            setMessages(messagesList);
 
-                // setMessages([{ text: data.message, sender: getOtherUsername(data.sender), time: data.timestamp }, ...messages]);
-                // console.log("This is a message: " + newMessage);
+            // setMessages([{ text: data.message, sender: getOtherUsername(data.sender), time: data.timestamp }, ...messages]);
+            // console.log("This is a message: " + newMessage);
 
-            });
+        });
 
 
             return () => {
                 off(messagesRef);
             };
-        },[location]);
-    }
+        },[selectedChat]);
+
 
 
     // Function to send a message
@@ -158,6 +166,7 @@ function TeamPage() {
         //
         // const auth = getAuth()
         // const user = auth.currentUser
+        console.log("THIS CHAT IS: "+ selectedChat);
         await createMessages(newMessage, selectedChat);
     };
 
