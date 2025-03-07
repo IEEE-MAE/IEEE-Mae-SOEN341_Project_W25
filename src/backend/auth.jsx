@@ -3,7 +3,7 @@ import {collection, doc, setDoc, query, getDocs, getDoc, where} from "firebase/f
 import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
-} from "@firebase/auth";
+} from "firebase/auth";
 import {getAuth} from "firebase/auth";
 import {getUserTeam} from "./Queries/getUserFields.jsx";
 
