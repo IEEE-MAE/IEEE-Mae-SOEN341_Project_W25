@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import {createMessages} from "../backend/messages.jsx";
 import {getAuth} from "firebase/auth";
 import * as React from "react";
+import {createChannel} from "../backend/createChannel.jsx";
 
 const teams = [{ id: 1, name: "Channels", icon: <FaUsers /> }];
 
@@ -69,8 +70,8 @@ function TeamPage() {
             }
 
             setChannels(channelList);
-            // if(channelList.length === 0){console.log("no channels transferred")}
-            // channels.forEach(channel => {console.log("channel retrieved " + channel.name)})
+            if(channelList.length === 0){console.log("no channels transferred")}
+            channels.forEach(channel => {console.log("channel retrieved " + channel.name)})
         };
 
         getChannelNames();
@@ -88,10 +89,8 @@ function TeamPage() {
         await createMessages(newMessage, "location template");
     };
 
-    const handleAddChannel = () => {
-        if (!channelName.trim()) return;
-
-        channelsByTeam[selectedTeam].push(channelName);
+    const handleAddChannel = async () => {
+        await createChannel(channelName);
         setChannelName("");
         setAddChannelModalOpen(false);
     };
