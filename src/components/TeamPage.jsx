@@ -5,6 +5,8 @@ import { FaUsers, FaComments } from "react-icons/fa";
 import { getCurrentUser } from "../backend/auth";
 import { getUserTeam } from "../backend/Queries/getUserFields.jsx";
 import { useNavigate } from "react-router-dom";
+import {createMessages} from "../backend/messages.jsx";
+import {getAuth} from "firebase/auth";
 
 const teams = [ // test team array (replace with backend implementation)
     { id: 1, name: "Channels", icon: <FaUsers /> }
@@ -51,13 +53,37 @@ function TeamPage() {
         checkUserTeam();
     }, []);
 
+    //upload my message to firebase
+    // const UploadMessages = async() => {
+    //     try {
+    //         const auth = getAuth()
+    //         const user = auth.currentUser()
+    //
+    //         await createMessages(newMessage, "location template", user.id);
+    //
+    //     } catch (error) {
+    //         console.log('error uploading message');
+    //         throw error;
+    //     }
+    // }
+
     // Function to send a message
-    const sendMessage = () => {
+    const sendMessage = async() => {
         if (!newMessage.trim()) return;
         const time = new Date().toLocaleTimeString();
         setMessages([{ text: newMessage, sender: "You", time }, ...messages]);
         setNewMessage("");
+        console.log("This is a message: " + newMessage);
+
+        //upload message
+
+        const auth = getAuth()
+        const user = auth.currentUser
+
+        await createMessages(newMessage, "location template");
+
     };
+
 
     if (isUserInTeam === null) { // Fetching team data, throw loading message
         return <div className="loading">Loading...</div>;
