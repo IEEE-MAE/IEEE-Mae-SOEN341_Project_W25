@@ -1,46 +1,42 @@
 import "../TeamPage.css";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import { FaUsers, FaComments } from "react-icons/fa";
+import { FaUsers, FaComments, FaPlus } from "react-icons/fa";
 import { getCurrentUser } from "../backend/auth";
 import { getUserTeam } from "../backend/Queries/getUserFields.jsx";
 import { useNavigate } from "react-router-dom";
-import {createMessages} from "../backend/messages.jsx";
-import {getAuth} from "firebase/auth";
+import { createMessages } from "../backend/messages.jsx";
+import { getAuth } from "firebase/auth";
 
-const teams = [ // test team array (replace with backend implementation)
-    { id: 1, name: "Channels", icon: <FaUsers /> }
-];
+const teams = [{ id: 1, name: "Channels", icon: <FaUsers /> }];
 
-// test channels for team (replace with backend implementation)
 const channelsByTeam = {
     1: ["General", "Development", "Announcements"]
 };
 
-// example names for DM feature (replace with backend implementation)
 const contacts = ["Alice", "Bob", "Charlie"];
 
 function TeamPage() {
-    const [selectedTeam, setSelectedTeam] = useState(1); // start with first team
-    const [viewMode, setViewMode] = useState("channels"); // sidebar mode
-    const [userRole] = useState("superAdmin"); // user role (add backend implementation)
+    const [selectedTeam, setSelectedTeam] = useState(1);
+    const [viewMode, setViewMode] = useState("channels");
+    const [userRole, setUserRole] = useState("superAdmin");
 
-    // State for messages and input field
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
 
-    // State to check if the user is part of a team
     const [isUserInTeam, setIsUserInTeam] = useState(null);
 
-    // State for modals
     const [isAddMemberModalOpen, setAddMemberModalOpen] = useState(false);
     const [isAddAdminModalOpen, setAddAdminModalOpen] = useState(false);
+    const [isAddChannelModalOpen, setAddChannelModalOpen] = useState(false);
+
     const [memberUsername, setMemberUsername] = useState("");
     const [adminUsername, setAdminUsername] = useState("");
+    const [channelName, setChannelName] = useState("");
 
     const navigate = useNavigate();
 
-    useEffect(() => { // Fetch user and team
+    useEffect(() => {
         const checkUserTeam = async () => {
             const user = getCurrentUser();
             if (user) {
@@ -53,62 +49,46 @@ function TeamPage() {
         checkUserTeam();
     }, []);
 
-    //upload my message to firebase
-    // const UploadMessages = async() => {
-    //     try {
-    //         const auth = getAuth()
-    //         const user = auth.currentUser()
-    //
-    //         await createMessages(newMessage, "location template", user.id);
-    //
-    //     } catch (error) {
-    //         console.log('error uploading message');
-    //         throw error;
-    //     }
-    // }
-
-    // Function to send a message
-    const sendMessage = async() => {
+    const sendMessage = async () => {
         if (!newMessage.trim()) return;
         const time = new Date().toLocaleTimeString();
         setMessages([{ text: newMessage, sender: "You", time }, ...messages]);
         setNewMessage("");
-        console.log("This is a message: " + newMessage);
 
-        //upload message
-
-        const auth = getAuth()
-        const user = auth.currentUser
+        const auth = getAuth();
+        const user = auth.currentUser;
 
         await createMessages(newMessage, "location template");
-
     };
 
+    const handleAddChannel = () => {
+        if (!channelName.trim()) return;
 
-    if (isUserInTeam === null) { // Fetching team data, throw loading message
+        channelsByTeam[selectedTeam].push(channelName);
+        setChannelName("");
+        setAddChannelModalOpen(false);
+    };
+
+    if (isUserInTeam === null) {
         return <div className="loading">Loading...</div>;
     }
 
-    if (!isUserInTeam) { // Content for if user is not in a team already
+    if (!isUserInTeam) {
         return (
             <div className="no-team">
                 <h2>Don't Have a Team?</h2>
                 <a href="/create-team">Contact the team admin to add you or create a team now</a>
-                <button
-                    className="create-team-button"
-                    onClick={() => navigate("/createTeam")}
-                >
+                <button className="create-team-button" onClick={() => navigate("/createTeam")}>
                     Create a Team
                 </button>
             </div>
         );
     }
 
-    return ( // Content for if user is part of a team
+    return (
         <div className="team-page">
             {/* Right Sidebar (Channels or DMs) */}
             <div className="channel-sidebar">
-                {/* Toggle Icon for Switching Views */}
                 <motion.div
                     className="toggle-btn"
                     onClick={() => setViewMode(viewMode === "dms" ? "channels" : "dms")}
@@ -132,9 +112,21 @@ function TeamPage() {
                         ))
                     }
                 </ul>
+
+                {/* Add Channel Button Inside Sidebar */}
+                {viewMode === "channels" && (
+                    <motion.button 
+                        className="add-channel-button" 
+                        whileHover={{ scale: 1.1 }} 
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => setAddChannelModalOpen(true)}
+                    >
+                        <FaPlus /> Add Channel
+                    </motion.button>
+                )}
             </div>
 
-            {/* Chat Space: Displays Messages & Input Box */}
+            {/* Chat Space */}
             <div className="chat-container">
                 <div className="messages-box">
                     {messages.map((msg, index) => (
@@ -163,67 +155,73 @@ function TeamPage() {
 
             {/* Top Navigation Bar */}
             <div className="top-nav">
-                <motion.button 
-                    className="logout-button" 
-                    whileHover={{ scale: 1.05 }} 
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => navigate("/login")}
-                >
+                <motion.button className="logout-button" onClick={() => navigate("/login")}>
                     Logout
                 </motion.button>
 
-                <motion.button 
-                    className="add-member-button" 
-                    whileHover={{ scale: 1.05 }} 
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setAddMemberModalOpen(true)}
-                >
+                <motion.button className="add-member-button" onClick={() => setAddMemberModalOpen(true)}>
                     Add Member
                 </motion.button>
 
-                <motion.button 
-                    className="add-admin-button" 
-                    whileHover={{ scale: 1.05 }} 
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setAddAdminModalOpen(true)}
-                >
+                <motion.button className="add-admin-button" onClick={() => setAddAdminModalOpen(true)}>
                     Add Admin
                 </motion.button>
             </div>
 
             {/* Add Member Modal */}
             {isAddMemberModalOpen && (
-                <div className="modal">
-                    <h2>Add Member</h2>
-                    <input
-                        type="text"
-                        placeholder="Enter member username"
-                        value={memberUsername}
-                        onChange={(e) => setMemberUsername(e.target.value)}
-                    />
-                    <button onClick={() => setAddMemberModalOpen(false)}>Cancel</button>
-                    <button onClick={() => {
-                        console.log(`Adding member: ${memberUsername}`);
-                        setAddMemberModalOpen(false);
-                    }}>Confirm</button>
+                <div className="modal-overlay">
+                    <div className="modal">
+                        <h2>Add Member</h2>
+                        <input
+                            type="text"
+                            placeholder="Enter member username"
+                            value={memberUsername}
+                            onChange={(e) => setMemberUsername(e.target.value)}
+                        />
+                        <button onClick={() => setAddMemberModalOpen(false)}>Cancel</button>
+                        <button onClick={() => {
+                            console.log(`Adding member: ${memberUsername}`);
+                            setAddMemberModalOpen(false);
+                        }}>Confirm</button>
+                    </div>
                 </div>
             )}
 
             {/* Add Admin Modal */}
             {isAddAdminModalOpen && (
-                <div className="modal">
-                    <h2>Add Admin</h2>
-                    <input
-                        type="text"
-                        placeholder="Enter admin username"
-                        value={adminUsername}
-                        onChange={(e) => setAdminUsername(e.target.value)}
-                    />
-                    <button onClick={() => setAddAdminModalOpen(false)}>Cancel</button>
-                    <button onClick={() => {
-                        console.log(`Adding admin: ${adminUsername}`);
-                        setAddAdminModalOpen(false);
-                    }}>Confirm</button>
+                <div className="modal-overlay">
+                    <div className="modal">
+                        <h2>Add Admin</h2>
+                        <input
+                            type="text"
+                            placeholder="Enter admin username"
+                            value={adminUsername}
+                            onChange={(e) => setAdminUsername(e.target.value)}
+                        />
+                        <button onClick={() => setAddAdminModalOpen(false)}>Cancel</button>
+                        <button onClick={() => {
+                            console.log(`Adding admin: ${adminUsername}`);
+                            setAddAdminModalOpen(false);
+                        }}>Confirm</button>
+                    </div>
+                </div>
+            )}
+
+            {/* Add Channel Modal */}
+            {isAddChannelModalOpen && (
+                <div className="modal-overlay">
+                    <div className="modal">
+                        <h2>Add Channel</h2>
+                        <input
+                            type="text"
+                            placeholder="Enter channel name"
+                            value={channelName}
+                            onChange={(e) => setChannelName(e.target.value)}
+                        />
+                        <button onClick={() => setAddChannelModalOpen(false)}>Cancel</button>
+                        <button onClick={handleAddChannel}>Confirm</button>
+                    </div>
                 </div>
             )}
         </div>
