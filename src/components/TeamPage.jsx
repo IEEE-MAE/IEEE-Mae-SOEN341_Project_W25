@@ -37,6 +37,8 @@ function TeamPage() {
     const [isAddAdminModalOpen, setAddAdminModalOpen] = useState(false);
     const [memberUsername, setMemberUsername] = useState("");
     const [adminUsername, setAdminUsername] = useState("");
+    const [selectedChat,setSelectedChat] = useState(null);
+
 
     const navigate = useNavigate();
 
@@ -125,15 +127,27 @@ function TeamPage() {
                 <ul className="channel-list">
                     {viewMode === "channels" && selectedTeam !== null && channelsByTeam[selectedTeam]
                         ? channelsByTeam[selectedTeam].map((channel, index) => (
-                            <li key={index} className="channel-item">{channel}</li>
+                            <li key={index}
+                                className={`channel-item ${selectedChat === channel ? "active" : ""}`}
+
+                                onClick={() => setSelectedChat(channel)}
+                            >{channel}</li>
+
                         ))
                         : contacts.map((contact, index) => (
-                            <li key={index} className="channel-item">{contact}</li>
+                            <li key={index}
+                                className={`channel-item ${selectedChat === contact ? "active" : ""}`}
+                                onClick={() => setSelectedChat(contact)}
+                            >{contact}</li>
                         ))
                     }
                 </ul>
             </div>
 
+            <div className="chat-name">
+                {/*Chat Name ie who are you chatting with */}
+                {selectedChat ? `Chatting with: ${selectedChat}` : "Select a chat"}
+            </div>
             {/* Chat Space: Displays Messages & Input Box */}
             <div className="chat-container">
                 <div className="messages-box">
