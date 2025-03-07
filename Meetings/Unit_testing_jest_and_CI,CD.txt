@@ -1,0 +1,96 @@
+Unit Testing, JEST and 
+CI/CD
+Today’s topic
+ ● Understanding what Unit Testing is
+ ● JEST
+ ● Integrating your tests with GitHub Actions
+
+Why Unit Testing? 
+Benefits:
+ ● Improved Code Quality: Catch and fix issues early.
+ ● Faster Debugging: Isolate problems quickly.
+ ● Easier Maintenance: Safeguard against regressions.
+ ● Confidence: Have trust in code changes.
+ Consequences of Not Unit Testing:
+ ● Bugs Persist: Undetected issues may surface later.
+ ● Costly Debugging: Time-consuming and expensive.
+ ● Reduced Confidence: Uncertainty in code quality.
+There are many testing frameworks
+ ● Depending upon the tech-stack, frameworks, libraries and  your architecture, 
+the way tests are implemented would wary
+ ● There are a lot of testing libraries and frameworks out there
+ ● Some works at the grass-root level, some are high level frameworks. 
+
+We will be talking about JEST…
+ ● What we going to cover: JEST
+ ● But let’s just take a peek at what Python offers
+ ● Python offers the base testing module - unittest module
+ ● This is good enough for Simple python applications
+ ● Has few shortcomings
+ ● Which is why people opt for pytest
+
+JEST
+ Jest: a popular JavaScript testing framework developed by Facebook. It's designed for simplicity, speed, and ease of use.
+ Key Features of Jest
+ ● Automatic mocking.
+ ● Snapshot testing.
+ ● Code coverage reports.
+ ● Easy-to-read error messages.
+ Why Choose Jest for Unit Testing
+ ● High adoption rate in the JavaScript community.
+ ● Extensive documentation and community support.
+ ● Fast and reliable test runner.
+
+
+Test file name syntax. 
+•anyName.test.js
+ •anyName.spec.js
+
+
+
+Integrating JEST tests to your CI/CD Pipeline (GitHub 
+Actions)
+ ● Set up your project repository in Github
+ ● Connect with your remote repository
+ ●
+Adding JEST
+ npm init -y
+ npm install --save-dev jest
+ Enter these commands with your cwd at root of your 
+project
+Consider a function in your Project 
+subtraction.js
+Create your test file - subtraction.test.js
+This is how your Directory should look like
+Update package.json
+Run the npm test command
+ Run : npm run test
+ Sd
+ Should look something like this
+Configure the Workflow
+ Remember that workflow is made up of jobs
+ GitHub Actions looks for .github/workflow/ directory in your project. If its not there, 
+create.
+ Enter: touch .github/workflows/main.yml
+ This will create the yml file
+Configure YML 
+Understanding what’s happening
+ ● name: Unit Tests: This is the name of the GitHub Actions workflow. It helps to identify the workflow in the 
+Actions tab of the GitHub repository.
+ ● on: Specifies the events that trigger the workflow. In this case, the workflow is triggered on both push to the 
+master branch and pull_request against the master branch.
+ ● jobs: Defines one or more jobs that will be executed as part of the workflow.
+ ● Jest: This is the name of the job. You can have multiple jobs in a workflow, each with its own name.
+ ● runs-on: ubuntu-latest: Specifies the operating system environment in which the job will run. In this case, it will 
+run on the latest version of Ubuntu.
+Understanding what’s happening (2)
+ ● steps: Contains a sequence of steps that define the tasks to be executed within the job.
+ ● uses: actions/checkout@v1: This step checks out the repository's code so that it can be used in subsequent steps. The 
+@v1 specifies the version of the checkout action to use.
+ ● name: Run Tests: This is a named step that indicates the beginning of a task to run the tests.
+ ● run: |: This is a multi line shell script that specifies the commands to be executed as part of the step.
+ ● npm install: This command installs the dependencies specified in the package.json file of the repository. This step ensures 
+that all required dependencies for running the tests are installed.
+ ● npm test: This command runs the tests using Jest. It executes the test scripts defined in the package.json file's scripts 
+section, typically labeled as "test".
+Make changes, commits, push changes…

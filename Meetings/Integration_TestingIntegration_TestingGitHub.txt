@@ -1,0 +1,116 @@
+Tutorial 8:
+ Integration Testing: Integration 
+Testing/GitHub
+ By: Maryam Mehrabi 
+Content
+ • What is Integration Testing?
+ • How set up integration testing on GitHub
+ • Integration testing on GitHub Steps with yaml File Example
+ • Useful Resources
+What is Integration Testing?
+ Integration testing is a key phase in software development where
+ individual modules or components of a system are tested collectively to
+ verify that they interact correctly. This is crucial for detecting issues in
+ the interactions between different parts of a codebase, such as APIs,
+ databases, and other services, and is often part of a CI/CD pipeline on
+ platforms like GitHub.
+How set up integration testing on GitHub
+ • Step 0: Set Up Project
+ • Step 1: Create an Integration Test
+ • Step 2: Define the GitHub Actions Workflow
+ • Step 3: Configure the Workflow
+ • Step 4: Check Results in GitHub
+Integration testing on GitHub Steps
+ • Step 0: Set Up Project: 
+Ensure your project is hosted on GitHub, and your codebase is in a 
+repository.
+ • Step 1: Create an Integration Test: 
+First, you need to write integration tests that check how different
+ components of your application work together. Typically, you’ll use a
+ testing framework specific to your programming language (e.g., JUnit
+ for Java, pytest for Python, Mocha for JavaScript).
+Integration testing on GitHub Steps
+ • Step 2: Define the GitHub Actions Workflow: 
+GitHub Actions allows you to define a workflow to run these tests on 
+each push, pull request, or scheduled basis. You create this workflow in 
+a .yml file within .github/workflows. 
+Integration testing on GitHub Steps
+ • Step 3: Configure the Workflow: 
+The example in next slides performs these steps:
+ 1. Triggers: The workflow triggers on pushes to the main branch and on pull 
+requests.
+ 2. Job Setup: The workflow runs on ubuntu-latest
+ 3. Services: Sets up a PostgreSQL database (example database service) that can 
+be accessed during tests.
+Integration testing on GitHub Steps
+ 4. Steps: 
+Checkout Code: Downloads the code from the repository.
+ Set up Python Environment: Configures Python (or you can use another 
+language setup based on your stack).
+ Install Dependencies: Installs the dependencies from requirements.txt.
+ Run Tests: Runs the integration tests located in tests/integration.
+Integration testing on GitHub Steps
+ • Step 4: Check Results in GitHub:
+ Once the workflow is defined, every push or pull request will trigger 
+the integration test job. The results appear under the Actions tab on 
+GitHub, showing pass/fail status for each test.
+An example YAML file
+ name: This is the name of the workflow, displayed in the Actions
+ tab on GitHub. Here, it’s named “Run Integration Tests.”
+ on: This section defines when the workflow should run.
+ push: The workflow will run every time code is pushed to the.
+ pull_request: The workflow will also run whenever there’s a 
+pull request made to any branch. This helps catch issues before 
+merging changes.
+ jobs: This section defines the jobs (tasks) to be run in the workflow. 
+Here, we have a job named integration-test.
+ runs-on: Specifies the type of server (or "runner") where the 
+job will run. ubuntu-latest means it will use the latest version 
+of the Ubuntu operating system as the environment.
+An example YAML file
+ services: Defines additional services that the job needs to run, 
+such as a database or web server.
+ db: This defines a service named db which is a PostgreSQL 
+database. 
+image: Specifies the Docker image to use for the database, 
+here postgres:13 (PostgreSQL version 13). 
+env: Sets environment variables for the database (username, 
+password, and database name) required for the application to 
+connect. 
+ports: Defines the port mappings. 5432:5432 means GitHub 
+Actions will map the default PostgreSQL port (5432) to the 
+same port on the server. 
+options: Sets health check commands to ensure the database
+ is ready before tests run. pg_isready-U user checks if the 
+database is ready to accept connections as user user.
+An example YAML file
+ steps: Defines the individual steps the job will run.
+ name: A label for each step to make them easier to follow in GitHub.
+ uses: Specifies a pre-built action from the GitHub Actions marketplace. 
+Here, actions/checkout@v2 checks out the repository’s code, making it 
+available for the rest of the workflow.
+ Set up Python: Configures Python as the programming language 
+environment for the job.
+ with: Allows us to specify settings, like the Python version. 
+Here, it’s set to Python 3.
+An example YAML file
+ Install dependencies: Installs the packages required 
+for the application to run and for tests.
+ run: Runs shell commands on the server. Here, it:
+ Updates pip the Python package manager.
+ Installs all packages listed in requirements.txt a 
+file that lists dependencies for Python projects.
+ Run Integration Tests: Executes the integration tests.
+ env: Sets environment variables that tests may 
+need. Here, DATABASE_URL is set so the 
+application knows where to find the database. 
+run: Runs the pytest command in the 
+tests/integration folder, where the integration 
+tests are stored.
+Useful Resources
+ •
+ •
+ https://docs.github.com/en/actions/about-github-actions/about-continuous-integration-with-github-actions
+ https://www.youtube.com/watch?v=uv-9tDauS6I
+ • https://www.youtube.com/watch?v=JUKZVlIDrtY
+ • https://www.youtube.com/watch?v=qXirDGGrG34
