@@ -10,6 +10,7 @@ import {getAuth} from "firebase/auth";
 import * as React from "react";
 import {createChannel} from "../backend/createChannel.jsx";
 import addMemberToTeam from "../backend/addMemberToTeam.jsx";
+import addAdminToTeam from "../backend/addAdminToTeam.jsx";
 
 const teams = [{ id: 1, name: "Channels", icon: <FaUsers /> }];
 
@@ -105,8 +106,13 @@ function TeamPage() {
     };
 
     const handleAddMember = async () => {
-        const successAddMember = await addMemberToTeam(memberUsername, team)
+        await addMemberToTeam(memberUsername, team);
         setMemberUsername("");
+    }
+
+    const handleAddAdmin = async () => {
+        await addAdminToTeam(adminUsername, team);
+        setAdminUsername("");
     }
 
     const validUsername = async (username) => {
@@ -114,6 +120,7 @@ function TeamPage() {
         if(!userExists) {
             alert("Username doesn't exist. Please try again.");
             setMemberUsername("");
+            setAdminUsername("");
         }
     }
 
@@ -283,10 +290,12 @@ function TeamPage() {
                             placeholder="Enter admin username"
                             value={adminUsername}
                             onChange={(e) => setAdminUsername(e.target.value)}
+                            onBlur={() => validUsername(adminUsername)}
                         />
                         <button onClick={() => setAddAdminModalOpen(false)}>Cancel</button>
                         <button onClick={() => {
                             console.log(`Adding admin: ${adminUsername}`);
+                            handleAddAdmin();
                             setAddAdminModalOpen(false);
                         }}>Confirm</button>
                     </div>

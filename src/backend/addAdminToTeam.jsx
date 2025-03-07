@@ -3,7 +3,7 @@ import {arrayUnion, collection, doc, getDocs, query, updateDoc, where} from "fir
 import {db} from "../config/firebase.jsx";
 
 
-const addMemberToTeam = async (username, teamName) => {
+const addAdminToTeam = async (username, teamName) => {
     try {
         const usersRef = collection(db, "users");
         const q = query(usersRef, where("username", "==", username));
@@ -17,14 +17,14 @@ const addMemberToTeam = async (username, teamName) => {
         const userDocRef = querySnapshot.docs[0].ref; // get unique doc
         await updateDoc(userDocRef, {
             team: teamName,
-            role: "member"
+            role: "admin"
         });
 
-        console.log(`User ${username} successfully added to team ${teamName}`);
+        console.log(`User ${username} successfully made admin of team ${teamName}`);
     } catch (err) {
         console.error("Error updating user:", err);
     }
 };
 
 
-export default addMemberToTeam;
+export default addAdminToTeam;
