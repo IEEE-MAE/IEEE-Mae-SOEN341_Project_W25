@@ -30,10 +30,12 @@ function TeamPage() {
     const [isAddMemberModalOpen, setAddMemberModalOpen] = useState(false);
     const [isAddAdminModalOpen, setAddAdminModalOpen] = useState(false);
     const [isAddChannelModalOpen, setAddChannelModalOpen] = useState(false);
+    const [isAddDMModalOpen, setAddDMModalOpen] = useState(false);
 
     const [memberUsername, setMemberUsername] = useState("");
     const [adminUsername, setAdminUsername] = useState("");
     const [channelName, setChannelName] = useState("");
+    const [dmUsername, setDMUsername] = useState("");
     const [selectedChat,setSelectedChat] = useState(null);
 
 
@@ -169,6 +171,17 @@ function TeamPage() {
                         <FaPlus /> Add Channel
                     </motion.button>
                 )}
+
+                {/* Add DM Button */}
+                {viewMode === "dms" && (
+                    <motion.button
+                        className="add-channel-button"
+                        whileHover={{ scale: 1.1 }}
+                        onClick={() => setAddDMModalOpen(true)}
+                    >
+                        <FaPlus /> Add DM
+                    </motion.button>
+                )}
             </div>
 
             <div className="chat-name">
@@ -270,6 +283,25 @@ function TeamPage() {
                         />
                         <button onClick={() => setAddChannelModalOpen(false)}>Cancel</button>
                         <button onClick={handleAddChannel}>Confirm</button>
+                    </div>
+                </div>
+            )}
+
+            {isAddDMModalOpen && (
+                <div className="modal-overlay">
+                    <div className="modal">
+                        <h2>Add Direct Message</h2>
+                        <input
+                            type="text"
+                            placeholder="Enter username"
+                            value={dmUsername}
+                            onChange={(e) => setDMUsername(e.target.value)}
+                        />
+                        <button onClick={() => setAddDMModalOpen(false)}>Cancel</button>
+                        <button onClick={() => {
+                            console.log(`Adding DM with: ${dmUsername}`);
+                            setAddDMModalOpen(false);
+                        }}>Confirm</button>
                     </div>
                 </div>
             )}
