@@ -60,7 +60,7 @@ function TeamPage() {
             const channelList = [];
 
             for (const userChannel of userChannels) {
-                if (userChannel.includes(team.toString())) {
+                if (userChannel.includes(team)) {
                     const channelName = userChannel.replace(team, "");
                     channelList.push({ name: channelName, id: userChannel });
                 }
@@ -146,7 +146,7 @@ function TeamPage() {
                         ? channels.map((channel) => (
                             <li key={channel.id}
                                 className={`channel-item ${selectedChat === channel.id ? "active" : ""}`}
-                                onClick={() => setSelectedChat(channel)}
+                                onClick={() => {setSelectedChat(channel.id)}}
                             >{channel.name}</li>
                         ))
                         : contacts.map((contact, index) => (
