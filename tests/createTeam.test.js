@@ -3,8 +3,9 @@ import { getCurrentUser } from "../src/backend/auth.jsx";
 import { createTeam } from "../src/backend/createTeam.jsx";
 
 jest.mock("firebase/firestore", () => ({
-  doc: jest.fn(),
+  doc: jest.fn(() => "mockDocRef"), // now returns a dummy doc reference
   updateDoc: jest.fn(),
+  getFirestore: jest.fn(() => ({})),
 }));
 
 jest.mock("../src/backend/auth.jsx", () => ({
@@ -23,7 +24,7 @@ describe("createTeam", () => {
     await createTeam("TeamA");
     const teamID = "abcTeamA";
     // Assert: updateDoc is called with the proper doc ref and update object
-    expect(updateDoc).toHaveBeenCalledWith(expect.anything(), {
+    expect(updateDoc).toHaveBeenCalledWith("mockDocRef", {
       team: teamID,
       role: "superUser",
     });
