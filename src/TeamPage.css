@@ -189,7 +189,6 @@
     position: absolute;
     top: 7%;
     right: 3%;
-    display: flex;
     justify-content: space-between;
 }
 
@@ -431,6 +430,21 @@ body.modal-open {
     pointer-events: all; /* Ensures modal buttons remain clickable */
 }
 
+.add-dm-button{
+    width: 100%;
+    padding: 10px;
+    margin-top: 20px;
+    background-color: #4d3174;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.add-dm-button:hover {
+    background-color: #6a45c3;
+}
 
 
 
