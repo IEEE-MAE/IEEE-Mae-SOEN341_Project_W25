@@ -63,7 +63,7 @@ function TeamPage() {
             const channelList = [];
 
             for (const userChannel of userChannels) {
-                if (userChannel.includes(team)) {
+                if (userChannel.includes(team.toString())) {
                     const channelName = userChannel.replace(team, "");
                     channelList.push({ name: channelName, id: userChannel });
                 }
