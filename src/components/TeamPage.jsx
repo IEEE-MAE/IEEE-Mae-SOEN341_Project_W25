@@ -3,23 +3,24 @@ import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { FaUsers, FaComments, FaPlus } from "react-icons/fa";
 import { getCurrentUser } from "../backend/auth";
-import { getUserTeam } from "../backend/Queries/getUserFields.jsx";
+import {getUserChannels, getUsername, getUserTeam} from "../backend/Queries/getUserFields.jsx";
 import { useNavigate } from "react-router-dom";
-import { createMessages } from "../backend/messages.jsx";
-import { getAuth } from "firebase/auth";
+import {createMessages} from "../backend/messages.jsx";
+import {getAuth} from "firebase/auth";
+import * as React from "react";
 
 const teams = [{ id: 1, name: "Channels", icon: <FaUsers /> }];
 
-const channelsByTeam = {
-    1: ["General", "Development", "Announcements"]
-};
-
+// example names for DM feature (replace with backend implementation)
 const contacts = ["Alice", "Bob", "Charlie"];
 
 function TeamPage() {
-    const [selectedTeam, setSelectedTeam] = useState(1);
-    const [viewMode, setViewMode] = useState("channels");
-    const [userRole, setUserRole] = useState("superAdmin");
+    const [selectedTeam, setSelectedTeam] = useState(1); // start with first team
+    const [viewMode, setViewMode] = useState("channels"); // sidebar mode
+    const [userRole] = useState("superAdmin"); // user role (add backend implementation)
+    const [team, setTeam] = useState();
+
+    const [channels, setChannels] = useState([]);
 
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
@@ -42,13 +43,35 @@ function TeamPage() {
         const checkUserTeam = async () => {
             const user = getCurrentUser();
             if (user) {
-                const userTeam = await getUserTeam(user.uid);
-                setIsUserInTeam(!!userTeam);
+                const userTeam = await getUserTeam();
+                setIsUserInTeam(userTeam);
+                setTeam(userTeam);
             } else {
                 setIsUserInTeam(false);
             }
         };
         checkUserTeam();
+    }, []);
+
+    // fetch user channels
+    useEffect(() => {
+        const getChannelNames = async () => {
+            const userChannels = await getUserChannels();
+            const channelList = [];
+
+            for (const userChannel of userChannels) {
+                if (userChannel.includes(team)) {
+                    const channelName = userChannel.replace(team, "");
+                    channelList.push({ name: channelName, id: userChannel });
+                }
+            }
+
+            setChannels(channelList);
+            // if(channelList.length === 0){console.log("no channels transferred")}
+            // channels.forEach(channel => {console.log("channel retrieved " + channel.name)})
+        };
+
+        getChannelNames();
     }, []);
 
     const sendMessage = async () => {
@@ -71,7 +94,21 @@ function TeamPage() {
         setAddChannelModalOpen(false);
     };
 
-    if (isUserInTeam === null) {
+    if(!getCurrentUser()){
+        return (
+            <div className="no-team">
+                <h2>User not logged in</h2>
+                <button
+                    className="create-team-button"
+                    onClick={() => navigate("/login")}
+                >
+                    Log In
+                </button>
+            </div>
+        );
+    }
+
+    if (isUserInTeam === null) { // Fetching team data, throw loading message
         return <div className="loading">Loading...</div>;
     }
 
@@ -105,14 +142,12 @@ function TeamPage() {
                 <h2>{viewMode === "dms" ? "Direct Messages" : ` ${teams.find(t => t.id === selectedTeam)?.name}`}</h2>
 
                 <ul className="channel-list">
-                    {viewMode === "channels" && selectedTeam !== null && channelsByTeam[selectedTeam]
-                        ? channelsByTeam[selectedTeam].map((channel, index) => (
-                            <li key={index}
-                                className={`channel-item ${selectedChat === channel ? "active" : ""}`}
-
-                                onClick={() => setSelectedChat(channel)}
-                            >{channel}</li>
-
+                    {viewMode === "channels" && selectedTeam !== null && channels
+                        ? channels.map((channel) => (
+                            <li key={channel.id}
+                                className={`channel-item ${selectedChat === channel.id ? "active" : ""}`}
+                                onClick={() => {setSelectedChat(channel.id)}}
+                            >{channel.name}</li>
                         ))
                         : contacts.map((contact, index) => (
                             <li key={index}
@@ -125,9 +160,9 @@ function TeamPage() {
 
                 {/* Add Channel Button Inside Sidebar */}
                 {viewMode === "channels" && (
-                    <motion.button 
-                        className="add-channel-button" 
-                        whileHover={{ scale: 1.1 }} 
+                    <motion.button
+                        className="add-channel-button"
+                        whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => setAddChannelModalOpen(true)}
                     >
