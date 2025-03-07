@@ -158,7 +158,7 @@ function TeamPage() {
         //
         // const auth = getAuth()
         // const user = auth.currentUser
-        await createMessages(newMessage, "location template");
+        await createMessages(newMessage, selectedChat);
     };
 
     const handleAddChannel = async () => {
