@@ -12,7 +12,7 @@ import {createMessages} from "../backend/messages.jsx";
 import {getAuth} from "firebase/auth";
 import {getMessages} from "../backend/Queries/getMessages.jsx";
 import {db, realtimeDB} from "../config/firebase.jsx";
-import {off, onValue, ref, orderByChild, equalTo} from "firebase/database";
+import {off, onValue, ref, orderByChild, equalTo, get} from "firebase/database";
 import {collection, query, where} from "firebase/firestore";
 import * as React from "react";
 import {createChannel} from "../backend/createChannel.jsx";
@@ -90,11 +90,11 @@ function TeamPage() {
             const userChannels = await getUserChannels();
             const channelList = [];
 
-            const userTeam = await getUserTeam();
-            if (!team) {
-                console.error("Team is undefined. Please check your team data.");
-                return channelList; // Return empty or handle the error as needed
-            }
+            // const userTeam = await getUserTeam();
+            // if (!team) {
+            //     console.error("Team is undefined. Please check your team data.");
+            //     return channelList; // Return empty or handle the error as needed
+            // }
 
 
 
@@ -116,32 +116,61 @@ function TeamPage() {
 
     //upon clicking a channel or a dm you would subscribe to the real time messages
 
+
+
     useEffect(() => {
         console.log("THIS CHAT IS: "+ selectedChat);
         const messagesRef = ref(realtimeDB, 'messages');
-        const q = query(messagesRef, orderByChild('Location'), equalTo(selectedChat));
-        const unsubscribe = onValue(q, (snapshot) => {
-            const data = snapshot.val();
-            const messagesList = data
-                ? Object.entries(data).map(([id, msg]) => ({
-                    id,
-                    sender: msg.Sender,                  // assuming stored as "Sender"
-                    text: msg.Message,                   // assuming stored as "Message"
-                    time: new Date(msg.timestamp).toLocaleTimeString() // convert timestamp to human-readable time
-                }))
-                : [];
+        console.log("Filtering messages for channel:", selectedChat);
 
-            console.log("Messages list:", messagesList);
-            setMessages(messagesList);
+        //const q = query(messagesRef, orderByChild('Location'), equalTo("rqrAWpJhI6cJr22dO4itHiWMBdg1ALEX_LA_BSETchannel1"));
+
+        const unsubscribe = onValue(messagesRef, (snapshot) => {
+                const data = snapshot.val();
+            if (data) {
+                // Use Promise.all without marking the callback as async
+                Promise.all(
+                    Object.entries(data).map(([id, msg]) => {
+                        return getOtherUsername(msg.Sender).then(username => ({
+                            id,
+                            sender: username,
+                            text: msg.Message,
+                            time: new Date(msg.timestamp).toLocaleTimeString()
+                        }));
+                    })
+                ).then(messagesList => {
+                    console.log("messagesList:", messagesList);
+                    setMessages(messagesList);
+                }).catch(err => {
+                    console.error("Error processing messages:", err);
+                    setMessages([]);
+                });
+            } else {
+                setMessages([]);
+            }
+        });
+
+            // const messagesList = data
+            //     ? Object.entries(data).map(([id, msg]) => ({
+            //         id,
+            //         sender: getOtherUsername(msg.Sender),                  // assuming stored as "Sender"
+            //         text: msg.Message,                   // assuming stored as "Message"
+            //         time: new Date(msg.timestamp).toLocaleTimeString() // convert timestamp to human-readable time
+            //     }))
+            //     : [];
+
+
 
             // setMessages([{ text: data.message, sender: getOtherUsername(data.sender), time: data.timestamp }, ...messages]);
             // console.log("This is a message: " + newMessage);
 
-        });
+        // });
 
 
-            return () => {
-                off(messagesRef);
+
+
+        return () => {
+            unsubscribe();
             };
         },[selectedChat]);
 
