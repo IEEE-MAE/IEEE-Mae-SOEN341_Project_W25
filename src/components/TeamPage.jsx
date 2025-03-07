@@ -2,11 +2,18 @@ import "../TeamPage.css";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { FaUsers, FaComments, FaPlus } from "react-icons/fa";
+import { getCurrentUser } from "../backend/auth";
+import {getOtherUsername, getUserTeam} from "../backend/Queries/getUserFields.jsx";
+import {getUserChannels, getUsername} from "../backend/Queries/getUserFields.jsx";
 import {doesUserExist, getCurrentUser} from "../backend/auth";
-import {getUserChannels, getUsername, getUserRole, getUserTeam} from "../backend/Queries/getUserFields.jsx";
+import {getUserRole, getUserTeam} from "../backend/Queries/getUserFields.jsx";
 import { useNavigate } from "react-router-dom";
 import {createMessages} from "../backend/messages.jsx";
 import {getAuth} from "firebase/auth";
+import {getMessages} from "../backend/Queries/getMessages.jsx";
+import {db, realtimeDB} from "../config/firebase.jsx";
+import {off, onValue, ref} from "firebase/database";
+import {collection, query, where} from "firebase/firestore";
 import * as React from "react";
 import {createChannel} from "../backend/createChannel.jsx";
 import addMemberToTeam from "../backend/addMemberToTeam.jsx";
@@ -99,15 +106,58 @@ function TeamPage() {
     }, [team]);
 
 
-    const sendMessage = async () => {
-        if (!newMessage.trim()) return;
-        const time = new Date().toLocaleTimeString();
-        setMessages([{ text: newMessage, sender: "You", time }, ...messages]);
-        setNewMessage("");
 
-        const auth = getAuth();
-        const user = auth.currentUser;
+    //upon clicking a channel or a dm you would subscribe to the real time messages
+    const subscribeTo = ({location}) => {
 
+        useEffect(() => {
+            const messagesRef = ref(realtimeDB, 'messages');
+            const q = query(messagesRef, where('Location', '==', location));
+
+            const unsubscribe = onValue(q, (snapshot) => {
+                const data = snapshot.val();
+                const messagesList = data
+                    ? Object.entries(data).map(([id, msg]) => ({
+                        id,
+                        sender: msg.Sender,                  // assuming stored as "Sender"
+                        text: msg.Message,                   // assuming stored as "Message"
+                        time: new Date(msg.timestamp).toLocaleTimeString() // convert timestamp to human-readable time
+                    }))
+                    : [];
+                setMessages(messagesList);
+
+                // setMessages([{ text: data.message, sender: getOtherUsername(data.sender), time: data.timestamp }, ...messages]);
+                // console.log("This is a message: " + newMessage);
+
+            });
+
+
+            return () => {
+                off(messagesRef);
+            };
+        },[location]);
+    }
+
+
+    // Function to send a message
+    //now it is to load messages
+    const sendMessage = async() => {
+        // if (!newMessage.trim()) return;
+        // const time = new Date().toLocaleTimeString();
+        //
+        // const channel = "location template"
+        // const theMessages = await getMessages(channel);
+        // setMessages([{ text: theMessages.message, sender: getOtherUsername(theMessages.sender), time }, ...messages]);
+        //
+        //
+        // //setMessages([{ text: newMessage, sender: "You", time }, ...messages]);
+        // setNewMessage("");
+        // console.log("This is a message: " + newMessage);
+        //
+        // //upload message
+        //
+        // const auth = getAuth()
+        // const user = auth.currentUser
         await createMessages(newMessage, "location template");
     };
 
@@ -255,7 +305,7 @@ function TeamPage() {
             <div className="chat-container">
                 <div className="messages-box">
                     {messages.map((msg, index) => (
-                        <div key={index} className="message">
+                        <div key={msg.id || index} className="message">
                             <strong>{msg.sender}:</strong> {msg.text} <span className="time">{msg.time}</span>
                         </div>
                     ))}

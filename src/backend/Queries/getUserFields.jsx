@@ -51,6 +51,28 @@ export async function getUsername() {
     }
 }
 
+export async function getOtherUsername(userid) {
+    const user = getCurrentUser()
+
+    try{
+        //This gets the snapshot of the users doc
+        const userDocRef = doc(db, "users", userid);
+        const userDocSnapshot = await getDoc(userDocRef);
+
+        //puts the username from the user into const username
+        const userData = userDocSnapshot.data();
+        const username =  userData ? userData.username : null;
+        if(!username) {
+            console.log("no username");
+            return null;
+        }
+        return username;
+    }
+    catch(error){
+        console.log("error fetching other user's username: " + error);
+    }
+}
+
 export async function getUserTeam() {
     const user = getCurrentUser()
 
