@@ -55,7 +55,7 @@ function TeamPage() {
     const sendMessage = () => {
         if (!newMessage.trim()) return;
         const time = new Date().toLocaleTimeString();
-        setMessages([...messages, { text: newMessage, sender: "You", time }]);
+        setMessages([{ text: newMessage, sender: "You", time }, ...messages]);
         setNewMessage("");
     };
 
@@ -123,6 +123,11 @@ function TeamPage() {
                         type="text"
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                sendMessage();
+                            }
+                        }}
                         placeholder="Type a message..."
                         className="input-field"
                     />

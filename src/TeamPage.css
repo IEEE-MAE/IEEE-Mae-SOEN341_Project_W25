@@ -10,6 +10,8 @@
 {
     display: flex;
     justify-content: right;
+    cursor: pointer;
+    user-select: none;
 }
 
 
