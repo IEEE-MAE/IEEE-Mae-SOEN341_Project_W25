@@ -2,13 +2,14 @@ import "../TeamPage.css";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { FaUsers, FaComments, FaPlus } from "react-icons/fa";
-import { getCurrentUser } from "../backend/auth";
+import {doesUserExist, getCurrentUser} from "../backend/auth";
 import {getUserChannels, getUsername, getUserTeam} from "../backend/Queries/getUserFields.jsx";
 import { useNavigate } from "react-router-dom";
 import {createMessages} from "../backend/messages.jsx";
 import {getAuth} from "firebase/auth";
 import * as React from "react";
 import {createChannel} from "../backend/createChannel.jsx";
+import addMemberToTeam from "../backend/addMemberToTeam.jsx";
 
 const teams = [{ id: 1, name: "Channels", icon: <FaUsers /> }];
 
@@ -39,7 +40,7 @@ function TeamPage() {
     const [dmUsername, setDMUsername] = useState("");
     const [selectedChat,setSelectedChat] = useState(null);
 
-
+    const [refresh, setRefresh] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -58,12 +59,13 @@ function TeamPage() {
 
     // fetch user channels
     useEffect(() => {
+        if(!team) return;
         const getChannelNames = async () => {
             const userChannels = await getUserChannels();
             const channelList = [];
 
             for (const userChannel of userChannels) {
-                if (userChannel.includes(team.toString())) {
+                if (userChannel.includes(team)) {
                     const channelName = userChannel.replace(team, "");
                     channelList.push({ name: channelName, id: userChannel });
                 }
@@ -71,11 +73,11 @@ function TeamPage() {
 
             setChannels(channelList);
             if(channelList.length === 0){console.log("no channels transferred")}
-            channels.forEach(channel => {console.log("channel retrieved " + channel.name)})
+            // channels.forEach(channel => {console.log("channel retrieved " + channel.name)})
         };
 
         getChannelNames();
-    }, []);
+    }, [team]);
 
     const sendMessage = async () => {
         if (!newMessage.trim()) return;
@@ -90,10 +92,30 @@ function TeamPage() {
     };
 
     const handleAddChannel = async () => {
-        await createChannel(channelName);
-        setChannelName("");
-        setAddChannelModalOpen(false);
+        if(channelName==="" || channelName === null){
+            alert("Please enter a channel name");
+            setChannelName("");
+        }
+        else{
+            await createChannel(channelName);
+            setRefresh(prev => !prev);
+            setChannelName("");
+            setAddChannelModalOpen(false);
+        }
     };
+
+    const handleAddMember = async () => {
+        const successAddMember = await addMemberToTeam(memberUsername, team)
+        setMemberUsername("");
+    }
+
+    const validUsername = async (username) => {
+        const userExists = await doesUserExist(username);
+        if(!userExists) {
+            alert("Username doesn't exist. Please try again.");
+            setMemberUsername("");
+        }
+    }
 
     if(!getCurrentUser()){
         return (
@@ -109,9 +131,9 @@ function TeamPage() {
         );
     }
 
-    if (isUserInTeam === null) { // Fetching team data, throw loading message
-        return <div className="loading">Loading...</div>;
-    }
+    // if (isUserInTeam === null) { // Fetching team data, throw loading message
+    //     return <div className="loading">Loading...</div>;
+    // }
 
     if (!isUserInTeam) {
         return (
@@ -239,10 +261,12 @@ function TeamPage() {
                             placeholder="Enter member username"
                             value={memberUsername}
                             onChange={(e) => setMemberUsername(e.target.value)}
+                            onBlur={() => validUsername(memberUsername)}
                         />
                         <button onClick={() => setAddMemberModalOpen(false)}>Cancel</button>
                         <button onClick={() => {
                             console.log(`Adding member: ${memberUsername}`);
+                            handleAddMember();
                             setAddMemberModalOpen(false);
                         }}>Confirm</button>
                     </div>
