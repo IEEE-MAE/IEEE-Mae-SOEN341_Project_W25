@@ -11,6 +11,7 @@ import * as React from "react";
 
 const teams = [{ id: 1, name: "Channels", icon: <FaUsers /> }];
 
+// example names for DM feature (replace with backend implementation)
 const contacts = ["Alice", "Bob", "Charlie"];
 
 function TeamPage() {
@@ -66,8 +67,8 @@ function TeamPage() {
             }
 
             setChannels(channelList);
-            if(channelList.length === 0){console.log("no channels transferred")};
-            channels.forEach(channel => {console.log("channel retrieved " + channel.name)})
+            // if(channelList.length === 0){console.log("no channels transferred")}
+            // channels.forEach(channel => {console.log("channel retrieved " + channel.name)})
         };
 
         getChannelNames();
@@ -144,7 +145,7 @@ function TeamPage() {
                     {viewMode === "channels" && selectedTeam !== null && channels
                         ? channels.map((channel) => (
                             <li key={channel.id}
-                                className={`channel-item ${selectedChat === channel ? "active" : ""}`}
+                                className={`channel-item ${selectedChat === channel.id ? "active" : ""}`}
                                 onClick={() => setSelectedChat(channel)}
                             >{channel.name}</li>
                         ))
