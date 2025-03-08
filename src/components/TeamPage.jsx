@@ -11,7 +11,7 @@ import {createMessages} from "../backend/messages.jsx";
 import {getAuth} from "firebase/auth";
 import {getMessages} from "../backend/Queries/getMessages.jsx";
 import {db, realtimeDB} from "../config/firebase.jsx";
-import {off, onValue, ref, orderByChild, equalTo, get} from "firebase/database";
+import {off, onValue, ref, orderByChild, equalTo, get, remove} from "firebase/database";
 import {collection, query, where} from "firebase/firestore";
 import * as React from "react";
 import {createChannel} from "../backend/createChannel.jsx";
@@ -175,9 +175,6 @@ function TeamPage() {
 
         // });
 
-
-
-
         return () => {
             unsubscribe();
             };
@@ -235,6 +232,12 @@ function TeamPage() {
     const handleAddMemberToChannel= async () =>{
         await addMemberToChannel(memberUsername, selectedChat);
         setMemberUsername("");
+    }
+
+    const handleDeleteMessage = async (messageId) => {
+        const messageRef = ref(realtimeDB, `messages/${messageId}`);
+        await remove(messageRef);
+        console.log("REMOVE MESSAGE: ", messageId);
     }
 
     const validUsername = async (username) => {
@@ -355,6 +358,7 @@ function TeamPage() {
                     {messages.map((msg) => (
                         <div key={msg.id} className="message">
                             <strong>{msg.sender}:</strong> {msg.text} <span className="time">{msg.time}</span>
+                            <button className="delete-msg-btn" onClick={() => handleDeleteMessage(msg.id)}>×</button>
                         </div>
                     ))}
                 </div>

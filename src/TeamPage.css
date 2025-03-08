@@ -458,6 +458,25 @@ body.modal-open {
     transition: all 0.3s;
 }
 
+.delete-msg-btn{
+    justify-self: end;
+    width: 10%;
+    padding: 0;
+    margin-top: 20px;
+    background-color: #4d3174;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.delete-msg-btn:hover {
+    color: #6a45c3;
+}
+
+
+
 /* option 2, needs fixing
 .team-page {
     display: flex;
