@@ -2,8 +2,7 @@ import "../TeamPage.css";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { FaUsers, FaComments, FaPlus } from "react-icons/fa";
-import { getCurrentUser } from "../backend/auth";
-import {getOtherUsername, getUserTeam} from "../backend/Queries/getUserFields.jsx";
+import {getOtherUsername} from "../backend/Queries/getUserFields.jsx";
 import {getUserChannels, getUsername} from "../backend/Queries/getUserFields.jsx";
 import {doesUserExist, getCurrentUser} from "../backend/auth";
 import {getUserRole, getUserTeam} from "../backend/Queries/getUserFields.jsx";
@@ -207,6 +206,7 @@ function TeamPage() {
         // const user = auth.currentUser
         console.log("THIS CHAT IS: "+ selectedChat);
         await createMessages(newMessage, selectedChat);
+        setNewMessage("");
     };
 
     const handleAddChannel = async () => {
