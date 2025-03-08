@@ -139,12 +139,22 @@ function TeamPage() {
                         }));
                     })
                 ).then(messagesList => {
-                    console.log("messagesList:", messagesList);
+                    // Sort in ascending order (oldest to newest)
+                    messagesList.sort((a, b) => a.timestamp - b.timestamp);
+                    console.log("Sorted messagesList:", messagesList);
                     setMessages(messagesList);
-                }).catch(err => {
-                    console.error("Error processing messages:", err);
-                    setMessages([]);
-                });
+                })
+                    .catch(err => {
+                        console.error("Error processing messages:", err);
+                        setMessages([]);
+                    });
+                // ).then(messagesList => {
+                //     console.log("messagesList:", messagesList);
+                //     setMessages(messagesList);
+                // }).catch(err => {
+                //     console.error("Error processing messages:", err);
+                //     setMessages([]);
+                // });
             } else {
                 setMessages([]);
             }
@@ -342,8 +352,8 @@ function TeamPage() {
             {/* Chat Space */}
             <div className="chat-container">
                 <div className="messages-box">
-                    {messages.map((msg, index) => (
-                        <div key={msg.id || index} className="message">
+                    {messages.map((msg) => (
+                        <div key={msg.id} className="message">
                             <strong>{msg.sender}:</strong> {msg.text} <span className="time">{msg.time}</span>
                         </div>
                     ))}
