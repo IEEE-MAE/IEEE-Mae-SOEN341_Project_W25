@@ -295,13 +295,6 @@ function TeamPage() {
                         </motion.button>
                     </>
                 )}
-                {/*<motion.button className="add-member-button" onClick={() => setAddMemberModalOpen(true)}>*/}
-                {/*    Add Member*/}
-                {/*</motion.button>*/}
-
-                {/*<motion.button className="add-admin-button" onClick={() => setAddAdminModalOpen(true)}>*/}
-                {/*    Add Admin*/}
-                {/*</motion.button>*/}
             </div>
 
             {/* Add Member to team Modal */}
@@ -396,7 +389,7 @@ function TeamPage() {
                             onChange={(e) => setMemberUsername(e.target.value)}
                             onBlur={() => validUsername(memberUsername)}
                         />
-                        <button onClick={() => isAddChannelMemberModalOpen(false)}>Cancel</button>
+                        <button onClick={() => setAddChannelMemberModalOpen(false)}>Cancel</button>
                         <button onClick={() => {
                             console.log(`Adding member to channel: ${adminUsername}`);
                             handleAddMemberToChannel();
