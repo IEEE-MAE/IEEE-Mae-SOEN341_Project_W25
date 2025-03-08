@@ -49,7 +49,7 @@ function LogIn() {
                     navigate("/CreateTeam");
                 }
             } catch (error) {
-                alert("Error during sign in: " + error);
+                alert("Username or password is incorrect.");
             }
         } else {
             alert("Please fill in the fields.");
