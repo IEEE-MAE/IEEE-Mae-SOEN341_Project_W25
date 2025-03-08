@@ -2,11 +2,18 @@ import "../TeamPage.css";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { FaUsers, FaComments, FaPlus } from "react-icons/fa";
+import { getCurrentUser } from "../backend/auth";
+import {getOtherUsername, getUserTeam} from "../backend/Queries/getUserFields.jsx";
+import {getUserChannels, getUsername} from "../backend/Queries/getUserFields.jsx";
 import {doesUserExist, getCurrentUser} from "../backend/auth";
-import {getUserChannels, getUsername, getUserRole, getUserTeam} from "../backend/Queries/getUserFields.jsx";
+import {getUserRole, getUserTeam} from "../backend/Queries/getUserFields.jsx";
 import { useNavigate } from "react-router-dom";
 import {createMessages} from "../backend/messages.jsx";
 import {getAuth} from "firebase/auth";
+import {getMessages} from "../backend/Queries/getMessages.jsx";
+import {db, realtimeDB} from "../config/firebase.jsx";
+import {off, onValue, ref, orderByChild, equalTo, get} from "firebase/database";
+import {collection, query, where} from "firebase/firestore";
 import * as React from "react";
 import {createChannel} from "../backend/createChannel.jsx";
 import addMemberToTeam from "../backend/addMemberToTeam.jsx";
@@ -83,6 +90,14 @@ function TeamPage() {
             const userChannels = await getUserChannels();
             const channelList = [];
 
+            // const userTeam = await getUserTeam();
+            // if (!team) {
+            //     console.error("Team is undefined. Please check your team data.");
+            //     return channelList; // Return empty or handle the error as needed
+            // }
+
+
+
             for (const userChannel of userChannels) {
                 if (userChannel.includes(team)) { // if user has channels in another team they won't be shown in this one
                     const channelName = userChannel.replace(team, "");
@@ -99,16 +114,99 @@ function TeamPage() {
     }, [team]);
 
 
-    const sendMessage = async () => {
-        if (!newMessage.trim()) return;
-        const time = new Date().toLocaleTimeString();
-        setMessages([{ text: newMessage, sender: "You", time }, ...messages]);
-        setNewMessage("");
+    //upon clicking a channel or a dm you would subscribe to the real time messages
 
-        const auth = getAuth();
-        const user = auth.currentUser;
 
-        await createMessages(newMessage, "location template");
+
+    useEffect(() => {
+        console.log("THIS CHAT IS: "+ selectedChat);
+        const messagesRef = ref(realtimeDB, 'messages');
+        console.log("Filtering messages for channel:", selectedChat);
+
+        //const q = query(messagesRef, orderByChild('Location'), equalTo("rqrAWpJhI6cJr22dO4itHiWMBdg1ALEX_LA_BSETchannel1"));
+
+        const unsubscribe = onValue(messagesRef, (snapshot) => {
+                const data = snapshot.val();
+            if (data) {
+                // Use Promise.all without marking the callback as async
+                Promise.all(
+                    Object.entries(data).map(([id, msg]) => {
+                        return getOtherUsername(msg.Sender).then(username => ({
+                            id,
+                            sender: username,
+                            text: msg.Message,
+                            time: new Date(msg.timestamp).toLocaleTimeString()
+                        }));
+                    })
+                ).then(messagesList => {
+                    // Sort in ascending order (oldest to newest)
+                    messagesList.sort((a, b) => a.timestamp - b.timestamp);
+                    console.log("Sorted messagesList:", messagesList);
+                    setMessages(messagesList);
+                })
+                    .catch(err => {
+                        console.error("Error processing messages:", err);
+                        setMessages([]);
+                    });
+                // ).then(messagesList => {
+                //     console.log("messagesList:", messagesList);
+                //     setMessages(messagesList);
+                // }).catch(err => {
+                //     console.error("Error processing messages:", err);
+                //     setMessages([]);
+                // });
+            } else {
+                setMessages([]);
+            }
+        });
+
+            // const messagesList = data
+            //     ? Object.entries(data).map(([id, msg]) => ({
+            //         id,
+            //         sender: getOtherUsername(msg.Sender),                  // assuming stored as "Sender"
+            //         text: msg.Message,                   // assuming stored as "Message"
+            //         time: new Date(msg.timestamp).toLocaleTimeString() // convert timestamp to human-readable time
+            //     }))
+            //     : [];
+
+
+
+            // setMessages([{ text: data.message, sender: getOtherUsername(data.sender), time: data.timestamp }, ...messages]);
+            // console.log("This is a message: " + newMessage);
+
+        // });
+
+
+
+
+        return () => {
+            unsubscribe();
+            };
+        },[selectedChat]);
+
+
+
+    // Function to send a message
+    //now it is to load messages
+    const sendMessage = async() => {
+        // if (!newMessage.trim()) return;
+        // const time = new Date().toLocaleTimeString();
+        //
+        // const channel = "location template"
+        // const theMessages = await getMessages(channel);
+        // setMessages([{ text: theMessages.message, sender: getOtherUsername(theMessages.sender), time }, ...messages]);
+        //
+        //
+        // //setMessages([{ text: newMessage, sender: "You", time }, ...messages]);
+        // setNewMessage("");
+        // console.log("This is a message: " + newMessage);
+        //
+        // //upload message
+        //
+        // const auth = getAuth()
+        // const user = auth.currentUser
+        console.log("THIS CHAT IS: "+ selectedChat);
+        await createMessages(newMessage, selectedChat);
     };
 
     const handleAddChannel = async () => {
@@ -254,8 +352,8 @@ function TeamPage() {
             {/* Chat Space */}
             <div className="chat-container">
                 <div className="messages-box">
-                    {messages.map((msg, index) => (
-                        <div key={index} className="message">
+                    {messages.map((msg) => (
+                        <div key={msg.id} className="message">
                             <strong>{msg.sender}:</strong> {msg.text} <span className="time">{msg.time}</span>
                         </div>
                     ))}

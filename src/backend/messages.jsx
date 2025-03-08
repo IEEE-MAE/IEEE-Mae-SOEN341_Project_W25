@@ -1,7 +1,8 @@
-import { db, auth } from "../config/firebase.jsx";
+import { db, realtimeDB } from "../config/firebase.jsx";
 import {collection, addDoc, setDoc, query, getDocs, getDoc, where} from "firebase/firestore"
 import {getAuth} from "firebase/auth";
 import {getUserTeam} from "./Queries/getUserFields.jsx";
+import {ref, set} from "firebase/database";
 
 export const createMessages= async (Message, Location)=>{
     try{
@@ -10,13 +11,19 @@ export const createMessages= async (Message, Location)=>{
         const auth = getAuth()
         const user = auth.currentUser
 
-        await addDoc(collection(db,'messages'), {
-            Message: Message,
-            Location: Location,
+        const messageData = {
+            Message,
+            Location,
             Sender: user.uid,
-        });
+            timestamp: Date.now(),
+        };
 
-        console.log("Messages created successfully.");
+        const docRef = await addDoc(collection(db,'messages'), messageData);
+        console.log("message stored: " + docRef.id);
+
+        const realtimeRef = ref(realtimeDB, 'messages/' + docRef.id);
+        await set(realtimeRef, messageData);
+        console.log("Messages stored in RealtimeDB successfully.");
     }
     catch(error){
         console.log('error creating message');
