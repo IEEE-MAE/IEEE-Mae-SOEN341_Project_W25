@@ -2,10 +2,11 @@ import "../TeamPage.css";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { FaUsers, FaComments, FaPlus } from "react-icons/fa";
-import {getOtherUsername} from "../backend/Queries/getUserFields.jsx";
+import { getCurrentUser } from "../backend/auth";
+import {getOtherUsername, getUserTeam} from "../backend/Queries/getUserFields.jsx";
 import {getUserChannels, getUsername} from "../backend/Queries/getUserFields.jsx";
 import {doesUserExist, getCurrentUser} from "../backend/auth";
-import {getUserRole, getUserTeam} from "../backend/Queries/getUserFields.jsx";
+import {getUserRole} from "../backend/Queries/getUserFields.jsx";
 import { useNavigate } from "react-router-dom";
 import {createMessages} from "../backend/messages.jsx";
 import {getAuth} from "firebase/auth";
@@ -142,8 +143,7 @@ function TeamPage() {
                     messagesList.sort((a, b) => a.timestamp - b.timestamp);
                     console.log("Sorted messagesList:", messagesList);
                     setMessages(messagesList);
-                })
-                    .catch(err => {
+                }).catch(err => {
                         console.error("Error processing messages:", err);
                         setMessages([]);
                     });
