@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { FaUsers, FaComments, FaPlus } from "react-icons/fa";
 import {doesUserExist, getCurrentUser} from "../backend/auth";
-import {getUserChannels, getUsername, getUserTeam} from "../backend/Queries/getUserFields.jsx";
+import {getUserChannels, getUsername, getUserRole, getUserTeam} from "../backend/Queries/getUserFields.jsx";
 import { useNavigate } from "react-router-dom";
 import {createMessages} from "../backend/messages.jsx";
 import {getAuth} from "firebase/auth";
@@ -20,7 +20,7 @@ const contacts = ["Alice", "Bob", "Charlie"];
 function TeamPage() {
     const [selectedTeam, setSelectedTeam] = useState(1); // start with first team
     const [viewMode, setViewMode] = useState("channels"); // sidebar mode
-    const [userRole] = useState("superAdmin"); // user role (add backend implementation)
+    const [userRole, setUserRole] = useState(""); // user role (add backend implementation)
     const [team, setTeam] = useState();
 
     const [channels, setChannels] = useState([]);
@@ -58,6 +58,22 @@ function TeamPage() {
         checkUserTeam();
     }, []);
 
+    useEffect(() => {
+        if(!team) return;
+        const checkUserRole = async () => {
+            const role = await getUserRole();
+            if(role){
+                setUserRole(role);
+                console.log("USER ROLE: " + userRole);
+            }
+            else{
+                console.log("COULD NOT FIND USER ROLE");
+            }
+        };
+
+        checkUserRole();
+    }, [team])
+
     // fetch user channels
     useEffect(() => {
         if(!team) return;
@@ -66,7 +82,7 @@ function TeamPage() {
             const channelList = [];
 
             for (const userChannel of userChannels) {
-                if (userChannel.includes(team)) {
+                if (userChannel.includes(team)) { // if user has channels in another team they won't be shown in this one
                     const channelName = userChannel.replace(team, "");
                     channelList.push({ name: channelName, id: userChannel });
                 }
@@ -79,6 +95,7 @@ function TeamPage() {
 
         getChannelNames();
     }, [team]);
+
 
     const sendMessage = async () => {
         if (!newMessage.trim()) return;
@@ -188,8 +205,9 @@ function TeamPage() {
                     }
                 </ul>
 
+
                 {/* Add Channel Button Inside Sidebar */}
-                {viewMode === "channels" && (
+                {viewMode === "channels" && ["admin", "superUser"].includes(userRole) &&(
                     <motion.button
                         className="add-channel-button"
                         whileHover={{ scale: 1.1 }}
@@ -214,7 +232,7 @@ function TeamPage() {
 
             <div className="chat-name">
                 {/*Chat Name ie who are you chatting with */}
-                {selectedChat ? `Chatting with: ${selectedChat}` : "Select a chat"}
+                {selectedChat ? `Chatting with: ${selectedChat.replace(team, "")}` : "Select a chat"}
             </div>
             {/* Chat Space */}
             <div className="chat-container">
@@ -249,13 +267,24 @@ function TeamPage() {
                     Logout
                 </motion.button>
 
-                <motion.button className="add-member-button" onClick={() => setAddMemberModalOpen(true)}>
-                    Add Member
-                </motion.button>
+                {["admin", "superUser"].includes(userRole) && (
+                    <>
+                        <motion.button className="add-member-button" onClick={() => setAddMemberModalOpen(true)}>
+                            Add Member
+                        </motion.button>
 
-                <motion.button className="add-admin-button" onClick={() => setAddAdminModalOpen(true)}>
-                    Add Admin
-                </motion.button>
+                        <motion.button className="add-admin-button" onClick={() => setAddAdminModalOpen(true)}>
+                            Add Admin
+                        </motion.button>
+                    </>
+                )}
+                {/*<motion.button className="add-member-button" onClick={() => setAddMemberModalOpen(true)}>*/}
+                {/*    Add Member*/}
+                {/*</motion.button>*/}
+
+                {/*<motion.button className="add-admin-button" onClick={() => setAddAdminModalOpen(true)}>*/}
+                {/*    Add Admin*/}
+                {/*</motion.button>*/}
             </div>
 
             {/* Add Member Modal */}
