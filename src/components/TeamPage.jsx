@@ -350,7 +350,7 @@ function TeamPage() {
 
             <div className="chat-name">
                 {/*Chat Name ie who are you chatting with */}
-                {selectedChat ? `Chatting with: ${selectedChat.replace(team, "")}` : "Select a chat"}
+                {selectedChat ? `On Channel: ${selectedChat.replace(team, "")}` : "Select a chat"}
             </div>
             {/* Chat Space */}
             <div className="chat-container">
@@ -358,7 +358,9 @@ function TeamPage() {
                     {messages.map((msg) => (
                         <div key={msg.id} className="message">
                             <strong>{msg.sender}:</strong> {msg.text} <span className="time">{msg.time}</span>
+                            {["admin", "superUser"].includes(userRole) &&(
                             <button className="delete-msg-btn" onClick={() => handleDeleteMessage(msg.id)}>×</button>
+                            )}
                         </div>
                     ))}
                 </div>
