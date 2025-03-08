@@ -207,6 +207,7 @@ function TeamPage() {
         // const user = auth.currentUser
         console.log("THIS CHAT IS: "+ selectedChat);
         await createMessages(newMessage, selectedChat);
+        setNewMessage("");
     };
 
     const handleAddChannel = async () => {
