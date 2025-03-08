@@ -73,7 +73,7 @@ export async function getUserTeam() {
     }
 }
 
-export async function getUserChannel() {
+export async function getUserRole() {
     const user = getCurrentUser()
 
     try{
@@ -81,13 +81,13 @@ export async function getUserChannel() {
         const userDocRef = doc(db, "users", user.uid);
         const userDocSnapshot = await getDoc(userDocRef);
 
-        //puts the team ID from the user into const teamID
+
         const userData = userDocSnapshot.data();
-        const teamID = userData ? userData.channel : null; // which channel dawg?
+        const userRole = userData ? userData.role : null;
+        console.log(" user's role: " + userRole);
+        return userRole;
     }
     catch(error){
-        console.log("error fetching user's team: " + error);
+        console.log("error fetching user's role: " + error);
     }
-
-    return teamID;
 }

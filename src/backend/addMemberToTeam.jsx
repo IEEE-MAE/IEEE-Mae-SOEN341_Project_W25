@@ -4,6 +4,7 @@ import {db} from "../config/firebase.jsx";
 
 
 const addMemberToTeam = async (username, teamName) => {
+    if(!username || !teamName) return;
     try {
         const usersRef = collection(db, "users");
         const q = query(usersRef, where("username", "==", username));
