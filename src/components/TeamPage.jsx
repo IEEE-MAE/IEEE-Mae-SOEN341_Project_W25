@@ -1,7 +1,7 @@
 import "../TeamPage.css";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import { FaUsers, FaComments, FaPlus } from "react-icons/fa";
+import { FaUsers, FaComments, FaPlus, FaChevronRight, FaChevronLeft, } from "react-icons/fa";
 import {getOtherUsername, getUserDMs, getUsername} from "../backend/Queries/getUserFields.jsx";
 import {getUserChannels} from "../backend/Queries/getUserFields.jsx";
 import {doesUserExist, getCurrentUser} from "../backend/auth";
@@ -16,11 +16,21 @@ import addMemberToTeam from "../backend/addMemberToTeam.jsx";
 import addAdminToTeam from "../backend/addAdminToTeam.jsx";
 import addMemberToChannel from "../backend/addMemberToChannel.jsx";
 import {createDM} from "../backend/createDM.jsx";
+import personIcon from "../assets/person_24dp_E8EAED_FILL1_wght400_GRAD0_opsz24.svg";
+
 
 const teams = [{ id: 1, name: "Channels", icon: <FaUsers /> }];
 
 // example names for DM feature (replace with backend implementation)
 const contacts = ["Alice", "Bob", "Charlie"];
+
+const users = [
+    { id: 1, name: "Andrew", profilePic: personIcon },
+    { id: 2, name: "Dallas", profilePic: personIcon },
+    { id: 3, name: "Eric", profilePic: personIcon },
+    { id: 4, name: "Marlon", profilePic: personIcon },
+    { id: 5, name: "Emma", profilePic: personIcon },
+];
 
 function TeamPage() {
     const [selectedTeam, setSelectedTeam] = useState(1); // start with first team
@@ -48,6 +58,8 @@ function TeamPage() {
     const [channelName, setChannelName] = useState("");
     const [dmUsername, setDMUsername] = useState("");
     const [selectedChat,setSelectedChat] = useState(null);
+    const [isUserListExpanded, setIsUserListExpanded] = useState(false);
+
 
     const [refresh, setRefresh] = useState(false);
     const navigate = useNavigate();
@@ -229,6 +241,7 @@ function TeamPage() {
         setMemberUsername("");
     }
 
+
     const handleDeleteMessage = async (messageId) => {
         const messageRef = ref(realtimeDB, `messages/${messageId}`);
         await remove(messageRef);
@@ -277,6 +290,30 @@ function TeamPage() {
 
     return (
         <div className="team-page">
+            <motion.div
+                className={`sidebar ${isUserListExpanded ? "expanded" : ""}`}
+                animate={{ width: isUserListExpanded ? "200px" : "80px" }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                initial={{ width: "80px" }} // Ensure it starts collapsed
+            >
+                <motion.button
+                    className="toggle-arrow"
+                    onClick={() => setIsUserListExpanded(!isUserListExpanded)}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                >
+                    {isUserListExpanded ? <FaChevronLeft /> : <FaChevronRight />}
+                </motion.button>
+
+                <div className="user-list">
+                    {users.map(user => (
+                        <motion.div key={user.id} className="user-item" whileHover={{ scale: 1.1 }}>
+                            <img src={user.profilePic} alt={user.name} className="user-icon" />
+                            {isUserListExpanded && <span className="username">{user.name}</span>}
+                        </motion.div>
+                    ))}
+                </div>
+            </motion.div>
             {/* Right Sidebar (Channels or DMs) */}
             <div className="channel-sidebar">
                 <motion.div
