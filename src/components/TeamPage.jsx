@@ -348,7 +348,7 @@ function TeamPage() {
                 {/*Chat Name ie who are you chatting with */}
                 {selectedChat
                     ? (viewMode === "dms"
-                            ? `Chatting with: ${selectedChat.replace(thisUsername, "")}`
+                            ? `Chatting with: ${getDMname(selectedChat)}`
                             : `On channel: ${selectedChat.replace(team, "")}`
                     )
                     : "Select a chat"}
