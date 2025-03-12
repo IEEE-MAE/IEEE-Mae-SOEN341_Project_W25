@@ -5,21 +5,15 @@ import {db} from "../../config/firebase.jsx";
 export async function pullUser(targetName) {
     try {
         const q = query(collection(db, 'users'), where('username', '==', targetName));
-
         const querySnapshot = await getDocs(q);
 
-        const docs = querySnapshot.docs;
+        const userId = querySnapshot.docs[0].id;
 
-        const items = [];
-        let userId = null;
-        querySnapshot.docs.forEach((doc) => {
-            userId = doc.id;
-        })
-        console.log('Retrieved Items:', items);
+        console.log('Retrieved ID of user ' + targetName + ": " + userId);
         return userId;
 
     } catch (error) {
-        console.log('error pulling document', error);
+        console.log('error pulling users ID', error);
         return [];
     }
 

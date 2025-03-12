@@ -2,7 +2,7 @@ import "../TeamPage.css";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { FaUsers, FaComments, FaPlus } from "react-icons/fa";
-import {getOtherUsername} from "../backend/Queries/getUserFields.jsx";
+import {getOtherUsername, getUserDMs, getUsername} from "../backend/Queries/getUserFields.jsx";
 import {getUserChannels} from "../backend/Queries/getUserFields.jsx";
 import {doesUserExist, getCurrentUser} from "../backend/auth";
 import {getUserRole, getUserTeam} from "../backend/Queries/getUserFields.jsx";
@@ -15,6 +15,7 @@ import {createChannel} from "../backend/createChannel.jsx";
 import addMemberToTeam from "../backend/addMemberToTeam.jsx";
 import addAdminToTeam from "../backend/addAdminToTeam.jsx";
 import addMemberToChannel from "../backend/addMemberToChannel.jsx";
+import {createDM} from "../backend/createDM.jsx";
 
 const teams = [{ id: 1, name: "Channels", icon: <FaUsers /> }];
 
@@ -23,11 +24,13 @@ const contacts = ["Alice", "Bob", "Charlie"];
 
 function TeamPage() {
     const [selectedTeam, setSelectedTeam] = useState(1); // start with first team
+    const [thisUsername, setThisUsername] = useState(""); // logged in username
     const [viewMode, setViewMode] = useState("channels"); // sidebar mode
     const [userRole, setUserRole] = useState(""); // user role (add backend implementation)
     const [team, setTeam] = useState();
 
     const [channels, setChannels] = useState([]);
+    const [dms, setDms] = useState([]);
 
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
@@ -52,6 +55,8 @@ function TeamPage() {
     useEffect(() => {
         const checkUserTeam = async () => {
             const user = getCurrentUser();
+            const username = await getUsername();
+            setThisUsername(username);
             if (user) {
                 const userTeam = await getUserTeam();
                 setIsUserInTeam(userTeam);
@@ -101,6 +106,26 @@ function TeamPage() {
         getChannelNames();
     }, [team]);
 
+    // fetch user dms
+    useEffect(() => {
+        const getDMs = async () => {
+            const userDMss = await getUserDMs();
+            const DMList = [];
+
+            for (const userDM of userDMss) {
+                if (userDM.includes(thisUsername)) { // display other username
+                    const DMname = getDMname(userDM);
+                    DMList.push({ name: DMname, id: userDM });
+                }
+            }
+
+            setDms(DMList);
+            if(DMList.length === 0){console.log("no channels transferred")}
+            // channels.forEach(channel => {console.log("channel retrieved " + channel.name)})
+        };
+
+        getDMs();
+    }, [refresh]);
 
     //upon clicking a channel or a dm you would subscribe to the real time messages
 
@@ -122,12 +147,13 @@ function TeamPage() {
                             id,
                             sender: username,
                             text: msg.Message,
-                            time: new Date(msg.timestamp).toLocaleTimeString()
+                            time: new Date(msg.timestamp).toLocaleTimeString(),
+                            timeSort: msg.timestamp
                         }));
                     })
                 ).then(messagesList => {
                     // Sort in ascending order (oldest to newest)
-                    messagesList.sort((a, b) => a.timestamp - b.timestamp);
+                    messagesList.sort((a, b) => b.timeSort - a.timeSort);
                     console.log("Sorted messagesList:", messagesList);
                     setMessages(messagesList);
                 })
@@ -135,60 +161,28 @@ function TeamPage() {
                     console.error("Error processing messages:", err);
                     setMessages([]);
                 });
-                // ).then(messagesList => {
-                //     console.log("messagesList:", messagesList);
-                //     setMessages(messagesList);
-                // }).catch(err => {
-                //     console.error("Error processing messages:", err);
-                //     setMessages([]);
-                // });
             } else {
                 setMessages([]);
             }
         });
-
-            // const messagesList = data
-            //     ? Object.entries(data).map(([id, msg]) => ({
-            //         id,
-            //         sender: getOtherUsername(msg.Sender),                  // assuming stored as "Sender"
-            //         text: msg.Message,                   // assuming stored as "Message"
-            //         time: new Date(msg.timestamp).toLocaleTimeString() // convert timestamp to human-readable time
-            //     }))
-            //     : [];
-
-
-
-            // setMessages([{ text: data.message, sender: getOtherUsername(data.sender), time: data.timestamp }, ...messages]);
-            // console.log("This is a message: " + newMessage);
-
-        // });
 
         return () => {
             unsubscribe();
             };
         },[selectedChat]);
 
-
+    const getDMname = (DMid) =>{
+        if (DMid.endsWith(thisUsername)) {
+            return DMid.replace(new RegExp(thisUsername + "$"), "");
+        } else if (DMid.startsWith(thisUsername)) {
+            return DMid.replace(new RegExp("^" + thisUsername), "");
+        } else {
+            return DMid;
+        }
+    }
 
     // Function to send a message
-    //now it is to load messages
     const sendMessage = async() => {
-        // if (!newMessage.trim()) return;
-        // const time = new Date().toLocaleTimeString();
-        //
-        // const channel = "location template"
-        // const theMessages = await getMessages(channel);
-        // setMessages([{ text: theMessages.message, sender: getOtherUsername(theMessages.sender), time }, ...messages]);
-        //
-        //
-        // //setMessages([{ text: newMessage, sender: "You", time }, ...messages]);
-        // setNewMessage("");
-        // console.log("This is a message: " + newMessage);
-        //
-        // //upload message
-        //
-        // const auth = getAuth()
-        // const user = auth.currentUser
         console.log("THIS CHAT IS: "+ selectedChat);
         await createMessages(newMessage, selectedChat);
         setNewMessage("");
@@ -206,6 +200,19 @@ function TeamPage() {
             setAddChannelModalOpen(false);
         }
     };
+
+    const handleAddDM = async () => {
+        if(dmUsername==="" || dmUsername === null){
+            alert("Please enter a username");
+            setDMUsername("");
+        }
+        else{
+            await createDM(dmUsername);
+            setDMUsername("");
+            setAddDMModalOpen(false);
+            setRefresh(prev => !prev);
+        }
+    }
 
     const handleAddMember = async () => {
         await addMemberToTeam(memberUsername, team);
@@ -234,6 +241,7 @@ function TeamPage() {
             alert("Username doesn't exist. Please try again.");
             setMemberUsername("");
             setAdminUsername("");
+            setDMUsername("");
         }
     }
 
@@ -302,11 +310,11 @@ function TeamPage() {
                                 )}
                             </li>
                         ))
-                        : contacts.map((contact, index) => (
-                            <li key={index}
+                        : dms.map((contact) => (
+                            <li key={contact.id}
                                 className={`channel-item ${selectedChat === contact ? "active" : ""}`}
-                                onClick={() => setSelectedChat(contact)}
-                            >{contact}</li>
+                                onClick={() => setSelectedChat(contact.id)}
+                            >{contact.name}</li>
                         ))
                     }
                 </ul>
@@ -338,7 +346,12 @@ function TeamPage() {
 
             <div className="chat-name">
                 {/*Chat Name ie who are you chatting with */}
-                {selectedChat ? `On Channel: ${selectedChat.replace(team, "")}` : "Select a chat"}
+                {selectedChat
+                    ? (viewMode === "dms"
+                            ? `Chatting with: ${selectedChat.replace(thisUsername, "")}`
+                            : `On channel: ${selectedChat.replace(team, "")}`
+                    )
+                    : "Select a chat"}
             </div>
             {/* Chat Space */}
             <div className="chat-container">
@@ -459,11 +472,14 @@ function TeamPage() {
                             placeholder="Enter username"
                             value={dmUsername}
                             onChange={(e) => setDMUsername(e.target.value)}
+                            onBlur={() => validUsername(dmUsername)}
                         />
                         <button onClick={() => setAddDMModalOpen(false)}>Cancel</button>
-                        <button onClick={() => {
+                        <button
+                            onClick={() => {
                             console.log(`Adding DM with: ${dmUsername}`);
                             setAddDMModalOpen(false);
+                            handleAddDM();
                         }}>Confirm</button>
                     </div>
                 </div>

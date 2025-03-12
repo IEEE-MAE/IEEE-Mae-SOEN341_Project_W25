@@ -29,6 +29,29 @@ export async function getUserChannels() {
     }
 }
 
+export async function getUserDMs() {
+    const user = getCurrentUser()
+
+    try{
+        //This gets the snapshot of the users doc
+        const userDocRef = doc(db, "users", user.uid);
+        const userDocSnapshot = await getDoc(userDocRef);
+
+        //puts the channels IDs from the user
+        const userData = userDocSnapshot.data();
+        const DMs =  userData ? userData.dms : [];
+        if(!DMs || DMs.length === 0) {
+            console.log("no DMs found");
+            return [];
+        }
+        console.log("********** DMs FOUND: ", DMs);
+        return DMs;
+    }
+    catch(error){
+        console.log("error fetching user's DMs: " + error);
+    }
+}
+
 export async function getUsername() {
     const user = getCurrentUser()
 
@@ -52,8 +75,6 @@ export async function getUsername() {
 }
 
 export async function getOtherUsername(userid) {
-    const user = getCurrentUser()
-
     try{
         //This gets the snapshot of the users doc
         const userDocRef = doc(db, "users", userid);
