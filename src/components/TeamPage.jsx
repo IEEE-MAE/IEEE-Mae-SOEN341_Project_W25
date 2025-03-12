@@ -3,16 +3,13 @@ import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { FaUsers, FaComments, FaPlus } from "react-icons/fa";
 import {getOtherUsername} from "../backend/Queries/getUserFields.jsx";
-import {getUserChannels, getUsername} from "../backend/Queries/getUserFields.jsx";
+import {getUserChannels} from "../backend/Queries/getUserFields.jsx";
 import {doesUserExist, getCurrentUser} from "../backend/auth";
 import {getUserRole, getUserTeam} from "../backend/Queries/getUserFields.jsx";
 import { useNavigate } from "react-router-dom";
 import {createMessages} from "../backend/messages.jsx";
-import {getAuth} from "firebase/auth";
-import {getMessages} from "../backend/Queries/getMessages.jsx";
-import {db, realtimeDB} from "../config/firebase.jsx";
-import {off, onValue, ref, orderByChild, equalTo, get, remove} from "firebase/database";
-import {collection, query, where} from "firebase/firestore";
+import {realtimeDB} from "../config/firebase.jsx";
+import {query, onValue, ref, orderByChild, equalTo, remove} from "firebase/database";
 import * as React from "react";
 import {createChannel} from "../backend/createChannel.jsx";
 import addMemberToTeam from "../backend/addMemberToTeam.jsx";
@@ -89,14 +86,6 @@ function TeamPage() {
             const userChannels = await getUserChannels();
             const channelList = [];
 
-            // const userTeam = await getUserTeam();
-            // if (!team) {
-            //     console.error("Team is undefined. Please check your team data.");
-            //     return channelList; // Return empty or handle the error as needed
-            // }
-
-
-
             for (const userChannel of userChannels) {
                 if (userChannel.includes(team)) { // if user has channels in another team they won't be shown in this one
                     const channelName = userChannel.replace(team, "");
@@ -116,16 +105,15 @@ function TeamPage() {
     //upon clicking a channel or a dm you would subscribe to the real time messages
 
 
-
     useEffect(() => {
         console.log("THIS CHAT IS: "+ selectedChat);
         const messagesRef = ref(realtimeDB, 'messages');
         console.log("Filtering messages for channel:", selectedChat);
 
-        //const q = query(messagesRef, orderByChild('Location'), equalTo("rqrAWpJhI6cJr22dO4itHiWMBdg1ALEX_LA_BSETchannel1"));
+        const q = query(messagesRef, orderByChild('Location'), equalTo(selectedChat));
 
-        const unsubscribe = onValue(messagesRef, (snapshot) => {
-                const data = snapshot.val();
+        const unsubscribe = onValue(q, (snapshot) => {
+            const data = snapshot.val();
             if (data) {
                 // Use Promise.all without marking the callback as async
                 Promise.all(
@@ -143,10 +131,10 @@ function TeamPage() {
                     console.log("Sorted messagesList:", messagesList);
                     setMessages(messagesList);
                 })
-                    .catch(err => {
-                        console.error("Error processing messages:", err);
-                        setMessages([]);
-                    });
+                .catch(err => {
+                    console.error("Error processing messages:", err);
+                    setMessages([]);
+                });
                 // ).then(messagesList => {
                 //     console.log("messagesList:", messagesList);
                 //     setMessages(messagesList);
