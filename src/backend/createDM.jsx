@@ -1,28 +1,36 @@
 import {getCurrentUser} from "./auth.jsx";
-import {getUsername, getUserTeam} from "./Queries/getUserFields.jsx";
-import {arrayUnion, doc, updateDoc} from "firebase/firestore";
+import {getOtherUsername, getUsername, getUserTeam} from "./Queries/getUserFields.jsx";
+import {arrayUnion, doc, getDoc, updateDoc} from "firebase/firestore";
 import {db} from "../config/firebase.jsx";
+import {pullUser} from "./Queries/basicqueryUsers.jsx";
 
 export const createDM = async (otherUserName) => {
 
     try {
-        const thisUser = await getUsername();
+        const thisUserName = await getUsername();
+        const thisUserID = await getCurrentUser();
+        const otherUserID = await pullUser(otherUserName);
 
-        const teamID = await getUserTeam();
-        if (!teamID) {
-            console.log("ERROR: No team ID found.");
+        if(!otherUserName || !thisUserID || !thisUserName || !otherUserID){
+            console.log("Could not find user's " + otherUserName + " ID in database.");
             return;
         }
 
-        const channelID = teamID.concat(channelName);
-        await updateDoc(doc(db, "users", user.uid), {
-            channels: arrayUnion(channelID),
+        const DMid = thisUserName.concat(otherUserName);
+        console.log("DM name: ", DMid);
+
+        await updateDoc(doc(db, "users", thisUserID.uid), {
+            dms: arrayUnion(DMid),
         });
 
-        console.log("Successfully created channel: ", channelID);
+        await updateDoc(doc(db, "users", otherUserID), {
+            dms: arrayUnion(DMid),
+        });
+
+        console.log("Successfully created DM: ", DMid);
 
     } catch (error) {
-        console.error("Error creating channel:", error);
+        console.error("Error creating DM:", error);
         throw error;
     }
 }
