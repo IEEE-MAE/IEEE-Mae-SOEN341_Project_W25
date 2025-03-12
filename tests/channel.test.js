@@ -1,4 +1,3 @@
-// Mock the createChannel function directly instead of importing the whole component
 jest.mock("../src/components/Channels.jsx", () => ({
   createChannel: jest.fn((user, channelData) => {
     if (user.role === "admin" || user.role === "superUser") {
