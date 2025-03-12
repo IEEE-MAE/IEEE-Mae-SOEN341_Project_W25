@@ -2,7 +2,6 @@ import "../TeamPage.css";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { FaUsers, FaComments, FaPlus } from "react-icons/fa";
-import { getCurrentUser } from "../backend/auth";
 import {getOtherUsername, getUserTeam} from "../backend/Queries/getUserFields.jsx";
 import {getUserChannels, getUsername} from "../backend/Queries/getUserFields.jsx";
 import {doesUserExist, getCurrentUser} from "../backend/auth";
@@ -12,8 +11,21 @@ import {createMessages} from "../backend/messages.jsx";
 import {getAuth} from "firebase/auth";
 import {getMessages} from "../backend/Queries/getMessages.jsx";
 import {db, realtimeDB} from "../config/firebase.jsx";
-import {off, onValue, ref, orderByChild, equalTo, get} from "firebase/database";
-import {collection, query, where} from "firebase/firestore";
+
+import {
+    off,
+    onValue,
+    ref,
+    orderByChild,
+    orderByValue,
+    equalTo,
+    get,
+    limitToLast,
+    limitToFirst,
+    set,
+    remove, query
+} from "firebase/database";
+
 import * as React from "react";
 import {createChannel} from "../backend/createChannel.jsx";
 import addMemberToTeam from "../backend/addMemberToTeam.jsx";
@@ -51,7 +63,33 @@ function TeamPage() {
     const [selectedChat,setSelectedChat] = useState(null);
 
     const [refresh, setRefresh] = useState(false);
+
     const navigate = useNavigate();
+
+    const usersRef = ref(realtimeDB, 'users');
+
+//     set(usersRef, {
+//         user1: { name: 'Alice', team: 'alpha' },
+//         user2: { name: 'Bob', team: 'alpha' },
+//         user3: { name: 'Charlie', team: 'alpha' },
+//         user4: { name: 'David', team: 'gamma' }
+//     }).then(() => {
+//         console.log("Test data written successfully!");
+//     }).catch((error) => {
+//         console.error("Error writing test data:", error);
+//     });
+//
+// // 3. Query the data using `orderByChild('team')` and `equalTo('alpha')`
+//     const q = query(usersRef, orderByChild('team'), equalTo('alpha'));
+//
+//     onValue(q, (snapshot) => {
+//         if (snapshot.exists()) {
+//             console.log('Query Result for team "alpha":', snapshot.val());
+//         } else {
+//             console.log('No users found for team "alpha".');
+//         }
+//     });
+
 
     useEffect(() => {
         const checkUserTeam = async () => {
@@ -123,9 +161,10 @@ function TeamPage() {
         const messagesRef = ref(realtimeDB, 'messages');
         console.log("Filtering messages for channel:", selectedChat);
 
-        //const q = query(messagesRef, orderByChild('Location'), equalTo("rqrAWpJhI6cJr22dO4itHiWMBdg1ALEX_LA_BSETchannel1"));
+        const q = query(messagesRef, orderByChild('Location'), equalTo(selectedChat));
 
-        const unsubscribe = onValue(messagesRef, (snapshot) => {
+        onValue(q, (snapshot) => {
+            if(!snapshot.exists){console.log("ERROR BIG ERROR")}
                 const data = snapshot.val();
             if (data) {
                 // Use Promise.all without marking the callback as async
@@ -133,53 +172,58 @@ function TeamPage() {
                     Object.entries(data).map(([id, msg]) => {
                         return getOtherUsername(msg.Sender).then(username => ({
                             id,
-                            sender: username,
+                            Location: msg.Location,
                             text: msg.Message,
+                            sender: username,
                             time: new Date(msg.timestamp).toLocaleTimeString()
                         }));
                     })
                 ).then(messagesList => {
-                    // Sort in ascending order (oldest to newest)
-                    messagesList.sort((a, b) => a.timestamp - b.timestamp);
-                    console.log("Sorted messagesList:", messagesList);
+                    console.log("messagesList:", messagesList);
                     setMessages(messagesList);
                 }).catch(err => {
-                        console.error("Error processing messages:", err);
-                        setMessages([]);
-                    });
-                // ).then(messagesList => {
-                //     console.log("messagesList:", messagesList);
-                //     setMessages(messagesList);
-                // }).catch(err => {
-                //     console.error("Error processing messages:", err);
-                //     setMessages([]);
-                // });
+                    console.error("Error processing messages:", err);
+                    setMessages([]);
+                });
+    //
+    //
+    //
+    //             // ).then(messagesList => {
+    //             //     // Sort in ascending order (oldest to newest)
+    //             //     messagesList.sort((a, b) => a.timestamp - b.timestamp);
+    //             //     console.log("Sorted messagesList:", messagesList);
+    //             //     setMessages(messagesList);
+    //             // }).catch(err => {
+    //             //     console.error("Error processing messages:", err);
+    //             //     setMessages([]);
+    //             // });
+    //
+    //
             } else {
                 setMessages([]);
             }
         });
-
-            // const messagesList = data
-            //     ? Object.entries(data).map(([id, msg]) => ({
-            //         id,
-            //         sender: getOtherUsername(msg.Sender),                  // assuming stored as "Sender"
-            //         text: msg.Message,                   // assuming stored as "Message"
-            //         time: new Date(msg.timestamp).toLocaleTimeString() // convert timestamp to human-readable time
-            //     }))
-            //     : [];
-
-
-
-            // setMessages([{ text: data.message, sender: getOtherUsername(data.sender), time: data.timestamp }, ...messages]);
-            // console.log("This is a message: " + newMessage);
-
-        // });
-
-
-
-
+    //
+    //         // const messagesList = data
+    //         //     ? Object.entries(data).map(([id, msg]) => ({
+    //         //         id,
+    //         //         sender: getOtherUsername(msg.Sender),                  // assuming stored as "Sender"
+    //         //         text: msg.Message,                   // assuming stored as "Message"
+    //         //         time: new Date(msg.timestamp).toLocaleTimeString() // convert timestamp to human-readable time
+    //         //     }))
+    //         //     : [];
+    //
+    //
+    //
+    //         // setMessages([{ text: data.message, sender: getOtherUsername(data.sender), time: data.timestamp }, ...messages]);
+    //         // console.log("This is a message: " + newMessage);
+    //
+    //     // });
+    //
+    //
+    //
+    //
         return () => {
-            unsubscribe();
             };
         },[selectedChat]);
 
@@ -188,26 +232,58 @@ function TeamPage() {
     // Function to send a message
     //now it is to load messages
     const sendMessage = async() => {
-        // if (!newMessage.trim()) return;
-        // const time = new Date().toLocaleTimeString();
-        //
-        // const channel = "location template"
-        // const theMessages = await getMessages(channel);
-        // setMessages([{ text: theMessages.message, sender: getOtherUsername(theMessages.sender), time }, ...messages]);
-        //
-        //
-        // //setMessages([{ text: newMessage, sender: "You", time }, ...messages]);
-        // setNewMessage("");
-        // console.log("This is a message: " + newMessage);
-        //
-        // //upload message
-        //
-        // const auth = getAuth()
-        // const user = auth.currentUser
+
+//         // 2. Write test data to Firebase Realtime Database
+//         const usersRef = ref(realtimeDB, 'users');
+//         set(usersRef, {
+//             user1: { name: 'Alice', team: 'alpha' },
+//             user2: { name: 'Bob', team: 'beta' },
+//             user3: { name: 'Charlie', team: 'alpha' },
+//             user4: { name: 'David', team: 'gamma' }
+//         }).then(() => {
+//             console.log("Test data written successfully!");
+//         }).catch((error) => {
+//             console.error("Error writing test data:", error);
+//         });
+//
+// // 3. Query the data using orderByChild('team') and equalTo('alpha')
+//         const q = query(usersRef, orderByChild('team'));
+//
+//         onValue(q, (snapshot) => {
+//             if (snapshot.exists()) {
+//                 console.log('Query Result for team "alpha":', snapshot.val());
+//             } else {
+//                 console.log('No users found for team "alpha".');
+//             }
+//         });
+
+
         console.log("THIS CHAT IS: "+ selectedChat);
         await createMessages(newMessage, selectedChat);
         setNewMessage("");
+
+        // const username = await getCurrentUser().uid;
+        // console.log("MY username: " + username);
+        // // const recentPostsRef = query(ref(realtimeDB, 'messages'),orderByChild('Sender'), equalTo(username));
+        // const recentPostsRef = query(ref(realtimeDB, 'messages'), orderByChild('Sender'));
+        // onValue(recentPostsRef, (snapshot) => {
+        //     if(snapshot.exists()){
+        //         snapshot.forEach(childSnapshot => {
+        //             console.log(childSnapshot.key, childSnapshot.val());
+        //         });
+        //     }else{
+        //         console.log("NO MATCHING DATA");
+        //     }
+        // })
+        // console.log("this ran")
+
+
     };
+
+    const handleDeleteMessage = async (messageId) => {
+        await remove(messageId);
+        console.log("REMOVE MESSAGE: ", messageId);
+    }
 
     const handleAddChannel = async () => {
         if(channelName==="" || channelName === null){

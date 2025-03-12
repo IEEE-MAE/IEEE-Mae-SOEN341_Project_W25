@@ -12,8 +12,8 @@ export const createMessages= async (Message, Location)=>{
         const user = auth.currentUser
 
         const messageData = {
-            Message,
-            Location,
+            Message: Message,
+            Location: Location,
             Sender: user.uid,
             timestamp: Date.now(),
         };

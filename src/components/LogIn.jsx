@@ -4,8 +4,10 @@ import * as React from "react";
 import { SignInAuth } from "../backend/auth.jsx";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "../config/firebase.jsx";
+import {db} from "../config/firebase.jsx";
 import "../style.css";
+import { ref, set, query, orderByChild, equalTo, onValue } from 'firebase/database';
+import {realtimeDB} from "../config/firebase.jsx";
 
 const pageVariants = {
     initial: { opacity: 0, scale: 0.95 },
@@ -14,6 +16,32 @@ const pageVariants = {
 }
 
 function LogIn() {
+    //TEStSTSTSTST
+
+    const usersRef = ref(realtimeDB, 'users');
+    set(usersRef, {
+        user1: { name: 'Alice', team: 'alpha' },
+        user2: { name: 'Bob', team: 'alpha' },
+        user3: { name: 'Charlie', team: 'alpha' },
+        user4: { name: 'David', team: 'gamma' }
+    }).then(() => {
+        console.log("Test data written successfully!");
+    }).catch((error) => {
+        console.error("Error writing test data:", error);
+    });
+
+// 3. Query the data using `orderByChild('team')` and `equalTo('alpha')`
+    const q = query(usersRef, orderByChild('team'), equalTo('alpha'));
+
+    onValue(q, (snapshot) => {
+        if (snapshot.exists()) {
+            console.log('Query Result for team "alpha":', snapshot.val());
+        } else {
+            console.log('No users found for team "alpha".');
+        }
+    });
+
+
     // holds user input email and password
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
