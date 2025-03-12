@@ -1,0 +1,63 @@
+SPRINT 1									
+									
+Issue#	User Story/Task	Story Point	Due Date	Description/ Associated Tasks	Priority	Risk	Responsible	Sprint	
+#60	US.01 User can create an account or log in if they already have one	2	7/Feb/25	"- account creation and login UI
+- set up authentication DB in firebase
+- connect frontend to DB"	HIGH		Cami, Mac	1	
+#59	US.02 User is associated with a single team and views team details	5	7/Feb/25	"- user can create a team (admin) 
+(DB connection)
+- user can join a team (member)
+(DB connection)
+Once logged in, the user is automatically associated with a team (e.g., via admin assignment or account creation logic).  
+The UI should immediately take the user to a team landing page where team details and available channels are visible. "	HIGH		Alex, Abu, Cami, Yara, Mae	1	
+#58	US.03 Admin of a team can create channels and add users to them, make other members admins	5	7/Feb/25	"- Create and Join Channel UI
+- Channel DB creation
+- Assigning channels to teams and users"	HIGH		Alex, Abu, Cami, Yara, Mae	1, 2	
+#57	T.01 Create UI visual diagram for login, team join/create and channel creation	3	7/Feb/25		MED		Mae	1, 2	
+#22	T.02 Logic diagram and 'pseudo' implementation of backend logic	3	7/Feb/25		MED		Abu	1	
+#23, #24	T.03 Design and implement login/signup UI 	3	7/Feb/25		HIGH		Mac	1	
+#3, #25	T.04 Set up user authentication (Login/SignUp) with firebase	3	7/Feb/25		HIGH		Cami	1	
+#36	T.05 Design and implent basic UI of Team page (create/add users to channels)	3	7/Feb/25		HIGH		Yara	1	
+#44, #52	T.06 Admin creates channels in DB and adds users to it	5	7/Feb/25		HIGH		Alex, Mac	1	
+#40	T.07 Set up navigation between pages according to user team status	3	7/Feb/25		HIGH		Abu	1	
+#4 	T.09 Admin creates teams in DB 	3	7/Feb/25		HIGH		Cami, Alex	1	
+#5	T.10 User joins teams in DB	3	7/Feb/25		HIGH		Cami, Alex 	1	
+#61	T.11 UI for creating and joining teams	3	7/Feb/25		HIGH		Mae	1	
+									
+									
+									
+Issue#	User Story/Task	Story Point	Due Date	Description/ Associated Tasks	Priority	Risk	Responsible	Sprint	
+#62	US.04 All users should be able to privately message users in their team (DM)		7/Mar/25		HIGH	3		2	
+#63	US.05 Admins should be able to moderate messages on channels (moderate)		7/Mar/25		HIGH	2		2	
+#64	US.06 Admins should be able to add people into the team		7/Mar/25	"- user joining a team should send a request
+- admin should recieve requests and accept/deny
+- acceptance/denial changes user's role"	HIGH	1		2	
+#65	US.07 Admins should be able to make members of the team into admins		7/Mar/25		HIGH	1		2	
+#66	US.08 All users should be able to message channels accessible to them		7/Mar/25		HIGH	2		2	
+#56	T.12 Re-do UI (colors etc.) from Sprint 1 and take new look to Sprint 2 functionalities		21/Feb/25	"- change theme to purple
+- implement animated background
+- implement page transitions and asset animations"			Malcolm, Yara, Mae	2	
+#28	T.13 Check for username, team name uniqueness (for search purposes)	2	21/Feb/25	- query current users and channels  in database to check if username is taken	MED	0	Camila	2	
+#68	T.14 Re-organize where landing page is	1	13/Feb/25		MED	0	Maelle	2	
+#70	T.15 Create UI in Figma for Channel Space	3	14/Feb/25		MED		Yara	2	
+#71	T.16 Implement the UI for the channel space with frontend	3	14/Feb/25	"- add the channel box and space 
+- message boxes and message logic
+- styling of messaging"	HIGH		Yara	2	
+#67	T. 17 Create skeleton for new team page	1	13/Feb/25	"- layout of buttons for frontend
+- implementation example for backend
+- user, admin and superAdmin views"	LOW	0	Malcolm	2	
+#74	T. 18 Make channels display on the channels page from DB	2	21/Feb/25	"- create query for all channels in a specific team
+- display them in UI"	HIGH	0	Camila	2	
+#81	T.19 Re-implement Signup, Create Team, Create Channel with new DB architecture	3	2/Mar/25	"- now we only have the User collection, they have their teams, channels and dms stored in them
+- re-do backend to fit new DB architecture"	HIGH	1	Camila	2	
+#83	T.20 Add user to channel in new BD architecture	3	2/Mar/25		HIGH	0	Camila	2	
+#86	T. 21 Reroute demoTeamPage	3	6/Mar/25	"- replace old TeamPage with demoTeamPage
+- Convert new TeamPage and LandingPage to jsx
+- Implement menu for when a user does not have a team"	HIGH	1	Malcolm	2	
+#87	T. 22 Add scrolling messages implementation	1	6/Mar/25	- keep new messages at the bottom of the page, invert scrollbar	HIGH	0	Malcolm	2	
+#101	T. 23 Add Admin and Add Member button modals	2	6/Mar/25	- Add popups to the buttons so that when clicked, they would take inputs	HIGH	0	Yara	2	
+#100	T .24 Add Channel Button modal	2	7/Mar/25	- Add this button to the sidebar so that when clicked, a pop up will appear taking input, then updating the list of channels	HIGH	1	Yara	2	
+#103	T .25 Implement the new logic discussed in the meeting in the Team Page	3	26/Feb/25	- Change sidebars logic, one button for dms and the rest is teams	MED	1	Yara	2	
+#102	T .26 Frontend: added navigation to the chat page	1	26/Feb/25	- Added a button that navigates to the team page for testing purposes	LOW	1	Yara	2	
+									
+									
