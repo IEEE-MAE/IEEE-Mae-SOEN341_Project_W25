@@ -5,4 +5,7 @@ module.exports = {
     '^.+\\.jsx?$': 'babel-jest',
   },
   verbose: true,
+  moduleNameMapper: {
+    '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+  },
 };
