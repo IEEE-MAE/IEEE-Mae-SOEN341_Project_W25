@@ -200,7 +200,7 @@
     border-radius: 10px;
     background: rgba(255, 255, 255, 0.1);
     display: flex;
-    flex-direction: column-reverse; 
+    flex-direction: column-reverse;
 }
 
 
@@ -288,13 +288,13 @@
     padding: 40px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     text-align: center;
-    color: #4d3174; 
+    color: #4d3174;
 }
 
 .no-team h2 {
     font-size: 2.5rem;
     margin-bottom: 20px;
-    color: #4d3174; 
+    color: #4d3174;
 }
 
 .no-team p {
@@ -475,6 +475,87 @@ body.modal-open {
     color: #6a45c3;
 }
 
+
+.sidebar {
+    width: 80px; /* Start collapsed */
+    min-height: 100vh;
+    background: #220044;
+    padding: 10px 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: width 0.3s ease-in-out;
+    overflow: hidden;
+    position: relative;
+    justify-content: flex-start;
+}
+
+.sidebar.expanded {
+    width: 200px; /* Expanded width */
+}
+
+.user-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    padding-top: 15px;
+}
+
+.user-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.user-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: white;
+    transition: transform 0.2s ease;
+}
+
+.user-item:hover .user-icon {
+    transform: scale(1.1);
+}
+
+.username {
+    font-size: 14px;
+    transition: opacity 0.3s ease-in-out;
+    white-space: nowrap;
+}
+
+.sidebar:not(.expanded) .username {
+    opacity: 0;
+}
+
+.toggle-arrow {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #4d3174;
+    border: none;
+    color: white;
+    padding: 5px;
+    border-radius: 50%;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toggle-arrow:hover {
+    background: white;
+    color: #4d3174;
+}
 
 
 /* option 2, needs fixing
@@ -822,4 +903,3 @@ body.modal-open {
 } */
 
 /* --------------------------------------------------------- */
-
