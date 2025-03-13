@@ -169,10 +169,10 @@ function TeamPage() {
                     console.log("Sorted messagesList:", messagesList);
                     setMessages(messagesList);
                 })
-                .catch(err => {
-                    console.error("Error processing messages:", err);
-                    setMessages([]);
-                });
+                    .catch(err => {
+                        console.error("Error processing messages:", err);
+                        setMessages([]);
+                    });
             } else {
                 setMessages([]);
             }
@@ -180,8 +180,8 @@ function TeamPage() {
 
         return () => {
             unsubscribe();
-            };
-        },[selectedChat]);
+        };
+    },[selectedChat]);
 
     const getDMname = (DMid) =>{
         if (DMid.endsWith(thisUsername)) {
@@ -337,13 +337,13 @@ function TeamPage() {
                                 onClick={() => {setSelectedChat(channel.id)}}
                             >   {channel.name}
                                 {["admin", "superUser"].includes(userRole) &&(
-                                <button className="add-button" onClick={(e) => {
-                                    e.stopPropagation(); // Prevents triggering the `onClick` of the `<li>`
-                                    setSelectedChat(channel.id);
-                                    setAddChannelMemberModalOpen(true);
-                                }}>
-                                    +
-                                </button>
+                                    <button className="add-button" onClick={(e) => {
+                                        e.stopPropagation(); // Prevents triggering the `onClick` of the `<li>`
+                                        setSelectedChat(channel.id);
+                                        setAddChannelMemberModalOpen(true);
+                                    }}>
+                                        +
+                                    </button>
                                 )}
                             </li>
                         ))
@@ -397,7 +397,7 @@ function TeamPage() {
                         <div key={msg.id} className="message">
                             <strong>{msg.sender}:</strong> {msg.text} <span className="time">{msg.time}</span>
                             {["admin", "superUser"].includes(userRole) &&(
-                            <button className="delete-msg-btn" onClick={() => handleDeleteMessage(msg.id)}>×</button>
+                                <button className="delete-msg-btn" onClick={() => handleDeleteMessage(msg.id)}>×</button>
                             )}
                         </div>
                     ))}
@@ -514,10 +514,10 @@ function TeamPage() {
                         <button onClick={() => setAddDMModalOpen(false)}>Cancel</button>
                         <button
                             onClick={() => {
-                            console.log(`Adding DM with: ${dmUsername}`);
-                            setAddDMModalOpen(false);
-                            handleAddDM();
-                        }}>Confirm</button>
+                                console.log(`Adding DM with: ${dmUsername}`);
+                                setAddDMModalOpen(false);
+                                handleAddDM();
+                            }}>Confirm</button>
                     </div>
                 </div>
             )}

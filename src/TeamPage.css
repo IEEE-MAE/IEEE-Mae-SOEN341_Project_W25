@@ -200,7 +200,7 @@
     border-radius: 10px;
     background: rgba(255, 255, 255, 0.1);
     display: flex;
-    flex-direction: column-reverse; 
+    flex-direction: column-reverse;
 }
 
 
@@ -288,13 +288,13 @@
     padding: 40px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     text-align: center;
-    color: #4d3174; 
+    color: #4d3174;
 }
 
 .no-team h2 {
     font-size: 2.5rem;
     margin-bottom: 20px;
-    color: #4d3174; 
+    color: #4d3174;
 }
 
 .no-team p {
@@ -903,4 +903,3 @@ body.modal-open {
 } */
 
 /* --------------------------------------------------------- */
-
