@@ -577,7 +577,22 @@ body.modal-open {
     background: #e82720;
 }
 
+.last-seen
+{
+    font-size: 10px;
+    visibility: hidden;
+}
 
+.last-seen.away
+{
+    visibility: visible;
+}
+
+.user-staus-info
+{
+    display: flex;
+    flex-direction: column;
+}
 
 
 /* option 2, needs fixing

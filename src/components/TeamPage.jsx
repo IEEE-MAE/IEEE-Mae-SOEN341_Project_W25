@@ -25,11 +25,11 @@ const teams = [{ id: 1, name: "Channels", icon: <FaUsers /> }];
 const contacts = ["Alice", "Bob", "Charlie"];
 
 const users = [
-    { id: 1, name: "Andrew", profilePic: personIcon, status: "online" },
-    { id: 2, name: "Dallas", profilePic: personIcon, status: "offline" },
-    { id: 3, name: "Eric", profilePic: personIcon, status: "away" },
-    { id: 4, name: "Marlon", profilePic: personIcon, status: "online" },
-    { id: 5, name: "Emma", profilePic: personIcon, status: "away" },
+    { id: 1, name: "Andrew", profilePic: personIcon, status: "online" ,time:12.05},
+    { id: 2, name: "Dallas", profilePic: personIcon, status: "offline" ,time:12.05},
+    { id: 3, name: "Eric", profilePic: personIcon, status: "away" ,time:12.05},
+    { id: 4, name: "Marlon", profilePic: personIcon, status: "online" ,time:12.05},
+    { id: 5, name: "Emma", profilePic: personIcon, status: "away" ,time:12.05},
 ];
 
 function TeamPage() {
@@ -305,11 +305,14 @@ function TeamPage() {
                     {isUserListExpanded ? <FaChevronLeft /> : <FaChevronRight />}
                 </motion.button>
 
-                <div className="user-list">
+                <div className="user-list">x
                     {users.map(user => (
                         <motion.div key={user.id} className="user-item" whileHover={{ scale: 1.1 }}>
                             <img src={user.profilePic} alt={user.name} className="user-icon" />
+                            <div className="user-staus-info">
                             <div className={`user-status ${user.status}`}></div>
+                            <div className = {`last-seen ${user.status}`}>{user.time}</div>
+                            </div>
                             {isUserListExpanded && <span className="username">{user.name}</span>}
                         </motion.div>
                     ))}
