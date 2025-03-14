@@ -310,11 +310,11 @@ function TeamPage() {
                                 )}
                             </li>
                         ))
-                        : dms.map((contact) => (
-                            <li key={contact.id}
-                                className={`channel-item ${selectedChat === contact ? "active" : ""}`}
-                                onClick={() => setSelectedChat(contact.id)}
-                            >{contact.name}</li>
+                        : dms.map((dm) => (
+                            <li key={dm.id}
+                                className={`channel-item ${selectedChat === dm ? "active" : ""}`}
+                                onClick={() => setSelectedChat(dm.id)}
+                            >{dm.name}</li>
                         ))
                     }
                 </ul>
