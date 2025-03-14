@@ -25,11 +25,11 @@ const teams = [{ id: 1, name: "Channels", icon: <FaUsers /> }];
 const contacts = ["Alice", "Bob", "Charlie"];
 
 const users = [
-    { id: 1, name: "Andrew", profilePic: personIcon, status: "active" },
-    { id: 2, name: "Dallas", profilePic: personIcon, status: "active" },
-    { id: 3, name: "Eric", profilePic: personIcon, status: "active" },
-    { id: 4, name: "Marlon", profilePic: personIcon, status: "active" },
-    { id: 5, name: "Emma", profilePic: personIcon, status: "active" },
+    { id: 1, name: "Andrew", profilePic: personIcon, status: "online" },
+    { id: 2, name: "Dallas", profilePic: personIcon, status: "offline" },
+    { id: 3, name: "Eric", profilePic: personIcon, status: "away" },
+    { id: 4, name: "Marlon", profilePic: personIcon, status: "online" },
+    { id: 5, name: "Emma", profilePic: personIcon, status: "away" },
 ];
 
 function TeamPage() {
@@ -309,7 +309,7 @@ function TeamPage() {
                     {users.map(user => (
                         <motion.div key={user.id} className="user-item" whileHover={{ scale: 1.1 }}>
                             <img src={user.profilePic} alt={user.name} className="user-icon" />
-                            <div className={"user-status"}></div>
+                            <div className={`user-status ${user.status}`}></div>
                             {isUserListExpanded && <span className="username">{user.name}</span>}
                         </motion.div>
                     ))}

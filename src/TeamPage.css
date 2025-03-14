@@ -562,8 +562,23 @@ body.modal-open {
     height: 10px;
     width: 10px;
     border-radius: 100px;
+}
+
+.user-status.online
+{
     background: #5be820;
 }
+.user-status.offline
+{
+    background: #e8b920;
+}
+.user-status.away
+{
+    background: #e82720;
+}
+
+
+
 
 /* option 2, needs fixing
 .team-page {
