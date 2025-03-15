@@ -1,6 +1,7 @@
 import {doesUserExist} from "./auth.jsx";
 import {arrayUnion, collection, doc, getDocs, query, updateDoc, where} from "firebase/firestore";
 import {db} from "../config/firebase.jsx";
+import {getSuperUserChannels} from "./Queries/getSuperUser.jsx";
 
 
 const addAdminToTeam = async (username, teamName) => {
@@ -15,10 +16,13 @@ const addAdminToTeam = async (username, teamName) => {
             return;
         }
 
+        const superUserChannels = await getSuperUserChannels(teamName);
+
         const userDocRef = querySnapshot.docs[0].ref; // get unique doc
         await updateDoc(userDocRef, {
             team: teamName,
-            role: "admin"
+            role: "admin",
+            channels: superUserChannels
         });
 
         console.log(`User ${username} successfully made admin of team ${teamName}`);
