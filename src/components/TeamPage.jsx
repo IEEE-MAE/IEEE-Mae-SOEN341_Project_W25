@@ -17,6 +17,7 @@ import addAdminToTeam from "../backend/addAdminToTeam.jsx";
 import addMemberToChannel from "../backend/addMemberToChannel.jsx";
 import {createDM} from "../backend/createDM.jsx";
 import personIcon from "../assets/person_24dp_E8EAED_FILL1_wght400_GRAD0_opsz24.svg";
+import {getSuperUserChannels} from "../backend/Queries/getSuperUser.jsx";
 
 
 const teams = [{ id: 1, name: "Channels", icon: <FaUsers /> }];
@@ -36,11 +37,12 @@ function TeamPage() {
     const [selectedTeam, setSelectedTeam] = useState(1); // start with first team
     const [thisUsername, setThisUsername] = useState(""); // logged in username
     const [viewMode, setViewMode] = useState("channels"); // sidebar mode
-    const [userRole, setUserRole] = useState(""); // user role (add backend implementation)
+    const [userRole, setUserRole] = useState(""); // user role
     const [team, setTeam] = useState();
 
     const [channels, setChannels] = useState([]);
     const [dms, setDms] = useState([]);
+    const [teamChannels, setTeamChannels] = useState([]);
 
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
@@ -118,6 +120,29 @@ function TeamPage() {
         getChannelNames();
     }, [team]);
 
+    // fetch team channels
+    useEffect(() => {
+        if(!team) return;
+        const getTeamChannels = async () => {
+            const superUserChannels = await getSuperUserChannels(team);
+            const teamChannelList = [];
+
+            for (const teamChannel of superUserChannels) {
+                if (teamChannel.includes(team)) { // if user has channels in another team they won't be shown in this one
+                    const teamChannelName = teamChannel.replace(team, "");
+                    teamChannelList.push({ name: teamChannelName, id: teamChannel });
+                }
+            }
+
+            setTeamChannels(teamChannelList);
+            console.log("GOT TEAM CHANNELS:" + teamChannels);
+            if(teamChannelList.length === 0){console.log("no channels transferred")}
+            // channels.forEach(channel => {console.log("channel retrieved " + channel.name)})
+        };
+
+        getTeamChannels();
+    }, [team]);
+
     // fetch user dms
     useEffect(() => {
         const getDMs = async () => {
@@ -132,8 +157,8 @@ function TeamPage() {
             }
 
             setDms(DMList);
-            if(DMList.length === 0){console.log("no channels transferred")}
-            // channels.forEach(channel => {console.log("channel retrieved " + channel.name)})
+            if(DMList.length === 0){console.log("no dms transferred")}
+            // DMList.forEach(dm => {console.log("dm retrieved " + dm.name)})
         };
 
         getDMs();
@@ -335,22 +360,58 @@ function TeamPage() {
 
                 <ul className="channel-list">
                     {viewMode === "channels" && selectedTeam !== null && channels
-                        ? channels.map((channel) => (
-                            <li key={channel.id}
-                                className={`channel-item ${selectedChat === channel.id ? "active" : ""}`}
-                                onClick={() => {setSelectedChat(channel.id)}}
-                            >   {channel.name}
-                                {["admin", "superUser"].includes(userRole) &&(
-                                    <button className="add-button" onClick={(e) => {
-                                        e.stopPropagation(); // Prevents triggering the `onClick` of the `<li>`
-                                        setSelectedChat(channel.id);
-                                        setAddChannelMemberModalOpen(true);
-                                    }}>
-                                        +
-                                    </button>
-                                )}
-                            </li>
-                        ))
+                        ? teamChannels.map((teamChannel) => {
+                            const isUserChannel = channels.some(channel => channel.id === teamChannel.id);
+                                return (
+                                    <li
+                                        key={teamChannel.id}
+                                        className={`channel-item ${isUserChannel ? "" : "greyed-out"} ${selectedChat === teamChannel.id ? "active" : ""}`}
+                                        onClick={isUserChannel ? () => setSelectedChat(teamChannel.id) : undefined}
+                                    >
+                                        {teamChannel.name}
+                                        {isUserChannel ? (
+                                            ["admin", "superUser"].includes(userRole) && (
+                                                <button
+                                                    className="add-button"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setSelectedChat(teamChannel.id);
+                                                        setAddChannelMemberModalOpen(true);
+                                                    }}
+                                                >
+                                                    Invite Member
+                                                </button>
+                                            )
+                                        ) : (
+                                            <button
+                                                className="add-button"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    console.log(`Request to join ${teamChannel.name}`);
+                                                }}
+                                            >
+                                                Request Access
+                                            </button>
+                                        )}
+                                    </li>
+                                );
+                    })
+                        // ? channels.map((channel) => (
+                        //     <li key={channel.id}
+                        //         className={`channel-item ${selectedChat === channel.id ? "active" : ""}`}
+                        //         onClick={() => {setSelectedChat(channel.id)}}
+                        //     >   {channel.name}
+                        //         {["admin", "superUser"].includes(userRole) &&(
+                        //             <button className="add-button" onClick={(e) => {
+                        //                 e.stopPropagation(); // Prevents triggering the `onClick` of the `<li>`
+                        //                 setSelectedChat(channel.id);
+                        //                 setAddChannelMemberModalOpen(true);
+                        //             }}>
+                        //                 +
+                        //             </button>
+                        //         )}
+                        //     </li>
+                        // ))
                         : dms.map((contact) => (
                             <li key={contact.id}
                                 className={`channel-item ${selectedChat === contact ? "active" : ""}`}

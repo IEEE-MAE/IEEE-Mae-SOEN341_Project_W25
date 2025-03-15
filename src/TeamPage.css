@@ -90,6 +90,19 @@
     overflow: visible;
 }
 
+.greyed-out {
+    padding: 10px;
+    margin: 5px 2px;
+    text-align: center;
+    border-radius: 10px;
+    cursor: not-allowed;
+    transition: background 0.2s, transform 0.2s;
+    backdrop-filter: blur(3px);
+    width: calc(100% - 4px);
+    opacity: 0.6;
+    pointer-events: none;
+}
+
 .top-nav {
     position: absolute;
     top: 10px;
@@ -474,7 +487,6 @@ body.modal-open {
 .delete-msg-btn:hover {
     color: #6a45c3;
 }
-
 
 .sidebar {
     width: 80px; /* Start collapsed */
