@@ -28,6 +28,7 @@ export const createDM = async (otherUserName) => {
         });
 
         console.log("Successfully created DM: ", DMid);
+        return DMid;
 
     } catch (error) {
         console.error("Error creating DM:", error);

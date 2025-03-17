@@ -95,12 +95,15 @@
     margin: 5px 2px;
     text-align: center;
     border-radius: 10px;
-    cursor: not-allowed;
     transition: background 0.2s, transform 0.2s;
     backdrop-filter: blur(3px);
     width: calc(100% - 4px);
     opacity: 0.6;
-    pointer-events: none;
+}
+
+.greyed-out .add-button {
+    pointer-events: auto;
+    cursor: pointer;
 }
 
 .top-nav {
@@ -460,6 +463,7 @@ body.modal-open {
 }
 
 .add-button{
+    font-size: 0.6rem;
     width: 100%;
     padding: 5px;
     margin-top: 20px;
@@ -469,6 +473,10 @@ body.modal-open {
     border-radius: 10px;
     cursor: pointer;
     transition: all 0.3s;
+}
+
+.add-button:hover {
+    color: #C5AEE5;
 }
 
 .delete-msg-btn{

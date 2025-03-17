@@ -41,6 +41,28 @@ export async function getSuperUserChannels(targetTeam) {
     }
 }
 
+export async function getSuperUserUsername(targetTeam) {
+    const superUserId = await getSuperUserId(targetTeam);
+    try{
+        //This gets the snapshot of the users doc
+        const userDocRef = doc(db, "users", superUserId);
+        const userDocSnapshot = await getDoc(userDocRef);
+
+        //puts the username from the user into const username
+        const userData = userDocSnapshot.data();
+        const superUserUsername =  userData ? userData.username : null;
+        if(!superUserUsername) {
+            console.log("no username found for superUser");
+            return null;
+        }
+        console.log("superUser username retrieved:", superUserUsername);
+        return superUserUsername;
+    }
+    catch(error){
+        console.log("error fetching superUser's username: " + error);
+    }
+}
+
 export async function getSuperUserDefaultChannels(targetTeam) {
     const superUserId = await getSuperUserId(targetTeam);
     try{

@@ -4,12 +4,12 @@ import { useState, useEffect } from "react";
 import { FaUsers, FaComments, FaPlus, FaChevronRight, FaChevronLeft, } from "react-icons/fa";
 import {getOtherUsername, getUserDMs, getUsername} from "../backend/Queries/getUserFields.jsx";
 import {getUserChannels} from "../backend/Queries/getUserFields.jsx";
-import {doesUserExist, getCurrentUser} from "../backend/auth";
+import {doesUserExist, getCurrentUser, SignOutAuth} from "../backend/auth";
 import {getUserRole, getUserTeam} from "../backend/Queries/getUserFields.jsx";
 import { useNavigate } from "react-router-dom";
 import {createMessages} from "../backend/messages.jsx";
-import {realtimeDB} from "../config/firebase.jsx";
-import {query, onValue, ref, orderByChild, equalTo, remove} from "firebase/database";
+import {db, realtimeDB} from "../config/firebase.jsx";
+import {query, onValue, ref, orderByChild, equalTo, remove, update} from "firebase/database";
 import * as React from "react";
 import {createChannel} from "../backend/createChannel.jsx";
 import addMemberToTeam from "../backend/addMemberToTeam.jsx";
@@ -17,7 +17,8 @@ import addAdminToTeam from "../backend/addAdminToTeam.jsx";
 import addMemberToChannel from "../backend/addMemberToChannel.jsx";
 import {createDM} from "../backend/createDM.jsx";
 import personIcon from "../assets/person_24dp_E8EAED_FILL1_wght400_GRAD0_opsz24.svg";
-import {getSuperUserChannels} from "../backend/Queries/getSuperUser.jsx";
+import {getSuperUserChannels, getSuperUserId, getSuperUserUsername} from "../backend/Queries/getSuperUser.jsx";
+import {collection, getDocs, where} from "firebase/firestore";
 
 
 const teams = [{ id: 1, name: "Channels", icon: <FaUsers /> }];
@@ -54,6 +55,7 @@ function TeamPage() {
     const [isAddChannelModalOpen, setAddChannelModalOpen] = useState(false);
     const [isAddDMModalOpen, setAddDMModalOpen] = useState(false);
     const [isAddChannelMemberModalOpen, setAddChannelMemberModalOpen] = useState(false);
+    const [isSendRequestModalOpen, setSendRequestModalOpen] = useState(false);
 
     const [memberUsername, setMemberUsername] = useState("");
     const [adminUsername, setAdminUsername] = useState("");
@@ -185,7 +187,10 @@ function TeamPage() {
                             sender: username,
                             text: msg.Message,
                             time: new Date(msg.timestamp).toLocaleTimeString(),
-                            timeSort: msg.timestamp
+                            timeSort: msg.timestamp,
+                            request: msg.isRequest,
+                            invite: msg.isInvite,
+                            refChannel: msg.refChannelID
                         }));
                     })
                 ).then(messagesList => {
@@ -239,12 +244,22 @@ function TeamPage() {
     };
 
     const handleAddDM = async () => {
+
         if(dmUsername==="" || dmUsername === null){
             alert("Please enter a username");
             setDMUsername("");
         }
         else{
-            await createDM(dmUsername);
+            const DMexist = await doesDMexist(dmUsername);
+            if(DMexist === false) {
+                const newDM = await createDM(dmUsername);
+                setSelectedChat(newDM);
+            }
+            else{
+                console.log("DM already exists");
+                alert("You already have a DM with this person!");
+                setSelectedChat(DMexist);
+            }
             setDMUsername("");
             setAddDMModalOpen(false);
             setRefresh(prev => !prev);
@@ -261,11 +276,112 @@ function TeamPage() {
         setAdminUsername("");
     }
 
-    const handleAddMemberToChannel= async () =>{
-        await addMemberToChannel(memberUsername, selectedChat);
+    const doesDMexist = async (otherUsername) =>{
+        const DMid1 = thisUsername.concat(otherUsername);
+        const DMid2 = otherUsername.concat(thisUsername);
+        console.log("Possible DMs: " + DMid1 + " | " + DMid2);
+        let DMid = DMid1;
+        if(!dms.some(dm => dm.id === DMid1)){
+            DMid = DMid2;
+        }
+        if(!dms.some(dm => dm.id === DMid2)){
+            DMid = false;
+        }
+        return DMid;
+    }
+
+    const handleInviteMemberToChannel = async () => {
+        // create dm between both users to send invite to join
+        let DMid= await doesDMexist(memberUsername);
+        if(DMid === false){
+            DMid = await createDM(memberUsername);
+        }
+        // send invite in message
+        const inviteMsg = thisUsername + " has invited you to join " + selectedChat.replace(team, "");
+        await createMessages(inviteMsg, DMid, false, true, selectedChat); // request = false, invite = true
         setMemberUsername("");
     }
 
+    const handleRequestToJoinChannel = async () => { // send request to team superUser
+        // get team's superUser username
+        const superUserUsername = await getSuperUserUsername(team);
+
+        // create dm between both users to send request to join
+        let DMid= await doesDMexist(superUserUsername);
+        console.log("in handle request to join, found dm: " + DMid);
+        if(DMid === false){
+            DMid = await createDM(superUserUsername);
+        }
+        // send invite in message
+        const inviteMsg = thisUsername + " has requested to join " + selectedChat.replace(team, "");
+        await createMessages(inviteMsg, DMid, true, false, selectedChat); // request = true, invite = false
+    }
+
+    const handleAccept = async (invite, request, sender, channel, msgID) => {
+        const DMid = await doesDMexist(sender);
+        let acceptanceType;
+        let updatedMsg;
+        if(invite && !request){ // handle accepting invite to join channel (member)
+            // add channel name to this user's list of channels
+            await addMemberToChannel(thisUsername, channel);
+            acceptanceType = thisUsername + " has accepted the invite to join " + channel.replace(team, "");
+            updatedMsg = "You have accepted the invite to join channel: " + channel.replace(team, "");
+        }
+        if(!invite && request){ // handle accepting request to join a channel (admin)
+            // add channel name to the requester's (sender) list of channels
+            await addMemberToChannel(sender, channel);
+            acceptanceType = "You have been accepted into " + channel.replace(team, "");
+            updatedMsg =  + sender + " has been accepted into channel: " + channel.replace(team, "");
+        }
+        // send acceptance message
+        const acceptanceMsg = thisUsername + acceptanceType + channel.replace(team, "");
+        await createMessages(acceptanceMsg, DMid);
+
+        // edit message so invite and request = false, so the buttons are not displayed anymore
+        const updates = {
+            Message: updatedMsg,
+            isRequest: false,
+            isInvite: false,
+            refChannelID : null,
+        }
+        await update(ref(realtimeDB, `messages/${msgID}`), updates);
+    }
+    const handleDeny = async (invite, request, sender, channel, msgID) => {
+        const DMid = await doesDMexist(sender);
+        let rejectionType;
+        let updatedMsg;
+        if(invite && !request){ // handle denying invite to join channel (member)
+            // send message to sender with invite denial
+            rejectionType = thisUsername + " has declined to join channel ";
+            updatedMsg = "You have declined to join channel: " + channel.replace(team, "");
+        }
+        if(!invite && request){ // handle denying request to join a channel (admin)
+            // send message to sender with request denial
+            rejectionType = "You have been denied access to channel ";
+            updatedMsg = sender + " has been denied access to channel "+ channel.replace(team, "");
+        }
+        // send rejection message
+        const rejectionMsg = rejectionType + channel.replace(team, "");
+        await createMessages(rejectionMsg, DMid);
+
+        // edit message so invite and request = false, so the buttons are not displayed anymore
+        const updates = {
+            Message: updatedMsg,
+            isRequest: false,
+            isInvite: false,
+            refChannelID : null,
+        }
+        await update(ref(realtimeDB, `messages/${msgID}`), updates);
+    }
+
+    // const handleAddMemberToChannel= async () =>{
+    //     await addMemberToChannel(memberUsername, selectedChat);
+    //     setMemberUsername("");
+    // }
+
+    const handleSignOut = async () =>{
+        await SignOutAuth();
+    }
 
     const handleDeleteMessage = async (messageId) => {
         const messageRef = ref(realtimeDB, `messages/${messageId}`);
@@ -387,7 +503,8 @@ function TeamPage() {
                                                 className="add-button"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    console.log(`Request to join ${teamChannel.name}`);
+                                                    setSelectedChat(teamChannel.id);
+                                                    setSendRequestModalOpen(true);
                                                 }}
                                             >
                                                 Request Access
@@ -396,22 +513,6 @@ function TeamPage() {
                                     </li>
                                 );
                     })
-                        // ? channels.map((channel) => (
-                        //     <li key={channel.id}
-                        //         className={`channel-item ${selectedChat === channel.id ? "active" : ""}`}
-                        //         onClick={() => {setSelectedChat(channel.id)}}
-                        //     >   {channel.name}
-                        //         {["admin", "superUser"].includes(userRole) &&(
-                        //             <button className="add-button" onClick={(e) => {
-                        //                 e.stopPropagation(); // Prevents triggering the `onClick` of the `<li>`
-                        //                 setSelectedChat(channel.id);
-                        //                 setAddChannelMemberModalOpen(true);
-                        //             }}>
-                        //                 +
-                        //             </button>
-                        //         )}
-                        //     </li>
-                        // ))
                         : dms.map((contact) => (
                             <li key={contact.id}
                                 className={`channel-item ${selectedChat === contact ? "active" : ""}`}
@@ -464,6 +565,14 @@ function TeamPage() {
                             {["admin", "superUser"].includes(userRole) &&(
                                 <button className="delete-msg-btn" onClick={() => handleDeleteMessage(msg.id)}>×</button>
                             )}
+                            {["admin", "superUser"].includes(userRole) && msg.request &&(
+                                <button className="delete-msg-btn" onClick={() => handleAccept(msg.invite, msg.request, msg.sender, msg.refChannel)}>accept</button>,
+                                <button className="delete-msg-btn" onClick={() => handleDeny(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>deny</button>
+                            )}
+                            {userRole === "member" && msg.invite && (
+                                <button className="delete-msg-btn" onClick={() => handleAccept(msg.invite, msg.request, msg.sender, msg.refChannel)}>accept</button>,
+                                <button className="delete-msg-btn" onClick={() => handleDeny(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>deny</button>
+                            )}
                         </div>
                     ))}
                 </div>
@@ -487,7 +596,10 @@ function TeamPage() {
 
             {/* Top Navigation Bar */}
             <div className="top-nav">
-                <motion.button className="logout-button" onClick={() => navigate("/login")}>
+                <motion.button className="logout-button" onClick={() => {
+                    navigate("/login");
+                    handleSignOut();
+                }}>
                     Logout
                 </motion.button>
 
@@ -565,6 +677,7 @@ function TeamPage() {
                 </div>
             )}
 
+            {/* Add DM Modal */}
             {isAddDMModalOpen && (
                 <div className="modal-overlay">
                     <div className="modal">
@@ -587,11 +700,11 @@ function TeamPage() {
                 </div>
             )}
 
-            {/* Add Member to channel Modal */}
+            {/* Invite Member to channel Modal */}
             {isAddChannelMemberModalOpen && (
                 <div className="modal-overlay">
                     <div className="modal">
-                        <h2>Add Member to Channel</h2>
+                        <h2>Invite Member to Channel</h2>
                         <input
                             type="text"
                             placeholder="Enter member username"
@@ -601,10 +714,25 @@ function TeamPage() {
                         />
                         <button onClick={() => setAddChannelMemberModalOpen(false)}>Cancel</button>
                         <button onClick={() => {
-                            console.log(`Adding member to channel: ${adminUsername}`);
-                            handleAddMemberToChannel();
+                            console.log(`Adding member to channel: ${memberUsername}`);
+                            handleInviteMemberToChannel();
                             setAddChannelMemberModalOpen(false);
                         }}>Confirm</button>
+                    </div>
+                </div>
+            )}
+
+            {/* Request to join channel Modal */}
+            {isSendRequestModalOpen && (
+                <div className="modal-overlay">
+                    <div className="modal">
+                        <h2>Request To Join Channel</h2>
+                        <button onClick={() => setSendRequestModalOpen(false)}>Cancel</button>
+                        <button onClick={() => {
+                            console.log("Sending request to join channel");
+                            handleRequestToJoinChannel();
+                            setSendRequestModalOpen(false);
+                        }}>Send Request</button>
                     </div>
                 </div>
             )}
