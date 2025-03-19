@@ -72,6 +72,7 @@ export const createUser= async (email, password, userName)=>{
                 team: "",
                 role: "",
                 channels: [],
+                defaultChannels: [],
                 dms: []
         });
         console.log("sign up: " + user.email);

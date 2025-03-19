@@ -162,3 +162,42 @@ export async function getTeamMembers(teamID) {
     //     });
     // }
 }
+
+
+export async function getTeamAdmins(teamID) {
+    try {
+        const q = query(collection(db, 'users'), where('team', '==', teamID), where('role', '==', "admin"));
+        const querySnapshot = await getDocs(q);
+        const queryDocs = querySnapshot.docs;
+
+        const items = [];
+
+        for (const doc of queryDocs) {
+            items.push(doc.id);
+        }
+
+        console.log(items)
+        return items;
+    } catch (error) {
+        console.log("error fetching team members role: " + error);
+    }
+}
+
+
+
+//
+//const superUserChannels = await getSuperUserChannels(teamID);
+//
+//     // get array of every admin in the team
+//     const q = query(collection(db, 'users'), where('team', '==', teamID), where('role', '==', "admin"));
+//     const querySnapshot = await getDocs(q);
+//     const queryDocs = querySnapshot.docs;
+//
+//     for(var newdoc of queryDocs) {
+//         const adminID = newdoc.id;
+//         console.log(`admin ID: ${adminID}`);
+//         await updateDoc(doc(db, "users", adminID), {
+//             channels: superUserChannels,
+//         });
+//     }
+//
