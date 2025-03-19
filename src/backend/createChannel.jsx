@@ -12,25 +12,29 @@ import {i} from "framer-motion/m";
 
 export const createChannel = async (channelName) => {
 
-    // add channel to superUser's channels
+    //------ add channel to superUser's channels  -------
+
+    //check team
     const teamID = await getUserTeam();
     if (!teamID) {
         console.log("ERROR: No team ID found.");
         return;
     }
 
+    //get superUser id
     const superUserID = await getSuperUserId(teamID);
     if (!superUserID) {
         console.log("ERROR: No superUser ID found.");
         return;
     }
 
+    //update superUser channels
     const channelID = teamID.concat(channelName);
     await updateDoc(doc(db, "users", superUserID), {
         channels: arrayUnion(channelID),
     });
 
-    // copy superUser's updated channel list to every admin of the team
+    //----- copy superUser's updated channel list to every admin of the team -----
 
     // get superUser's channels
     const superUserChannels = await getSuperUserChannels(teamID);
@@ -40,6 +44,7 @@ export const createChannel = async (channelName) => {
     const querySnapshot = await getDocs(q);
     const queryDocs = querySnapshot.docs;
 
+    //update all of there channels
     for(var newdoc of queryDocs) {
         const adminID = newdoc.id;
         console.log(`admin ID: ${adminID}`);

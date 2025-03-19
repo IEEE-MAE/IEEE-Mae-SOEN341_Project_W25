@@ -250,7 +250,7 @@ function TeamPage() {
 
     const validUsername = async (username) => {
         const userExists = await doesUserExist(username);
-        if(!userExists) {
+        if(!userExists && username !== "all") {
             alert("Username doesn't exist. Please try again.");
             setMemberUsername("");
             setAdminUsername("");

@@ -1,7 +1,7 @@
 import { db, auth } from "../../config/firebase.jsx";
 import {
     doc,
-    setDoc, getDoc
+    setDoc, getDoc, query, collection, where, getDocs, updateDoc
 } from 'firebase/firestore';
 import {getCurrentUser} from "../auth.jsx";
 
@@ -134,3 +134,70 @@ export async function getUserRole() {
         console.log("error fetching user's role: " + error);
     }
 }
+
+export async function getTeamMembers(teamID) {
+    try{
+        const q = query(collection(db, 'users'), where('team', '==', teamID), where('role', '==', "member"));
+        const querySnapshot = await getDocs(q);
+        const queryDocs = querySnapshot.docs;
+
+        const items = [];
+
+        for(const doc of queryDocs){
+                items.push(doc.id);
+            }
+
+        console.log(items);
+        return items;
+    }
+    catch(error){
+            console.log("error fetching team members role: " + error);
+        }
+
+    // for(var newdoc of queryDocs) {
+    //     const team = newdoc.id;
+    //     console.log(`admin ID: ${adminID}`);
+    //     await updateDoc(doc(db, "users", adminID), {
+    //         channels: superUserChannels,
+    //     });
+    // }
+}
+
+
+export async function getTeamAdmins(teamID) {
+    try {
+        const q = query(collection(db, 'users'), where('team', '==', teamID), where('role', '==', "admin"));
+        const querySnapshot = await getDocs(q);
+        const queryDocs = querySnapshot.docs;
+
+        const items = [];
+
+        for (const doc of queryDocs) {
+            items.push(doc.id);
+        }
+
+        console.log(items)
+        return items;
+    } catch (error) {
+        console.log("error fetching team members role: " + error);
+    }
+}
+
+
+
+//
+//const superUserChannels = await getSuperUserChannels(teamID);
+//
+//     // get array of every admin in the team
+//     const q = query(collection(db, 'users'), where('team', '==', teamID), where('role', '==', "admin"));
+//     const querySnapshot = await getDocs(q);
+//     const queryDocs = querySnapshot.docs;
+//
+//     for(var newdoc of queryDocs) {
+//         const adminID = newdoc.id;
+//         console.log(`admin ID: ${adminID}`);
+//         await updateDoc(doc(db, "users", adminID), {
+//             channels: superUserChannels,
+//         });
+//     }
+//
