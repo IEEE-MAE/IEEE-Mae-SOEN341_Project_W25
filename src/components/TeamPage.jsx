@@ -533,9 +533,10 @@ function TeamPage() {
                             <img src={user.profilePic} alt={user.name} className="user-icon" />
                             <div className="user-staus-info">
                             <div className={`user-status ${user.status}`}></div>
-                            <div className = {`last-seen ${user.status}`}>{user.time}</div>
                             </div>
                             {isUserListExpanded && <span className="username">{user.name}</span>}
+                            {isUserListExpanded && <div className = {`last-seen ${user.status}`}>{user.time}</div> }
+
                         </motion.div>
                     ))}
                 </div>
