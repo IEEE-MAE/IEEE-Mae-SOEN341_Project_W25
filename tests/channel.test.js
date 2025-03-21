@@ -1,40 +1,110 @@
-jest.mock("../src/components/Channels.jsx", () => ({
-  createChannel: jest.fn((user, channelData) => {
-    if (user.role === "admin" || user.role === "superUser") {
-      return Promise.resolve({
-        id: "channel123",
-        name: channelData.name,
-        teamId: channelData.teamId
-      });
-    } else {
-      return Promise.reject(new Error("Unauthorized"));
-    }
-  })
+import { doc, updateDoc } from "firebase/firestore";
+import { getCurrentUser } from "../src/backend/auth.jsx";
+import { createChannel } from "../src/backend/createChannel.jsx";
+import { getSuperUserId } from "../src/backend/Queries/getSuperUser.jsx";
+import { getUserTeam } from "../src/backend/Queries/getUserFields.jsx";
+
+// Mock Firebase and related functions
+jest.mock("firebase/firestore", () => ({
+  doc: jest.fn(() => "mockDocRef"),
+  updateDoc: jest.fn(),
+  arrayUnion: jest.fn(val => val),
+  collection: jest.fn(),
+  query: jest.fn(),
+  where: jest.fn(),
+  getDocs: jest.fn().mockResolvedValue({
+    docs: [], 
+    empty: false
+  }),
+  getFirestore: jest.fn(() => ({})),
+  getDoc: jest.fn(),
 }));
 
-const { createChannel } = require("../src/components/Channels.jsx");
+jest.mock("../src/config/firebase.jsx", () => ({
+  db: {},
+  auth: {},
+  realtimeDB: {},
+}));
+
+jest.mock("../src/backend/auth.jsx", () => ({
+  getCurrentUser: jest.fn(),
+}));
+
+jest.mock("../src/backend/Queries/getUserFields.jsx", () => ({
+  getUserTeam: jest.fn(),
+}));
+
+jest.mock("../src/backend/Queries/getSuperUser.jsx", () => ({
+  getSuperUserId: jest.fn(),
+  getSuperUserChannels: jest.fn(),
+}));
 
 describe("Channel Management", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  test("should allow an admin to create a channel", async () => {
-    const admin = { uid: "admin1", role: "admin", team: "teamA" };
-    const channelData = { name: "General", teamId: "teamA" };
-    const newChannel = await createChannel(admin, channelData);
+  describe("createChannel", () => {
+    it("should create a channel and update superuser channels", async () => {
+      // Set up mocks
+      getCurrentUser.mockReturnValue({ uid: "user123" });
+      getUserTeam.mockResolvedValue("team456");
+      getSuperUserId.mockResolvedValue("superuser789");
+      
+      // Call the function
+      await createChannel("general");
 
-    expect(newChannel).toHaveProperty("id");
-    expect(newChannel.name).toBe("General");
-    expect(newChannel.teamId).toBe("teamA");
-  });
+      // Verify channel was created with correct ID
+      const expectedChannelId = "team456general";
+      
+      // Check that updateDoc was called to update the superuser's channels
+      expect(doc).toHaveBeenCalledWith(expect.anything(), "users", "superuser789");
+      expect(updateDoc).toHaveBeenCalledWith("mockDocRef", {
+        channels: "team456general"
+      });
+    });
 
-  test("should reject channel creation if the user is not an admin", async () => {
-    const nonAdmin = { uid: "user1", role: "member", team: "teamA" };
-    const channelData = { name: "General", teamId: "teamA" };
+    it("should handle missing team ID", async () => {
+      // Set up mocks to return null for team ID
+      getCurrentUser.mockReturnValue({ uid: "user123" });
+      getUserTeam.mockResolvedValue(null);
+      
+      console.log = jest.fn(); // Mock console.log
+      
+      // Call the function
+      await createChannel("general");
+      
+      // Verify error handling
+      expect(console.log).toHaveBeenCalledWith("ERROR: No team ID found.");
+      expect(updateDoc).not.toHaveBeenCalled();
+    });
 
-    await expect(createChannel(nonAdmin, channelData)).rejects.toThrow(
-      "Unauthorized"
-    );
+    it("should handle missing superUser ID", async () => {
+      // Set up mocks
+      getCurrentUser.mockReturnValue({ uid: "user123" });
+      getUserTeam.mockResolvedValue("team456");
+      getSuperUserId.mockResolvedValue(null);
+      
+      console.log = jest.fn(); // Mock console.log
+      
+      // Call the function
+      await createChannel("general");
+      
+      // Verify error handling
+      expect(console.log).toHaveBeenCalledWith("ERROR: No superUser ID found.");
+      expect(updateDoc).not.toHaveBeenCalled();
+    });
+
+    it("should handle empty channel name", async () => {
+      // Set up mocks
+      getCurrentUser.mockReturnValue({ uid: "user123" });
+      getUserTeam.mockResolvedValue("team456");
+      
+      // Call with empty channel name
+      await createChannel("");
+      
+      // Verify no updates called
+      expect(updateDoc).not.toHaveBeenCalled();
+    });
   });
 });
