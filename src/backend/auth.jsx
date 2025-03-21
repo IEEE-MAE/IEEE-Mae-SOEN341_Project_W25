@@ -1,14 +1,16 @@
-import { db, auth } from "../config/firebase.jsx";
-import {collection, doc, setDoc, query, getDocs, getDoc, where} from "firebase/firestore"
+import {db, auth, realtimeDB} from "../config/firebase.jsx";
+import {collection, doc, setDoc, query, getDocs, getDoc, where, updateDoc, arrayUnion} from "firebase/firestore"
 import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
 } from "firebase/auth";
 import {getAuth} from "firebase/auth";
 import {getUserTeam} from "./Queries/getUserFields.jsx";
+import {createStatus} from "./status.jsx";
+import {ref, update} from "firebase/database";
 
 
-// get current user
+// get current use
 export const getCurrentUser = () => {
     const auth = getAuth();
     const user = auth.currentUser;
@@ -61,7 +63,7 @@ export const doesChannelExist = async (channelName) => {
 }
 
 // create user in auth database and firestore database
-export const createUser= async (email, password, userName)=>{
+export const createUser= async (email, password, userName,last_seen, status)=>{
     try{
         // create account using firebase authentication
         const {user} = await createUserWithEmailAndPassword(auth, email, password);
@@ -73,9 +75,13 @@ export const createUser= async (email, password, userName)=>{
                 role: "",
                 channels: [],
                 defaultChannels: [],
-                dms: []
+                dms: [],
+                last_seen: Date.now(),
+                status: "online"
         });
         console.log("sign up: " + user.email);
+
+        await createStatus(Date.now(),'online');
     }
     catch(error){
         console.log("Error during signup: " + error);
@@ -90,6 +96,13 @@ export const SignInAuth= async (email, password)=>{
         // log into account using firebase authentication
         const {user} = await signInWithEmailAndPassword(auth, email, password);
         console.log("sign in: " + user.email);
+
+        const userDocRef = doc(db, "users", user.uid);
+        await updateDoc(userDocRef, {
+            last_seen: Date.now(),
+            status: "online",
+        });
+
         return user;
     }
     catch(error){
@@ -101,9 +114,19 @@ export const SignInAuth= async (email, password)=>{
 // log out
 export const SignOutAuth= async ()=>{
     try{
+        const user = getCurrentUser();
+        const userDocRef = doc(db, "users", user.uid);
+        await updateDoc(userDocRef, {
+            last_seen: Date.now(),
+            status: "offline",
+        });
+        console.log("User status updated");
+
         // logout using firebase
         await auth.signOut();
         console.log("sign out");
+
+
     }
     catch(error){
         console.log("Error during sign out: " + error);

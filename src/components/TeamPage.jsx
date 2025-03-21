@@ -17,26 +17,14 @@ import addAdminToTeam from "../backend/addAdminToTeam.jsx";
 import addMemberToChannel from "../backend/addMemberToChannel.jsx";
 import {createDM} from "../backend/createDM.jsx";
 import personIcon from "../assets/person_24dp_E8EAED_FILL1_wght400_GRAD0_opsz24.svg";
-import {
-    getSuperUserChannels,
-    getSuperUserDefaultChannels,
-    getSuperUserId,
-    getSuperUserUsername
-} from "../backend/Queries/getSuperUser.jsx";
-import {doc, updateDoc, arrayRemove} from "firebase/firestore";
-import {getAuth} from "firebase/auth";
+import {getSuperUserChannels, getSuperUserId, getSuperUserUsername} from "../backend/Queries/getSuperUser.jsx";
+import {doc, updateDoc, arrayRemove, collection, where, onSnapshot} from "firebase/firestore";
 
 
 const teams = [{ id: 1, name: "Channels", icon: <FaUsers /> }];
 
-// example of all the info the frontend needs from the user. id is not needed though
-const users = [
-    { id: 1, name: "Andrew", profilePic: personIcon, status: "online" ,time:12.05},
-    { id: 2, name: "Dallas", profilePic: personIcon, status: "offline" ,time:12.05},
-    { id: 3, name: "Eric", profilePic: personIcon, status: "away" ,time:12.05},
-    { id: 4, name: "Marlon", profilePic: personIcon, status: "online" ,time:12.05},
-    { id: 5, name: "Emma", profilePic: personIcon, status: "away" ,time:12.05},
-];
+// example names for DM feature (replace with backend implementation)
+const contacts = ["Alice", "Bob", "Charlie"];
 
 function TeamPage() {
     const [selectedTeam, setSelectedTeam] = useState(1); // start with first team
@@ -48,6 +36,7 @@ function TeamPage() {
     const [channels, setChannels] = useState([]);
     const [dms, setDms] = useState([]);
     const [teamChannels, setTeamChannels] = useState([]);
+    const [users, setUsers] = useState([]);
 
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
@@ -233,6 +222,42 @@ function TeamPage() {
         };
     },[selectedChat]);
 
+    //----------------------UPDATING STATUS LIVE ---------------------
+    // fetch team users
+    useEffect(() => {
+        if(!team)return;
+
+        const q = query(collection(db, 'users'), where('team', '==', team));
+        const unsubscribe = onSnapshot(q,(querySnapshot)=> {
+            const userList = [];
+            const queryDocs = querySnapshot.docs;
+            for(const doc of queryDocs){
+                const data = doc.data();
+                const userData = {
+                    id: doc.id,
+                    name: data.username,
+                    profilePic: personIcon,
+                    status: data.status,
+                    time: new Date(data.last_seen).toLocaleTimeString(),
+                }
+                userList.push(userData);
+            }
+
+            setUsers(userList);
+
+
+        })
+
+        return () => {
+            unsubscribe();
+        };
+    }, [refresh, team]);
+
+
+
+
+    //---------------------------------------------------------------
+
     const getDMname = (DMid) =>{
         if (DMid.endsWith(thisUsername)) {
             return DMid.replace(new RegExp(thisUsername + "$"), "");
@@ -248,6 +273,13 @@ function TeamPage() {
         console.log("THIS CHAT IS: "+ selectedChat);
         await createMessages(newMessage, selectedChat);
         setNewMessage("");
+
+        //update user status
+        const user = getCurrentUser();
+        const userDocRef = doc(db, "users", user.uid);
+        await updateDoc(userDocRef, {
+            last_seen: Date.now(),
+        });
     };
 
     const handleAddChannel = async () => {

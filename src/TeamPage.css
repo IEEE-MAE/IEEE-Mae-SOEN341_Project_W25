@@ -623,11 +623,11 @@ body.modal-open {
 {
     background: #5be820;
 }
-.user-status.offline
+.user-status.away
 {
     background: #e8b920;
 }
-.user-status.away
+.user-status.offline
 {
     background: #e82720;
 }
@@ -639,6 +639,11 @@ body.modal-open {
 }
 
 .last-seen.away
+{
+    visibility: visible;
+}
+
+.last-seen.offline
 {
     visibility: visible;
 }
