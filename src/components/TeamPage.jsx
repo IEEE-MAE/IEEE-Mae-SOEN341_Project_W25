@@ -575,21 +575,28 @@ function TeamPage() {
             <div className="chat-container">
                 <div className="messages-box">
                     {messages.map((msg) => (
-                        <div key={msg.id} className="message">
-                            <strong>{msg.sender}:</strong> {msg.text} <span className="time">{msg.time}</span>
-                            {["admin", "superUser"].includes(userRole) &&(
+                        <div
+                            key={msg.id}
+                            className={`message ${msg.sender === thisUsername ? "you" : "other"}`}
+                        >
+                            <strong>{msg.sender}:</strong> {msg.text}
+                            <span className="time">{msg.time}</span>
+
+                            {["admin", "superUser"].includes(userRole) && (
                                 <button className="delete-msg-btn" onClick={() => handleDeleteMessage(msg.id)}>×</button>
                             )}
-                            {["admin", "superUser"].includes(userRole) && msg.request &&(
-                                <><br />
-                                <button className="delete-msg-btn" onClick={() => handleAccept(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>accept</button>
-                                <button className="delete-msg-btn" onClick={() => handleDeny(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>deny</button>
+                            {["admin", "superUser"].includes(userRole) && msg.request && (
+                                <>
+                                    <br />
+                                    <button className="delete-msg-btn" onClick={() => handleAccept(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>accept</button>
+                                    <button className="delete-msg-btn" onClick={() => handleDeny(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>deny</button>
                                 </>
                             )}
                             {userRole === "member" && msg.invite && (
-                                <><br />
-                                <button className="delete-msg-btn" onClick={() => handleAccept(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>accept</button>
-                                <button className="delete-msg-btn" onClick={() => handleDeny(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>deny</button>
+                                <>
+                                    <br />
+                                    <button className="delete-msg-btn" onClick={() => handleAccept(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>accept</button>
+                                    <button className="delete-msg-btn" onClick={() => handleDeny(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>deny</button>
                                 </>
                             )}
                         </div>
