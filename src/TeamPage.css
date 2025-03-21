@@ -658,3 +658,12 @@ body.modal-open {
 {
     color: darkgreen;
 }
+
+.active-user
+{
+    padding-left: 4px;
+    padding-right: 4px;
+    height: 30px;
+    background: #4d3174;
+    border-radius: 30px;
+}

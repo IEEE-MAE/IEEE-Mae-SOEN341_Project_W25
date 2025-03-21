@@ -24,6 +24,7 @@ import {
     getSuperUserUsername
 } from "../backend/Queries/getSuperUser.jsx";
 import {doc, updateDoc, arrayRemove} from "firebase/firestore";
+import * as constants from "node:constants";
 
 
 const teams = [{ id: 1, name: "Channels", icon: <FaUsers /> }];
@@ -458,8 +459,7 @@ function TeamPage() {
             </div>
         );
     }
-
-    return (
+   return (
         <div className="team-page">
             <motion.div
                 className={`sidebar ${isUserListExpanded ? "expanded" : ""}`}
@@ -477,6 +477,11 @@ function TeamPage() {
                 </motion.button>
 
                 <div className="user-list">
+                     <div className="active-user">
+
+                            <span className={`active-user`}> {thisUsername }</span>
+                     </div>
+
                     {users.map(user => (
                         <motion.div key={user.id} className="user-item" whileHover={{ scale: 1.1 }}>
                             <img src={user.profilePic} alt={user.name} className="user-icon" />
