@@ -221,29 +221,27 @@
 
 
 .message {
-    max-width: 60%;
-    padding: 8px 12px;
+    max-width: 90%;
+    min-width: 300px;
+    padding: 10px 16px;
     margin: 6px;
     border-radius: 12px;
-    font-size: 14px;
+    font-size: 16px;
     word-wrap: break-word;
     position: relative;
 }
 
-
 .message.you {
     align-self: flex-end;
-    background: rgba(150, 80, 220, 0.7);
+    background: rgba(150, 80, 220, 0.9);
     color: white;
 }
-
 
 .message.other {
     align-self: flex-start;
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.4);
     color: white;
 }
-
 
 .time {
     font-size: 10px;
@@ -500,21 +498,35 @@ body.modal-open {
     transform: scale(1.05);
 }
 
-.delete-msg-btn{
-    justify-self: end;
-    width: 10%;
+.delete-msg-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 24px;
+    height: 24px;
     padding: 0;
-    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background-color: #4d3174;
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: 50%;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    font-size: 14px;
+
+    opacity: 0;
+    visibility: hidden;
+}
+
+.message:hover .delete-msg-btn {
+    opacity: 1;
+    visibility: visible;
 }
 
 .delete-msg-btn:hover {
-    color: #6a45c3;
+    background-color: #351d58;
 }
 
 .sidebar {
