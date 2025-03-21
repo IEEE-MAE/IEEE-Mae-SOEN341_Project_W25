@@ -382,6 +382,7 @@ function TeamPage() {
             channels: arrayRemove(selectedChat),
         });
 
+        setRefresh(prev => !prev )
         console.log("Channel " + selectedChat + " removed successfully from user " + thisUser.uid);
     }
 
