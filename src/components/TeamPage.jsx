@@ -233,6 +233,18 @@ function TeamPage() {
         };
     },[selectedChat]);
 
+    //----------------------UPDATING STATUS LIVE ---------------------
+    useEffect(() => {
+
+
+
+
+    },)
+
+
+
+    //---------------------------------------------------------------
+
     const getDMname = (DMid) =>{
         if (DMid.endsWith(thisUsername)) {
             return DMid.replace(new RegExp(thisUsername + "$"), "");
@@ -248,6 +260,13 @@ function TeamPage() {
         console.log("THIS CHAT IS: "+ selectedChat);
         await createMessages(newMessage, selectedChat);
         setNewMessage("");
+
+        //update user status
+        const user = getCurrentUser();
+        const userDocRef = doc(db, "users", user.uid);
+        await updateDoc(userDocRef, {
+            last_seen: Date.now(),
+        });
     };
 
     const handleAddChannel = async () => {
