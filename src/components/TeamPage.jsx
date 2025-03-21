@@ -18,7 +18,7 @@ import addMemberToChannel from "../backend/addMemberToChannel.jsx";
 import {createDM} from "../backend/createDM.jsx";
 import personIcon from "../assets/person_24dp_E8EAED_FILL1_wght400_GRAD0_opsz24.svg";
 import {getSuperUserChannels, getSuperUserId, getSuperUserUsername} from "../backend/Queries/getSuperUser.jsx";
-import {collection, getDocs, where} from "firebase/firestore";
+import {doc, updateDoc, arrayRemove} from "firebase/firestore";
 
 
 const teams = [{ id: 1, name: "Channels", icon: <FaUsers /> }];
@@ -369,10 +369,21 @@ function TeamPage() {
         await update(ref(realtimeDB, `messages/${msgID}`), updates);
     }
 
-    // const handleAddMemberToChannel= async () =>{
-    //     await addMemberToChannel(memberUsername, selectedChat);
-    //     setMemberUsername("");
-    // }
+    const handleLeave = async () => { // function for a user to leave the selected channel
+        if(!selectedChat) return;
+        if(userRole === "admin" || userRole === "superUser"){
+            alert("You are an owner of this channel and therefore cannot leave it"); // do we want this?
+            return;
+        }
+        const thisUser = await getCurrentUser();
+        const userRef = doc(db, 'users', thisUser.uid);
+
+        await updateDoc(userRef, {
+            channels: arrayRemove(selectedChat),
+        });
+
+        console.log("Channel " + selectedChat + " removed successfully from user " + thisUser.uid);
+    }
 
     const handleSignOut = async () =>{
         await SignOutAuth();
@@ -549,8 +560,13 @@ function TeamPage() {
                 {/*Chat Name ie who are you chatting with */}
                 {selectedChat
                     ? (viewMode === "dms"
-                            ? `Chatting with: ${getDMname(selectedChat)}`
-                            : `On channel: ${selectedChat.replace(team, "")}`
+                            ? (<p>Chatting with: {getDMname(selectedChat)}</p>)
+                            : (
+                                <>
+                                <p>On channel: {selectedChat.replace(team, "")}<span><button className="leave-button" onClick={()=> handleLeave()}>leave channel</button></span></p>
+
+                                </>
+                            )
                     )
                     : "Select a chat"}
             </div>

@@ -479,6 +479,27 @@ body.modal-open {
     color: #C5AEE5;
 }
 
+.leave-button{
+    font-size: 0.6rem;
+    padding: 1px;
+    margin: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid white;
+    width: auto;
+    min-width: 100px;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    backdrop-filter: blur(10px);
+    text-align: center;
+}
+
+.leave-button:hover {
+    background: rgba(106, 13, 173, 0.5);
+    transform: scale(1.05);
+}
+
 .delete-msg-btn{
     justify-self: end;
     width: 10%;
@@ -613,6 +634,7 @@ body.modal-open {
     display: flex;
     flex-direction: column;
 }
+
 
 
 /* option 2, needs fixing
