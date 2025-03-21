@@ -143,7 +143,7 @@ function TeamPage() {
         };
 
         getTeamChannels();
-    }, [team]);
+    }, [team, refresh]);
 
     // fetch user dms
     useEffect(() => {
@@ -318,24 +318,21 @@ function TeamPage() {
     }
 
     const handleAccept = async (invite, request, sender, channel, msgID) => {
+        console.log("IN HANDLE ACCEPT")
         const DMid = await doesDMexist(sender);
-        let acceptanceType;
         let updatedMsg;
         if(invite && !request){ // handle accepting invite to join channel (member)
             // add channel name to this user's list of channels
             await addMemberToChannel(thisUsername, channel);
-            acceptanceType = thisUsername + " has accepted the invite to join " + channel.replace(team, "");
-            updatedMsg = "You have accepted the invite to join channel: " + channel.replace(team, "");
+            updatedMsg = thisUsername + " has accepted the invite to join channel: " + channel.replace(team, "");
+            console.log("USER " + thisUsername + "HAS ACCEPTED INVITE TO " + channel.replace(team, ""));
         }
         if(!invite && request){ // handle accepting request to join a channel (admin)
             // add channel name to the requester's (sender) list of channels
             await addMemberToChannel(sender, channel);
-            acceptanceType = "You have been accepted into " + channel.replace(team, "");
-            updatedMsg =  + sender + " has been accepted into channel: " + channel.replace(team, "");
+            updatedMsg = sender + " has been accepted into channel: " + channel.replace(team, "");
+            console.log("USER " + sender + "HAS BEEN ACCEPTED TO " + channel.replace(team, ""));
         }
-        // send acceptance message
-        const acceptanceMsg = thisUsername + acceptanceType + channel.replace(team, "");
-        await createMessages(acceptanceMsg, DMid);
 
         // edit message so invite and request = false, so the buttons are not displayed anymore
         const updates = {
@@ -344,25 +341,23 @@ function TeamPage() {
             isInvite: false,
             refChannelID : null,
         }
+        console.log("UPDATING MESSAGE ID: " + msgID);
         await update(ref(realtimeDB, `messages/${msgID}`), updates);
     }
+
     const handleDeny = async (invite, request, sender, channel, msgID) => {
-        const DMid = await doesDMexist(sender);
-        let rejectionType;
+        console.log("IN HANDLE DENY");
         let updatedMsg;
         if(invite && !request){ // handle denying invite to join channel (member)
-            // send message to sender with invite denial
-            rejectionType = thisUsername + " has declined to join channel ";
-            updatedMsg = "You have declined to join channel: " + channel.replace(team, "");
+            // update message with invite denial
+            updatedMsg = thisUsername + " has declined to join channel: " + channel.replace(team, "");
+            console.log("USER " + thisUsername + "HAS DECLINED INVITE TO " + channel.replace(team, ""));
         }
         if(!invite && request){ // handle denying request to join a channel (admin)
-            // send message to sender with request denial
-            rejectionType = "You have been denied access to channel ";
+            // update message with request denial
             updatedMsg = sender + " has been denied access to channel "+ channel.replace(team, "");
+            console.log("USER " + sender + "HAS BEEN DENIED ACCESS TO " + channel.replace(team, ""));
         }
-        // send rejection message
-        const rejectionMsg = rejectionType + channel.replace(team, "");
-        await createMessages(rejectionMsg, DMid);
 
         // edit message so invite and request = false, so the buttons are not displayed anymore
         const updates = {
@@ -463,8 +458,11 @@ function TeamPage() {
             <div className="channel-sidebar">
                 <motion.div
                     className="toggle-btn"
-                    onClick={() => setViewMode(viewMode === "dms" ? "channels" : "dms")}
-                    whileHover={{ scale: 1.4 }}
+                    onClick={() => {
+                        setViewMode(viewMode === "dms" ? "channels" : "dms");
+                        setRefresh(prev => !prev);
+                    }}
+                    whileHover={{ scale: 1.1 }}
                 >
                     {viewMode === "dms" ? <FaComments size={24} /> : <FaUsers size={24} />}
                     <span className="view-toggle-text">
@@ -566,12 +564,16 @@ function TeamPage() {
                                 <button className="delete-msg-btn" onClick={() => handleDeleteMessage(msg.id)}>×</button>
                             )}
                             {["admin", "superUser"].includes(userRole) && msg.request &&(
-                                <button className="delete-msg-btn" onClick={() => handleAccept(msg.invite, msg.request, msg.sender, msg.refChannel)}>accept</button>,
+                                <><br />
+                                <button className="delete-msg-btn" onClick={() => handleAccept(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>accept</button>
                                 <button className="delete-msg-btn" onClick={() => handleDeny(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>deny</button>
+                                </>
                             )}
                             {userRole === "member" && msg.invite && (
-                                <button className="delete-msg-btn" onClick={() => handleAccept(msg.invite, msg.request, msg.sender, msg.refChannel)}>accept</button>,
+                                <><br />
+                                <button className="delete-msg-btn" onClick={() => handleAccept(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>accept</button>
                                 <button className="delete-msg-btn" onClick={() => handleDeny(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>deny</button>
+                                </>
                             )}
                         </div>
                     ))}
