@@ -297,6 +297,13 @@ function TeamPage() {
 
     const handleInviteMemberToChannel = async () => {
         // create dm between both users to send invite to join
+        if((userRole === "admin" || userRole === "superUser") && memberUsername === "all"){
+            await addMemberToChannel(memberUsername, selectedChat);
+            alert("You have made " + selectedChat.replace(team, "") + " a default channel");
+            setMemberUsername("");
+            return;
+        }
+
         let DMid= await doesDMexist(memberUsername);
         if(DMid === false){
             DMid = await createDM(memberUsername);
@@ -377,8 +384,10 @@ function TeamPage() {
     const handleLeave = async () => { // function for a user to leave the selected channel
         if(!selectedChat) return;
 
-        const defaultChannels = getSuperUserDefaultChannels(team);
+        const defaultChannels = await getSuperUserDefaultChannels(team);
+
         if(defaultChannels.includes(selectedChat)){
+
             alert("You cannot leave a default channel");
             return;
         }
