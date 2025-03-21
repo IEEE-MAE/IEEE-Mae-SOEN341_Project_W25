@@ -24,14 +24,12 @@ import {
     getSuperUserUsername
 } from "../backend/Queries/getSuperUser.jsx";
 import {doc, updateDoc, arrayRemove} from "firebase/firestore";
-import * as constants from "node:constants";
+import {getAuth} from "firebase/auth";
 
 
 const teams = [{ id: 1, name: "Channels", icon: <FaUsers /> }];
 
-// example names for DM feature (replace with backend implementation)
-const contacts = ["Alice", "Bob", "Charlie"];
-
+// example of all the info the frontend needs from the user. id is not needed though
 const users = [
     { id: 1, name: "Andrew", profilePic: personIcon, status: "online" ,time:12.05},
     { id: 2, name: "Dallas", profilePic: personIcon, status: "offline" ,time:12.05},
@@ -74,9 +72,25 @@ function TeamPage() {
     const [refresh, setRefresh] = useState(false);
     const navigate = useNavigate();
 
+    const waitForUser = () => {
+        return new Promise((resolve) => {
+            const check = () => {
+                const user = getAuth().currentUser;
+                if (user) {
+                    resolve(user);
+                } else {
+                    setTimeout(check, 100); // Try again in 100ms
+                }
+            };
+            check();
+        });
+    };
+
     useEffect(() => {
+
+
         const checkUserTeam = async () => {
-            const user = getCurrentUser();
+            const user = await waitForUser();
             const username = await getUsername();
             setThisUsername(username);
             if (user) {
