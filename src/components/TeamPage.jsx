@@ -238,7 +238,7 @@ function TeamPage() {
                     name: data.username,
                     profilePic: personIcon,
                     status: data.status,
-                    time: data.last_seen,
+                    time: new Date(data.last_seen).toLocaleTimeString(),
                 }
                 userList.push(userData);
             }
