@@ -588,15 +588,15 @@ function TeamPage() {
                             {["admin", "superUser"].includes(userRole) && msg.request && (
                                 <>
                                     <br />
-                                    <button className="delete-msg-btn" onClick={() => handleAccept(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>accept</button>
-                                    <button className="delete-msg-btn" onClick={() => handleDeny(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>deny</button>
+                                    <button className="accept-btn" onClick={() => handleAccept(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>accept</button>
+                                    <button className="deny-btn" onClick={() => handleDeny(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>deny</button>
                                 </>
                             )}
                             {userRole === "member" && msg.invite && (
                                 <>
                                     <br />
-                                    <button className="delete-msg-btn" onClick={() => handleAccept(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>accept</button>
-                                    <button className="delete-msg-btn" onClick={() => handleDeny(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>deny</button>
+                                    <button className="accept-btn" onClick={() => handleAccept(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>accept</button>
+                                    <button className="deny-btn" onClick={() => handleDeny(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>deny</button>
                                 </>
                             )}
                         </div>
