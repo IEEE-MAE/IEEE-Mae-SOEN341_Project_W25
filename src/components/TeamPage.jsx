@@ -17,7 +17,12 @@ import addAdminToTeam from "../backend/addAdminToTeam.jsx";
 import addMemberToChannel from "../backend/addMemberToChannel.jsx";
 import {createDM} from "../backend/createDM.jsx";
 import personIcon from "../assets/person_24dp_E8EAED_FILL1_wght400_GRAD0_opsz24.svg";
-import {getSuperUserChannels, getSuperUserId, getSuperUserUsername} from "../backend/Queries/getSuperUser.jsx";
+import {
+    getSuperUserChannels,
+    getSuperUserDefaultChannels,
+    getSuperUserId,
+    getSuperUserUsername
+} from "../backend/Queries/getSuperUser.jsx";
 import {doc, updateDoc, arrayRemove} from "firebase/firestore";
 
 
@@ -355,7 +360,7 @@ function TeamPage() {
         }
         if(!invite && request){ // handle denying request to join a channel (admin)
             // update message with request denial
-            updatedMsg = sender + " has been denied access to channel "+ channel.replace(team, "");
+            updatedMsg = sender + " has been denied access to channel: "+ channel.replace(team, "");
             console.log("USER " + sender + "HAS BEEN DENIED ACCESS TO " + channel.replace(team, ""));
         }
 
@@ -371,10 +376,18 @@ function TeamPage() {
 
     const handleLeave = async () => { // function for a user to leave the selected channel
         if(!selectedChat) return;
-        if(userRole === "admin" || userRole === "superUser"){
-            alert("You are an owner of this channel and therefore cannot leave it"); // do we want this?
+
+        const defaultChannels = getSuperUserDefaultChannels(team);
+        if(defaultChannels.includes(selectedChat)){
+            alert("You cannot leave a default channel");
             return;
         }
+
+        if(userRole === "admin" || userRole === "superUser"){
+            alert("You are an owner of this channel and therefore cannot leave it");
+            return;
+        }
+
         const thisUser = await getCurrentUser();
         const userRef = doc(db, 'users', thisUser.uid);
 
@@ -384,6 +397,7 @@ function TeamPage() {
 
         setRefresh(prev => !prev )
         console.log("Channel " + selectedChat + " removed successfully from user " + thisUser.uid);
+        alert("You have left channel " + selectedChat.replace(team, ""));
     }
 
     const handleSignOut = async () =>{
