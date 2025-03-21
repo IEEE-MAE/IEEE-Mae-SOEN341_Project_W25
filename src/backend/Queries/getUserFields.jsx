@@ -136,23 +136,46 @@ export async function getUserRole() {
 }
 
 export async function getTeamMembers(teamID) {
-    try{
+    try {
         const q = query(collection(db, 'users'), where('team', '==', teamID), where('role', '==', "member"));
         const querySnapshot = await getDocs(q);
         const queryDocs = querySnapshot.docs;
 
         const items = [];
 
-        for(const doc of queryDocs){
-                items.push(doc.id);
-            }
+        for (const doc of queryDocs) {
+            items.push(doc.id);
+        }
 
         console.log(items);
         return items;
+    } catch (error) {
+        console.log("error fetching team members role: " + error);
     }
-    catch(error){
-            console.log("error fetching team members role: " + error);
-        }
+}
+    // export async function getAllTeam(teamID) {
+    //     try {
+    //         //const items = [];
+    //
+    //         const q = query(collection(db, 'users'), where('team', '==', teamID));
+    //         const unsubscribe = q.onSnapshot((querySnapshot)=> {
+    //
+    //             const queryDocs = querySnapshot.docs;
+    //             for(const doc of queryDocs){
+    //                 const data = doc.data();
+    //                 items.push({
+    //                     id: doc.id,
+    //                     ...data,
+    //                 });
+    //             }
+    //         })
+    //
+    //         console.log(items);
+    //         return items;
+    //     } catch (error) {
+    //         console.log("error fetching team: " + error);
+    //     }
+    // }
 
     // for(var newdoc of queryDocs) {
     //     const team = newdoc.id;
@@ -161,7 +184,7 @@ export async function getTeamMembers(teamID) {
     //         channels: superUserChannels,
     //     });
     // }
-}
+
 
 
 export async function getTeamAdmins(teamID) {

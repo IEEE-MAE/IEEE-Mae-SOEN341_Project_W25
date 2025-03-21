@@ -114,16 +114,17 @@ export const SignInAuth= async (email, password)=>{
 // log out
 export const SignOutAuth= async ()=>{
     try{
-        // logout using firebase
-        await auth.signOut();
-        console.log("sign out");
-
         const user = getCurrentUser();
         const userDocRef = doc(db, "users", user.uid);
         await updateDoc(userDocRef, {
             last_seen: Date.now(),
             status: "offline",
         });
+        console.log("User status updated");
+
+        // logout using firebase
+        await auth.signOut();
+        console.log("sign out");
 
 
     }
