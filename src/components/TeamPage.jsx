@@ -453,7 +453,7 @@ function TeamPage() {
                     {isUserListExpanded ? <FaChevronLeft /> : <FaChevronRight />}
                 </motion.button>
 
-                <div className="user-list">x
+                <div className="user-list">
                     {users.map(user => (
                         <motion.div key={user.id} className="user-item" whileHover={{ scale: 1.1 }}>
                             <img src={user.profilePic} alt={user.name} className="user-icon" />
