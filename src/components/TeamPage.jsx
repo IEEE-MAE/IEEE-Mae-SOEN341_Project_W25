@@ -20,6 +20,7 @@ import personIcon from "../assets/person_24dp_E8EAED_FILL1_wght400_GRAD0_opsz24.
 import {getSuperUserChannels, getSuperUserId, getSuperUserUsername} from "../backend/Queries/getSuperUser.jsx";
 import {doc, updateDoc, arrayRemove, collection, where, onSnapshot} from "firebase/firestore";
 import {getAuth} from "firebase/auth";
+import {updateUserStatus} from "../backend/updateStatus.jsx";
 
 const teams = [{ id: 1, name: "Channels", icon: <FaUsers /> }];
 
@@ -60,6 +61,8 @@ function TeamPage() {
 
     const [refresh, setRefresh] = useState(false);
     const navigate = useNavigate();
+
+    updateUserStatus();
 
     const waitForUser = () => {
         return new Promise((resolve) => {
@@ -226,7 +229,6 @@ function TeamPage() {
     // fetch team users
     useEffect(() => {
         if(!team)return;
-
         const q = query(collection(db, 'users'), where('team', '==', team));
         const unsubscribe = onSnapshot(q,(querySnapshot)=> {
             const userList = [];
@@ -245,15 +247,12 @@ function TeamPage() {
 
             setUsers(userList);
 
-
         })
 
         return () => {
             unsubscribe();
         };
     }, [refresh, team]);
-
-
 
 
     //---------------------------------------------------------------
@@ -505,6 +504,7 @@ function TeamPage() {
             </div>
         );
     }
+
    return (
         <div className="team-page">
             <motion.div
