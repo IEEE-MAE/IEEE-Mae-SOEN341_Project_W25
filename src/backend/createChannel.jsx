@@ -3,18 +3,22 @@ import {
     doc,
     setDoc, getDoc, updateDoc, query, collection, where, getDocs, arrayUnion
 } from 'firebase/firestore';
-import {getUserTeam} from "./Queries/getUserFields.jsx";
+import {getTeamAdmins, getTeamMembers, getUserTeam} from "./Queries/getUserFields.jsx";
 import {getCurrentUser} from "./auth.jsx";
 import {getSuperUserChannels, getSuperUserId} from "./Queries/getSuperUser.jsx";
 import {i} from "framer-motion/m";
 
 
 
-export const createChannel = async (channelName) => {
+export const createChannel = async (channelName, defaultChannel) => {
 
     //------ add channel to superUser's channels  -------
 
     /**
+     ----------------------------------------------------------------------------------
+     |----- if default channel is 1, it should add that channel to all members ------|
+     ----------------------------------------------------------------------------------
+
       ADD CHANNEL TO SUP AND ADMIN:
       1. get sup id
       2. add new channel to sup channels
@@ -58,24 +62,47 @@ export const createChannel = async (channelName) => {
 
     //----- copy superUser's updated channel list to every admin of the team -----
 
-    // get superUser's channels
-    const superUserChannels = await getSuperUserChannels(teamID);
 
-    // get array of every admin in the team
-    const q = query(collection(db, 'users'), where('team', '==', teamID), where('role', '==', "admin"));
-    const querySnapshot = await getDocs(q);
-    const queryDocs = querySnapshot.docs;
+    //gets list of admins in Admins
+    const Admins = await getTeamAdmins(teamID);
+    console.log("Admins: ", Admins);
 
-    //update all of there channels
-    for(var newdoc of queryDocs) {
-        const adminID = newdoc.id;
-        console.log(`admin ID: ${adminID}`);
-        await updateDoc(doc(db, "users", adminID), {
-            channels: superUserChannels,
+    for (const adminId of Admins) {
+        const userDocRef = doc(db, "users", adminId);
+        await updateDoc(userDocRef, {
+            channels: arrayUnion(channelID),
         });
     }
 
     //---- HERE I ADD THE ALL CODE ----
+
+    if (defaultChannel) {
+        //update superUser channels
+        await updateDoc(doc(db, "users", superUserID), {
+            defaultChannels: arrayUnion(channelID),
+        });
+
+        //updates all admins
+        for (const adminId of Admins) {
+            const userDocRef = doc(db, "users", adminId);
+            await updateDoc(userDocRef, {
+                defaultChannels: arrayUnion(channelID),
+            });
+        }
+
+        //get list of members in Members
+        const Members = await getTeamMembers(teamID);
+        console.log("Admins: ", Members);
+
+        //update all members channels
+        for (const memberId of Members) {
+            const userDocRef = doc(db, "users", memberId);
+            await updateDoc(userDocRef, {
+                channels: arrayUnion(channelID),
+            });
+        }
+
+    }
 
     // add the channel to the current user
     // try {

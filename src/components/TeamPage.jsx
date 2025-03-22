@@ -49,7 +49,7 @@ function TeamPage() {
     const [newMessage, setNewMessage] = useState("");
 
     const [isUserInTeam, setIsUserInTeam] = useState(null);
-    const [isDefaultChannel, setIsDefaultChannel] = useState(null);
+    const [isDefaultChannel, setIsDefaultChannel] = useState(false);
 
     const [isAddMemberModalOpen, setAddMemberModalOpen] = useState(false);
     const [isAddAdminModalOpen, setAddAdminModalOpen] = useState(false);
@@ -118,6 +118,12 @@ function TeamPage() {
 
         checkUserRole();
     }, [team])
+
+    useEffect(() => {
+        if (isAddChannelModalOpen) {
+            setIsDefaultChannel(false); // Reset checkbox when modal opens
+        }
+    }, [isAddChannelModalOpen]);
 
     // fetch user teams
     const channels = getEffectChannel(team, "user");
@@ -277,7 +283,7 @@ function TeamPage() {
             setChannelName("");
         }
         else{
-            await createChannel(channelName);
+            await createChannel(channelName,isDefaultChannel);
             setRefresh(prev => !prev);
             setChannelName("");
             setAddChannelModalOpen(false);
