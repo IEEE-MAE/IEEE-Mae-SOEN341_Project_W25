@@ -2,7 +2,7 @@ import "../TeamPage.css";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { FaUsers, FaComments, FaPlus, FaChevronRight, FaChevronLeft, } from "react-icons/fa";
-import {getOtherUsername, getUserDMs, getUsername} from "../backend/Queries/getUserFields.jsx";
+import {getOtherUsername, getTeamMembers, getUserDMs, getUsername} from "../backend/Queries/getUserFields.jsx";
 import {getUserChannels} from "../backend/Queries/getUserFields.jsx";
 import {doesUserExist, getCurrentUser, SignOutAuth} from "../backend/auth";
 import {getUserRole, getUserTeam} from "../backend/Queries/getUserFields.jsx";
@@ -26,6 +26,7 @@ import {
 import {doc, updateDoc, arrayRemove, collection, where, onSnapshot} from "firebase/firestore";
 import {getAuth} from "firebase/auth";
 import {updateUserStatus} from "../backend/updateStatus.jsx";
+import {getEffectChannel, getEffectTeamChannels} from "../backend/Queries/getEffectChannel.jsx";
 
 const teams = [{ id: 1, name: "Channels", icon: <FaUsers /> }];
 
@@ -39,9 +40,8 @@ function TeamPage() {
     const [userRole, setUserRole] = useState(""); // user role
     const [team, setTeam] = useState();
 
-    const [channels, setChannels] = useState([]);
     const [dms, setDms] = useState([]);
-    const [teamChannels, setTeamChannels] = useState([]);
+    //const [teamChannels, setTeamChannels] = useState([]);
     const [users, setUsers] = useState([]);
 
     const [messages, setMessages] = useState([]);
@@ -117,50 +117,55 @@ function TeamPage() {
         checkUserRole();
     }, [team])
 
-    // fetch user channels
-    useEffect(() => {
-        if(!team) return;
-        const getChannelNames = async () => {
-            const userChannels = await getUserChannels();
-            const channelList = [];
+    const channels = getEffectChannel(team);
 
-            for (const userChannel of userChannels) {
-                if (userChannel.includes(team)) { // if user has channels in another team they won't be shown in this one
-                    const channelName = userChannel.replace(team, "");
-                    channelList.push({ name: channelName, id: userChannel });
-                }
-            }
+    // // fetch user channels
+    // useEffect(() => {
+    //     if(!team) return;
+    //     const getChannelNames = async () => {
+    //         const userChannels = await getUserChannels();
+    //         const channelList = [];
+    //
+    //         for (const userChannel of userChannels) {
+    //             if (userChannel.includes(team)) { // if user has channels in another team they won't be shown in this one
+    //                 const channelName = userChannel.replace(team, "");
+    //                 channelList.push({ name: channelName, id: userChannel });
+    //             }
+    //         }
+    //
+    //         setChannels(channelList);
+    //         if(channelList.length === 0){console.log("no channels transferred")}
+    //         // channels.forEach(channel => {console.log("channel retrieved " + channel.name)})
+    //     };
+    //
+    //     getChannelNames();
+    // }, [team]);
 
-            setChannels(channelList);
-            if(channelList.length === 0){console.log("no channels transferred")}
-            // channels.forEach(channel => {console.log("channel retrieved " + channel.name)})
-        };
 
-        getChannelNames();
-    }, [team]);
+    const teamChannels = getEffectTeamChannels(team);
 
     // fetch team channels
-    useEffect(() => {
-        if(!team) return;
-        const getTeamChannels = async () => {
-            const superUserChannels = await getSuperUserChannels(team);
-            const teamChannelList = [];
-
-            for (const teamChannel of superUserChannels) {
-                if (teamChannel.includes(team)) { // if user has channels in another team they won't be shown in this one
-                    const teamChannelName = teamChannel.replace(team, "");
-                    teamChannelList.push({ name: teamChannelName, id: teamChannel });
-                }
-            }
-
-            setTeamChannels(teamChannelList);
-            console.log("GOT TEAM CHANNELS:" + teamChannels);
-            if(teamChannelList.length === 0){console.log("no channels transferred")}
-            // channels.forEach(channel => {console.log("channel retrieved " + channel.name)})
-        };
-
-        getTeamChannels();
-    }, [team, refresh]);
+    // useEffect(() => {
+    //     if(!team) return;
+    //     const getTeamChannels = async () => {
+    //         const superUserChannels = await getSuperUserChannels(team);
+    //         const teamChannelList = [];
+    //
+    //         for (const teamChannel of superUserChannels) {
+    //             if (teamChannel.includes(team)) { // if user has channels in another team they won't be shown in this one
+    //                 const teamChannelName = teamChannel.replace(team, "");
+    //                 teamChannelList.push({ name: teamChannelName, id: teamChannel });
+    //             }
+    //         }
+    //
+    //         setTeamChannels(teamChannelList);
+    //         console.log("GOT TEAM CHANNELS:" + teamChannels);
+    //         if(teamChannelList.length === 0){console.log("no channels transferred")}
+    //         // channels.forEach(channel => {console.log("channel retrieved " + channel.name)})
+    //     };
+    //
+    //     getTeamChannels();
+    // }, [team, refresh]);
 
     // fetch user dms
     useEffect(() => {
