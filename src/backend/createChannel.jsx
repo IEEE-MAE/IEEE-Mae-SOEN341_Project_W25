@@ -14,6 +14,27 @@ export const createChannel = async (channelName) => {
 
     //------ add channel to superUser's channels  -------
 
+    /**
+      ADD CHANNEL TO SUP AND ADMIN:
+      1. get sup id
+      2. add new channel to sup channels
+      3. get sup's channels
+      4. get array of every admin in team
+      5. make admin channels = sup's channel
+
+      IF DEFAULT CHANNEL = 1:
+      1. add new channel to sup defaultChannels
+      2. make admin defaultChannels = sup default chan
+      3. get all current team members
+      4. update all members channesl to sup default chan
+
+      next:
+      1. when user joins team
+      2. pull from superUser default channels
+      3. add to users channel
+
+     **/
+
     //check team
     const teamID = await getUserTeam();
     if (!teamID) {
@@ -27,6 +48,7 @@ export const createChannel = async (channelName) => {
         console.log("ERROR: No superUser ID found.");
         return;
     }
+
 
     //update superUser channels
     const channelID = teamID.concat(channelName);
@@ -52,6 +74,8 @@ export const createChannel = async (channelName) => {
             channels: superUserChannels,
         });
     }
+
+    //---- HERE I ADD THE ALL CODE ----
 
     // add the channel to the current user
     // try {
