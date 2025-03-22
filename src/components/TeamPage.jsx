@@ -17,7 +17,12 @@ import addAdminToTeam from "../backend/addAdminToTeam.jsx";
 import addMemberToChannel from "../backend/addMemberToChannel.jsx";
 import {createDM} from "../backend/createDM.jsx";
 import personIcon from "../assets/person_24dp_E8EAED_FILL1_wght400_GRAD0_opsz24.svg";
-import {getSuperUserChannels, getSuperUserId, getSuperUserUsername} from "../backend/Queries/getSuperUser.jsx";
+import {
+    getSuperUserChannels,
+    getSuperUserDefaultChannels,
+    getSuperUserId,
+    getSuperUserUsername
+} from "../backend/Queries/getSuperUser.jsx";
 import {doc, updateDoc, arrayRemove, collection, where, onSnapshot} from "firebase/firestore";
 import {getAuth} from "firebase/auth";
 import {updateUserStatus} from "../backend/updateStatus.jsx";
