@@ -26,6 +26,7 @@ import {
 import {doc, updateDoc, arrayRemove, collection, where, onSnapshot} from "firebase/firestore";
 import {getAuth} from "firebase/auth";
 import {updateUserStatus} from "../backend/updateStatus.jsx";
+import {isUserInChannel, userInTeam} from "../backend/Queries/basicqueryUsers.jsx";
 import {getDMname, getEffectChannel, getEffectMessages} from "../backend/Queries/getEffectChannel.jsx";
 
 const teams = [{ id: 1, name: "Channels", icon: <FaUsers /> }];
@@ -67,7 +68,7 @@ function TeamPage() {
     const [refresh, setRefresh] = useState(false);
     const navigate = useNavigate();
 
-    updateUserStatus();
+    updateUserStatus(getCurrentUser());
 
     const waitForUser = () => {
         return new Promise((resolve) => {
@@ -226,6 +227,33 @@ function TeamPage() {
 
     //---------------------------------------------------------------
 
+    const validUsername = async (username) => {
+        const userExists = await doesUserExist(username);
+        if(!userExists && username !== "all") {
+            alert("Username doesn't exist. Please try again.");
+            setMemberUsername("");
+            setAdminUsername("");
+            setDMUsername("");
+        }
+    }
+
+    const validChannelMember = async (username) => {
+        await validUsername(username);
+        const sameTeam = await userInTeam(username);
+        const inChannel = await isUserInChannel(username, selectedChat);
+        if(!sameTeam) {
+            alert("This user is not in your team.");
+            setMemberUsername("");
+            setAdminUsername("");
+            setDMUsername("");
+        }
+        if(inChannel) {
+            alert("This user is already in this channel.");
+            setMemberUsername("");
+            setAdminUsername("");
+            setDMUsername("");
+        }
+    }
 
 
     // Function to send a message
@@ -255,7 +283,28 @@ function TeamPage() {
         }
     };
 
+    const doesDMexist = async (otherUsername) =>{
+        const DMid1 = thisUsername.concat(otherUsername);
+        const DMid2 = otherUsername.concat(thisUsername);
+        console.log("Possible DMs: " + DMid1 + " | " + DMid2);
+        let DMid = DMid1;
+        setRefresh(prev => !prev);
+        if(!dms.some(dm => dm.id === DMid1)){
+            DMid = DMid2;
+        }
+        if(!dms.some(dm => dm.id === DMid2)){
+            DMid = false;
+        }
+        return DMid;
+    }
+
     const handleAddDM = async () => {
+
+        const userExists = await doesUserExist(dmUsername);
+        if(!userExists) {
+            setDMUsername("");
+            return;
+        }
 
         if(dmUsername==="" || dmUsername === null){
             alert("Please enter a username");
@@ -286,20 +335,6 @@ function TeamPage() {
     const handleAddAdmin = async () => {
         await addAdminToTeam(adminUsername, team);
         setAdminUsername("");
-    }
-
-    const doesDMexist = async (otherUsername) =>{
-        const DMid1 = thisUsername.concat(otherUsername);
-        const DMid2 = otherUsername.concat(thisUsername);
-        console.log("Possible DMs: " + DMid1 + " | " + DMid2);
-        let DMid = DMid1;
-        if(!dms.some(dm => dm.id === DMid1)){
-            DMid = DMid2;
-        }
-        if(!dms.some(dm => dm.id === DMid2)){
-            DMid = false;
-        }
-        return DMid;
     }
 
     const handleInviteMemberToChannel = async () => {
@@ -424,16 +459,6 @@ function TeamPage() {
         const messageRef = ref(realtimeDB, `messages/${messageId}`);
         await remove(messageRef);
         console.log("REMOVE MESSAGE: ", messageId);
-    }
-
-    const validUsername = async (username) => {
-        const userExists = await doesUserExist(username);
-        if(!userExists && username !== "all") {
-            alert("Username doesn't exist. Please try again.");
-            setMemberUsername("");
-            setAdminUsername("");
-            setDMUsername("");
-        }
     }
 
     if(!getCurrentUser()){
@@ -754,7 +779,6 @@ function TeamPage() {
                         <button onClick={() => setAddDMModalOpen(false)}>Cancel</button>
                         <button
                             onClick={() => {
-                                console.log(`Adding DM with: ${dmUsername}`);
                                 setAddDMModalOpen(false);
                                 handleAddDM();
                             }}>Confirm</button>
@@ -772,7 +796,7 @@ function TeamPage() {
                             placeholder="Enter member username"
                             value={memberUsername}
                             onChange={(e) => setMemberUsername(e.target.value)}
-                            onBlur={() => validUsername(memberUsername)}
+                            onBlur={() => validChannelMember(memberUsername)}
                         />
                         <button onClick={() => setAddChannelMemberModalOpen(false)}>Cancel</button>
                         <button onClick={() => {

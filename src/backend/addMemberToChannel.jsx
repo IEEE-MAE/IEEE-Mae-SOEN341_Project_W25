@@ -2,6 +2,7 @@ import {arrayUnion, collection, doc, getDocs, query, updateDoc, where} from "fir
 import {db} from "../config/firebase.jsx";
 import {getTeamAdmins, getTeamMembers, getUserTeam} from "./Queries/getUserFields.jsx";
 import {getSuperUserId} from "./Queries/getSuperUser.jsx";
+import {isUserInChannel, userInTeam} from "./Queries/basicqueryUsers.jsx";
 
 
 const addMemberToChannel = async (username, channelID) =>{
@@ -70,36 +71,37 @@ const addMemberToChannel = async (username, channelID) =>{
         }
         else{
 
+            // ------ otherwise it just proceeds with the previous code ------
+
+            const sameTeam = await userInTeam(username);
+            if(!sameTeam) {
+                console.log("users do not belong to the same team, can't add to channel");
+                return;
+            }
+
+            const inChannel = await isUserInChannel(username, channelID);
+            if(inChannel) {
+                console.log("user is already in channel, can't add to channel");
+                return;
+            }
+
+            // add to channel
+
             const usersRef = collection(db, "users");
             const q = query(usersRef, where("username", "==", username));
             const querySnapshot = await getDocs(q);
 
             if (querySnapshot.empty) {
                 console.log("No user found with username:", username);
-                //return;
+                return;
             }
 
-            const userData = querySnapshot.docs[0].data();
-            const newUserTeam =  userData ? userData.team : null;
-            const thisUserTeam = getUserTeam();
-            if(!newUserTeam || !thisUserTeam) {
-                console.log("error fetching teams");
-                //return;
-            }
-            if(!newUserTeam === thisUserTeam) {
-                console.log("users do not belong to the same team, can't add to channel");
-                //return;
-            }
+            const userDocRef = querySnapshot.docs[0].ref; // get unique doc
+            await updateDoc(userDocRef, {
+                channels: arrayUnion(channelID),
+            });
 
-            // ------ otherwise it just procedes with the previous code ------
-
-
-                const userDocRef = querySnapshot.docs[0].ref; // get unique doc
-                await updateDoc(userDocRef, {
-                    channels: arrayUnion(channelID),
-                });
-
-                console.log(`User ${username} successfully added to channel ${channelID}`);
+            console.log(`User ${username} successfully added to channel ${channelID}`);
         }
     } catch (err) {
         console.error("Error adding user to channel:", err);
