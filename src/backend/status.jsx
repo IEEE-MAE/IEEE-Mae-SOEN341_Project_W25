@@ -9,6 +9,7 @@ export const createStatus= async (last_seen, status)=>{
     try{
 
         const userName = getUsername();
+        const user = getCurrentUser();
 
         const statusData = {
             username: userName,
@@ -21,7 +22,7 @@ export const createStatus= async (last_seen, status)=>{
         console.log("Status stored in RealtimeDB successfully.");
     }
     catch(error){
-        console.log('error creating status');
+        console.log('error creating status' + error);
         throw error;
     }
 }

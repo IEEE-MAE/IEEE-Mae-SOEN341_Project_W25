@@ -63,7 +63,7 @@ export const doesChannelExist = async (channelName) => {
 }
 
 // create user in auth database and firestore database
-export const createUser= async (email, password, userName,last_seen, status)=>{
+export const createUser= async (email, password, userName )=>{
     try{
         // create account using firebase authentication
         const {user} = await createUserWithEmailAndPassword(auth, email, password);
