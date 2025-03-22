@@ -12,6 +12,8 @@ export function getEffectChannel(team) {
 //replace this
     useEffect(() => {
         if (!team) return;
+        let unsubscribe;
+
         const getChannelNames = async () => {
             //--- CODE FROM getUserChannels() ---
             const user = getCurrentUser();
@@ -19,7 +21,7 @@ export function getEffectChannel(team) {
             try {
                 //This gets the snapshot of the users doc
                 const userDocRef = doc(db, "users", user.uid);
-                const unsubscribe = onSnapshot(userDocRef, (userDocSnapshot) => {
+                unsubscribe = onSnapshot(userDocRef, (userDocSnapshot) => {
 
                     if (userDocSnapshot.exists()) {
                         //puts the channels IDs from the user
@@ -50,14 +52,13 @@ export function getEffectChannel(team) {
                         console.log("User document does not exist");
                     }
                 });
-                    return unsubscribe;
 
             } catch (error) {
                 console.log("error fetching user's channels: " + error);
             }
         };
-
-        const unsubscribe = getChannelNames();
+//wowsssaadasdasd
+        getChannelNames();
 
         return () => {
             if (unsubscribe) unsubscribe();
@@ -72,14 +73,16 @@ export function getEffectTeamChannels(team) {
 //replace this
     useEffect(() => {
         if (!team) return;
-        const getChannelNames = async () => {
+        let unsubscribe;
+
+        const getTeamChannelNames = async () => {
             //--- CODE FROM getUserChannels() ---
             const user = await getSuperUserId(team);
 
             try {
                 //This gets the snapshot of the users doc
                 const userDocRef = doc(db, "users", user);
-                const unsubscribe = onSnapshot(userDocRef, (userDocSnapshot) => {
+                unsubscribe = onSnapshot(userDocRef, (userDocSnapshot) => {
 
                     if (userDocSnapshot.exists()) {
                         //puts the channels IDs from the user
@@ -111,14 +114,14 @@ export function getEffectTeamChannels(team) {
                         console.log("User document does not exist");
                     }
                 });
-                return unsubscribe;
+
 
             } catch (error) {
                 console.log("error fetching user's channels: " + error);
             }
         };
 
-        const unsubscribe = getChannelNames();
+        getTeamChannelNames();
 
         return () => {
             if (unsubscribe) unsubscribe();
