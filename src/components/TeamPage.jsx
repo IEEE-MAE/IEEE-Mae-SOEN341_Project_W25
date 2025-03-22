@@ -49,6 +49,7 @@ function TeamPage() {
     const [newMessage, setNewMessage] = useState("");
 
     const [isUserInTeam, setIsUserInTeam] = useState(null);
+    const [isDefaultChannel, setIsDefaultChannel] = useState(null);
 
     const [isAddMemberModalOpen, setAddMemberModalOpen] = useState(false);
     const [isAddAdminModalOpen, setAddAdminModalOpen] = useState(false);
@@ -758,6 +759,16 @@ function TeamPage() {
                             value={channelName}
                             onChange={(e) => setChannelName(e.target.value)}
                         />
+                        <div className="checkbox-container">
+                            <input
+                                type="checkbox"
+                                checked={isDefaultChannel}  // State for toggle
+                                onChange={() => setIsDefaultChannel((prev) => !prev)}  // Toggle value
+                            />
+                            <label htmlFor="private-channel" className="checkbox-label">
+                                Default Channel?
+                            </label>
+                        </div>
                         <button onClick={() => setAddChannelModalOpen(false)}>Cancel</button>
                         <button onClick={handleAddChannel}>Confirm</button>
                     </div>

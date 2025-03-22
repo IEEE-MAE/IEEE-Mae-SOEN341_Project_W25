@@ -672,3 +672,23 @@ body.modal-open {
     background: #4d3174;
     border-radius: 30px;
 }
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px; /* Space between checkbox and label */
+    margin-top: 10px;
+}
+
+.checkbox-container input[type="checkbox"] {
+    width: 20px; /* Make it bigger */
+    height: 20px;
+    cursor: pointer;
+    accent-color: #007bff; /* Change color */
+}
+
+.checkbox-label {
+    font-size: 0.8rem; /* Make text larger */
+    cursor: pointer;
+}
