@@ -5,34 +5,38 @@ import {getCurrentUser} from "./auth.jsx";
 
 export function updateUserStatus(user) {
     useEffect(() => {
-        if (!user?.uid) return; // Ensure user exists
+        if (!user?.uid) return;
 
         const userDocRef = doc(db, "users", user.uid);
 
-        const setOnline = async () => {
+        const setStatus = async (status) => {
             await updateDoc(userDocRef, {
-                status: "online",
+                status: status,
+                last_seen: Date.now(),
             });
         };
 
-        setOnline();
+        setStatus("online");
+
+        const handleUnload = () => {
+            setStatus("offline");
+        };
 
         const handleVisibilityChange = async () => {
             if (document.hidden) {
-                await updateDoc(userDocRef, {
-                    last_seen: Date.now(),
-                    status: "away",
-                });
+                setStatus("away");
             } else {
-                setOnline()
+                setStatus("online");
             }
         };
 
         console.log("User status has been updated to away");
 
+        window.addEventListener("beforeunload", handleUnload);
         document.addEventListener("visibilitychange", handleVisibilityChange);
 
         return () => {
+            window.removeEventListener("beforeunload", handleUnload);
             document.removeEventListener("visibilitychange", handleVisibilityChange);
         };
     }, [user?.uid]);
