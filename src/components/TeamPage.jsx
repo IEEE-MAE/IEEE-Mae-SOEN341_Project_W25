@@ -236,7 +236,7 @@ function TeamPage() {
 
     const validUsername = async (username) => {
         const userExists = await doesUserExist(username);
-        if(!userExists && username !== "all") {
+        if(!userExists) {
             alert("Username doesn't exist. Please try again.");
             setMemberUsername("");
             setAdminUsername("");
@@ -346,7 +346,7 @@ function TeamPage() {
 
     const handleInviteMemberToChannel = async () => {
         // create dm between both users to send invite to join
-        if((userRole === "admin" || userRole === "superUser") && memberUsername === "all"){
+        if((userRole === "admin" || userRole === "superUser")){
             await addMemberToChannel(memberUsername, selectedChat);
             alert("You have made " + selectedChat.replace(team, "") + " a default channel");
             setMemberUsername("");
