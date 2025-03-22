@@ -25,6 +25,8 @@ export function updateUserStatus() {
             }
         };
 
+        console.log("User status has been updated to away");
+
         document.addEventListener("visibilitychange", handleVisibilityChange);
 
         return () => {

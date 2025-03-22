@@ -226,6 +226,15 @@ function TeamPage() {
 
     //---------------------------------------------------------------
 
+    const validUsername = async (username) => {
+        const userExists = await doesUserExist(username);
+        if(!userExists && username !== "all") {
+            alert("Username doesn't exist. Please try again.");
+            setMemberUsername("");
+            setAdminUsername("");
+            setDMUsername("");
+        }
+    }
 
 
     // Function to send a message
@@ -255,7 +264,28 @@ function TeamPage() {
         }
     };
 
+    const doesDMexist = async (otherUsername) =>{
+        const DMid1 = thisUsername.concat(otherUsername);
+        const DMid2 = otherUsername.concat(thisUsername);
+        console.log("Possible DMs: " + DMid1 + " | " + DMid2);
+        let DMid = DMid1;
+        setRefresh(prev => !prev);
+        if(!dms.some(dm => dm.id === DMid1)){
+            DMid = DMid2;
+        }
+        if(!dms.some(dm => dm.id === DMid2)){
+            DMid = false;
+        }
+        return DMid;
+    }
+
     const handleAddDM = async () => {
+
+        const userExists = await doesUserExist(dmUsername);
+        if(!userExists) {
+            setDMUsername("");
+            return;
+        }
 
         if(dmUsername==="" || dmUsername === null){
             alert("Please enter a username");
@@ -286,20 +316,6 @@ function TeamPage() {
     const handleAddAdmin = async () => {
         await addAdminToTeam(adminUsername, team);
         setAdminUsername("");
-    }
-
-    const doesDMexist = async (otherUsername) =>{
-        const DMid1 = thisUsername.concat(otherUsername);
-        const DMid2 = otherUsername.concat(thisUsername);
-        console.log("Possible DMs: " + DMid1 + " | " + DMid2);
-        let DMid = DMid1;
-        if(!dms.some(dm => dm.id === DMid1)){
-            DMid = DMid2;
-        }
-        if(!dms.some(dm => dm.id === DMid2)){
-            DMid = false;
-        }
-        return DMid;
     }
 
     const handleInviteMemberToChannel = async () => {
@@ -424,16 +440,6 @@ function TeamPage() {
         const messageRef = ref(realtimeDB, `messages/${messageId}`);
         await remove(messageRef);
         console.log("REMOVE MESSAGE: ", messageId);
-    }
-
-    const validUsername = async (username) => {
-        const userExists = await doesUserExist(username);
-        if(!userExists && username !== "all") {
-            alert("Username doesn't exist. Please try again.");
-            setMemberUsername("");
-            setAdminUsername("");
-            setDMUsername("");
-        }
     }
 
     if(!getCurrentUser()){
@@ -754,7 +760,6 @@ function TeamPage() {
                         <button onClick={() => setAddDMModalOpen(false)}>Cancel</button>
                         <button
                             onClick={() => {
-                                console.log(`Adding DM with: ${dmUsername}`);
                                 setAddDMModalOpen(false);
                                 handleAddDM();
                             }}>Confirm</button>
