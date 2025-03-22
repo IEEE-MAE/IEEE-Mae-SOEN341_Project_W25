@@ -5,6 +5,14 @@ import {
 } from 'firebase/firestore';
 import {getCurrentUser} from "../auth.jsx";
 
+/**
+ *
+ * useEffect(() => {
+ *         if(!team)return;
+ *         const q = query(collection(db, 'users'), where('team', '==', team));
+ *         const unsubscribe = onSnapshot(q,(querySnapshot)=> {
+ *
+ * **/
 
 export async function getUserChannels() {
     const user = getCurrentUser()
