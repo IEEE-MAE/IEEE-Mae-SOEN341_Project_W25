@@ -26,6 +26,7 @@ import {
 import {doc, updateDoc, arrayRemove, collection, where, onSnapshot} from "firebase/firestore";
 import {getAuth} from "firebase/auth";
 import {updateUserStatus} from "../backend/updateStatus.jsx";
+import {isUserInChannel, userInTeam} from "../backend/Queries/basicqueryUsers.jsx";
 import {getDMname, getEffectChannel, getEffectMessages} from "../backend/Queries/getEffectChannel.jsx";
 
 const teams = [{ id: 1, name: "Channels", icon: <FaUsers /> }];
@@ -67,7 +68,7 @@ function TeamPage() {
     const [refresh, setRefresh] = useState(false);
     const navigate = useNavigate();
 
-    updateUserStatus();
+    updateUserStatus(getCurrentUser());
 
     const waitForUser = () => {
         return new Promise((resolve) => {
@@ -230,6 +231,24 @@ function TeamPage() {
         const userExists = await doesUserExist(username);
         if(!userExists && username !== "all") {
             alert("Username doesn't exist. Please try again.");
+            setMemberUsername("");
+            setAdminUsername("");
+            setDMUsername("");
+        }
+    }
+
+    const validChannelMember = async (username) => {
+        await validUsername(username);
+        const sameTeam = await userInTeam(username);
+        const inChannel = await isUserInChannel(username, selectedChat);
+        if(!sameTeam) {
+            alert("This user is not in your team.");
+            setMemberUsername("");
+            setAdminUsername("");
+            setDMUsername("");
+        }
+        if(inChannel) {
+            alert("This user is already in this channel.");
             setMemberUsername("");
             setAdminUsername("");
             setDMUsername("");
@@ -777,7 +796,7 @@ function TeamPage() {
                             placeholder="Enter member username"
                             value={memberUsername}
                             onChange={(e) => setMemberUsername(e.target.value)}
-                            onBlur={() => validUsername(memberUsername)}
+                            onBlur={() => validChannelMember(memberUsername)}
                         />
                         <button onClick={() => setAddChannelMemberModalOpen(false)}>Cancel</button>
                         <button onClick={() => {
