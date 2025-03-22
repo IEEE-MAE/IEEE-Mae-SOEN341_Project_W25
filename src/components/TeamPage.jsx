@@ -26,7 +26,7 @@ import {
 import {doc, updateDoc, arrayRemove, collection, where, onSnapshot} from "firebase/firestore";
 import {getAuth} from "firebase/auth";
 import {updateUserStatus} from "../backend/updateStatus.jsx";
-import {getEffectChannel, getEffectTeamChannels} from "../backend/Queries/getEffectChannel.jsx";
+import {getDMname, getEffectChannel, getEffectMessages} from "../backend/Queries/getEffectChannel.jsx";
 
 const teams = [{ id: 1, name: "Channels", icon: <FaUsers /> }];
 
@@ -40,7 +40,7 @@ function TeamPage() {
     const [userRole, setUserRole] = useState(""); // user role
     const [team, setTeam] = useState();
 
-    const [dms, setDms] = useState([]);
+    //const [dms, setDms] = useState([]);
     //const [teamChannels, setTeamChannels] = useState([]);
     const [users, setUsers] = useState([]);
 
@@ -117,76 +117,35 @@ function TeamPage() {
         checkUserRole();
     }, [team])
 
-    const channels = getEffectChannel(team);
-
-    // // fetch user channels
-    // useEffect(() => {
-    //     if(!team) return;
-    //     const getChannelNames = async () => {
-    //         const userChannels = await getUserChannels();
-    //         const channelList = [];
-    //
-    //         for (const userChannel of userChannels) {
-    //             if (userChannel.includes(team)) { // if user has channels in another team they won't be shown in this one
-    //                 const channelName = userChannel.replace(team, "");
-    //                 channelList.push({ name: channelName, id: userChannel });
-    //             }
-    //         }
-    //
-    //         setChannels(channelList);
-    //         if(channelList.length === 0){console.log("no channels transferred")}
-    //         // channels.forEach(channel => {console.log("channel retrieved " + channel.name)})
-    //     };
-    //
-    //     getChannelNames();
-    // }, [team]);
-
-
-    const teamChannels = getEffectTeamChannels(team);
+    // fetch user teams
+    const channels = getEffectChannel(team, "user");
 
     // fetch team channels
+    const teamChannels = getEffectChannel(team, "team");
+
+    const dms = getEffectMessages(team)
+    //test
+
+    // fetch user dms
     // useEffect(() => {
-    //     if(!team) return;
-    //     const getTeamChannels = async () => {
-    //         const superUserChannels = await getSuperUserChannels(team);
-    //         const teamChannelList = [];
+    //     const getDMs = async () => {
+    //         const userDMss = await getUserDMs();
+    //         const DMList = [];
     //
-    //         for (const teamChannel of superUserChannels) {
-    //             if (teamChannel.includes(team)) { // if user has channels in another team they won't be shown in this one
-    //                 const teamChannelName = teamChannel.replace(team, "");
-    //                 teamChannelList.push({ name: teamChannelName, id: teamChannel });
+    //         for (const userDM of userDMss) {
+    //             if (userDM.includes(thisUsername)) { // display other username
+    //                 const DMname = getDMname(userDM);
+    //                 DMList.push({ name: DMname, id: userDM });
     //             }
     //         }
     //
-    //         setTeamChannels(teamChannelList);
-    //         console.log("GOT TEAM CHANNELS:" + teamChannels);
-    //         if(teamChannelList.length === 0){console.log("no channels transferred")}
-    //         // channels.forEach(channel => {console.log("channel retrieved " + channel.name)})
+    //         setDms(DMList);
+    //         if(DMList.length === 0){console.log("no dms transferred")}
+    //         // DMList.forEach(dm => {console.log("dm retrieved " + dm.name)})
     //     };
     //
-    //     getTeamChannels();
-    // }, [team, refresh]);
-
-    // fetch user dms
-    useEffect(() => {
-        const getDMs = async () => {
-            const userDMss = await getUserDMs();
-            const DMList = [];
-
-            for (const userDM of userDMss) {
-                if (userDM.includes(thisUsername)) { // display other username
-                    const DMname = getDMname(userDM);
-                    DMList.push({ name: DMname, id: userDM });
-                }
-            }
-
-            setDms(DMList);
-            if(DMList.length === 0){console.log("no dms transferred")}
-            // DMList.forEach(dm => {console.log("dm retrieved " + dm.name)})
-        };
-
-        getDMs();
-    }, [refresh]);
+    //     getDMs();
+    // }, [refresh]);
 
     //upon clicking a channel or a dm you would subscribe to the real time messages
 
@@ -267,15 +226,7 @@ function TeamPage() {
 
     //---------------------------------------------------------------
 
-    const getDMname = (DMid) =>{
-        if (DMid.endsWith(thisUsername)) {
-            return DMid.replace(new RegExp(thisUsername + "$"), "");
-        } else if (DMid.startsWith(thisUsername)) {
-            return DMid.replace(new RegExp("^" + thisUsername), "");
-        } else {
-            return DMid;
-        }
-    }
+
 
     // Function to send a message
     const sendMessage = async() => {
@@ -646,7 +597,7 @@ function TeamPage() {
                 {/*Chat Name ie who are you chatting with */}
                 {selectedChat
                     ? (viewMode === "dms"
-                            ? (<p>Chatting with: {getDMname(selectedChat)}</p>)
+                            ? (<p>Chatting with: {getDMname(selectedChat, thisUsername)}</p>)
                             : (
                                 <>
                                 <p>On channel: {selectedChat.replace(team, "")}<span><button className="leave-button" onClick={()=> handleLeave()}>leave channel</button></span></p>
