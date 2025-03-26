@@ -19,3 +19,4 @@ Participants: Yara, Mac, Alex, Abu, Cami, Mae
 ### Post-Meeting Actionables 
 - Pick an automatic testing tool (SonarQube) and ask for approval
 - Plan how to make the final presentation
+- Once we are finished with all of the implementation and bug fixes, work on cleaning up the code (removing pages that are not used e.g. channels, etc) and re-structuring it so it satisfies the guidelines set in Appendix A of the Sprint 4 Guidelines document. 
