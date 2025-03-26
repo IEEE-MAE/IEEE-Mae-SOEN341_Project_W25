@@ -6,6 +6,8 @@ End Time: 3:15
 Participants: Yara, Mac, Alex, Abu, Cami, Mae
 
 ### Meeting Notes
+- went over requirements for the sprint, assigned tasks and responsibilities
+
 - need to do replies/quoting (just a display thing of replying - a single message - no thread making/backend) - MAC
 - fourth feature: delete and edit messages with limit of time
   - backend develops function to set boolean hook depending on conditions - delete and edit buttons - CAMI & ALEX (deadline 30 Mar)
