@@ -1,6 +1,6 @@
 import "../TeamPage.css";
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { FaUsers, FaComments, FaPlus, FaChevronRight, FaChevronLeft, } from "react-icons/fa";
 import {getOtherUsername, getTeamMembers, getUserDMs, getUsername} from "../backend/Queries/getUserFields.jsx";
 import {getUserChannels} from "../backend/Queries/getUserFields.jsx";
@@ -64,6 +64,9 @@ function TeamPage() {
     const [dmUsername, setDMUsername] = useState("");
     const [selectedChat,setSelectedChat] = useState(null);
     const [isUserListExpanded, setIsUserListExpanded] = useState(false);
+    const [selectedReplyMessage, setSelectedReplyMessage] = useState(null);
+    const messageInputRef = useRef(null);
+    const [inputPlaceholder, setInputPlaceholder] = useState("Type a message...");
 
 
     const [refresh, setRefresh] = useState(false);
@@ -86,8 +89,6 @@ function TeamPage() {
     };
 
     useEffect(() => {
-
-
         const checkUserTeam = async () => {
             const user = await waitForUser();
             const username = await getUsername();
@@ -179,7 +180,8 @@ function TeamPage() {
                             timeSort: msg.timestamp,
                             request: msg.isRequest,
                             invite: msg.isInvite,
-                            refChannel: msg.refChannelID
+                            refChannel: msg.refChannelID,
+                            replyTo: msg.replyTo || null
                         }));
                     })
                 ).then(messagesList => {
@@ -264,17 +266,37 @@ function TeamPage() {
 
 
     // Function to send a message
-    const sendMessage = async() => {
-        console.log("THIS CHAT IS: "+ selectedChat);
-        await createMessages(newMessage, selectedChat);
-        setNewMessage("");
+    const sendMessage = async () => {
+        console.log("THIS CHAT IS: " + selectedChat);
 
-        //update user status
+        const replyPayload = selectedReplyMessage
+            ? {
+                replyTo: {
+                    id: selectedReplyMessage.id,
+                    sender: selectedReplyMessage.sender,
+                    text: selectedReplyMessage.text,
+                },
+            }
+            : null;
+
+        await createMessages(newMessage, selectedChat, replyPayload, false, false, null);
+
+        setNewMessage("");
+        setSelectedReplyMessage(null);
+        setInputPlaceholder("Type a message...");
+
         const user = getCurrentUser();
         const userDocRef = doc(db, "users", user.uid);
         await updateDoc(userDocRef, {
             last_seen: Date.now(),
         });
+    };
+
+
+    const handleReplyMessage = (msg) => {
+        setSelectedReplyMessage(msg)
+        setInputPlaceholder("");
+        messageInputRef.current?.focus();
     };
 
     const handleAddChannel = async () => {
@@ -647,18 +669,23 @@ function TeamPage() {
                             key={msg.id}
                             className={`message ${msg.sender === thisUsername ? "you" : "other"}`}
                         >
+                            {msg.replyTo && (
+                                <div className="reply-preview">
+                                    Replying to {msg.replyTo.sender}: "{msg.replyTo.text.slice(0, 30)}{msg.replyTo.text.length > 30 ? '...' : ''}"
+                                </div>
+                            )}
+
                             <strong>{msg.sender}:</strong> {msg.text}
                             <span className="time">{msg.time}</span>
 
-                            {["admin", "superUser"].includes(userRole) && (
-                                <button className="delete-msg-btn" onClick={() => handleDeleteMessage(msg.id)}>×</button>
+                            {selectedReplyMessage && selectedReplyMessage.id === msg.id && (
+                                <button className="cancel-reply-btn" onClick={() => setSelectedReplyMessage(null)}>× Cancel Reply</button>
                             )}
-                            {["admin", "superUser"].includes(userRole) && msg.request && (
-                                <>
-                                    <br />
-                                    <button className="accept-btn" onClick={() => handleAccept(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>accept</button>
-                                    <button className="deny-btn" onClick={() => handleDeny(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>deny</button>
-                                </>
+
+                            <button className="reply-msg-btn" onClick={() => handleReplyMessage(msg)}>↩</button>
+
+                            {userRole && ["admin", "superUser"].includes(userRole) && (
+                                <button className="delete-msg-btn" onClick={() => handleDeleteMessage(msg.id)}>×</button>
                             )}
                             {userRole === "member" && msg.invite && (
                                 <>
@@ -672,16 +699,25 @@ function TeamPage() {
                 </div>
 
                 <div className="message-input">
+                    {selectedReplyMessage && (
+                        <div className="replying-to">
+                            <span>
+                                Replying to {selectedReplyMessage.sender}: "{selectedReplyMessage.text}"
+                            </span>
+                            <button className="cancel-reply-btn" onClick={() => setSelectedReplyMessage(null)}>×</button>
+                        </div>
+                    )}
                     <input
                         type="text"
                         value={newMessage}
+                        ref={messageInputRef}
                         onChange={(e) => setNewMessage(e.target.value)}
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {
                                 sendMessage();
                             }
                         }}
-                        placeholder="Type a message..."
+                        placeholder={inputPlaceholder}
                         className="input-field"
                     />
                     <button onClick={sendMessage} className="send-button">Send</button>
