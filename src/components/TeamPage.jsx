@@ -279,7 +279,7 @@ function TeamPage() {
             }
             : null;
 
-        await createMessages(newMessage, selectedChat, replyPayload, false, false, null);
+        await createMessages(newMessage, selectedChat, false, false, null, replyPayload);
 
         setNewMessage("");
         setSelectedReplyMessage(null);
@@ -369,20 +369,19 @@ function TeamPage() {
     const handleInviteMemberToChannel = async () => {
         // create dm between both users to send invite to join
         if((userRole === "admin" || userRole === "superUser")){
-            await addMemberToChannel(memberUsername, selectedChat);
-            alert("You have made " + selectedChat.replace(team, "") + " a default channel");
+            let DMid= await doesDMexist(memberUsername);
+            if(DMid === false){
+                DMid = await createDM(memberUsername);
+            }
+            // send invite in message
+            const inviteMsg = thisUsername + " has invited you to join " + selectedChat.replace(team, "");
+            await createMessages(inviteMsg, DMid, false, true, selectedChat); // request = false, invite = true
             setMemberUsername("");
-            return;
         }
-
-        let DMid= await doesDMexist(memberUsername);
-        if(DMid === false){
-            DMid = await createDM(memberUsername);
+        else{
+            alert("You don't have permission to invite people to this channel!");
+            setMemberUsername("");
         }
-        // send invite in message
-        const inviteMsg = thisUsername + " has invited you to join " + selectedChat.replace(team, "");
-        await createMessages(inviteMsg, DMid, false, true, selectedChat); // request = false, invite = true
-        setMemberUsername("");
     }
 
     const handleRequestToJoinChannel = async () => { // send request to team superUser
@@ -402,9 +401,9 @@ function TeamPage() {
 
     const handleAccept = async (invite, request, sender, channel, msgID) => {
         console.log("IN HANDLE ACCEPT")
-        const DMid = await doesDMexist(sender);
         let updatedMsg;
         if(invite && !request){ // handle accepting invite to join channel (member)
+            console.log("IN HANDLE ACCEPT - INVITE")
             // add channel name to this user's list of channels
             await addMemberToChannel(thisUsername, channel);
             updatedMsg = thisUsername + " has accepted the invite to join channel: " + channel.replace(team, "");
@@ -412,6 +411,7 @@ function TeamPage() {
         }
         if(!invite && request){ // handle accepting request to join a channel (admin)
             // add channel name to the requester's (sender) list of channels
+            console.log("IN HANDLE ACCEPT - REQUEST")
             await addMemberToChannel(sender, channel);
             updatedMsg = sender + " has been accepted into channel: " + channel.replace(team, "");
             console.log("USER " + sender + "HAS BEEN ACCEPTED TO " + channel.replace(team, ""));
@@ -688,9 +688,6 @@ function TeamPage() {
 
                             <button className="reply-msg-btn" onClick={() => handleReplyMessage(msg)}>↩</button>
 
-                            {userRole && ["admin", "superUser"].includes(userRole) && (
-                                <button className="delete-msg-btn" onClick={() => handleDeleteMessage(msg.id)}>×</button>
-                            )}
                             {["admin", "superUser"].includes(userRole) && msg.request && (
                                 <>
                                     <br />
