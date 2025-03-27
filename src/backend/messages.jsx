@@ -3,7 +3,7 @@ import { collection, addDoc } from "firebase/firestore";
 import { getCurrentUser } from "./auth.jsx";
 import { ref, set } from "firebase/database";
 
-export const createMessages = async (Message, Location, replyPayload = null, request = false, invite = false, channel = null) => {
+export const createMessages = async (Message, Location, request = false, invite = false, channel = null, replyPayload = null,) => {
     try {
         const user = getCurrentUser();
 
