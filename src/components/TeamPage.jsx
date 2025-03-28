@@ -2,7 +2,13 @@ import "../TeamPage.css";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { FaUsers, FaComments, FaPlus, FaChevronRight, FaChevronLeft, } from "react-icons/fa";
-import {getOtherUsername, getTeamMembers, getUserDMs, getUsername} from "../backend/Queries/getUserFields.jsx";
+import {
+    getOtherUsername,
+    getTeamMembers,
+    getUserDMs,
+    getUsername,
+    pullFirstUserChannel
+} from "../backend/Queries/getUserFields.jsx";
 import {getUserChannels} from "../backend/Queries/getUserFields.jsx";
 import {doesUserExist, getCurrentUser, SignOutAuth} from "../backend/auth";
 import {getUserRole, getUserTeam} from "../backend/Queries/getUserFields.jsx";
@@ -64,10 +70,19 @@ function TeamPage() {
     const [dmUsername, setDMUsername] = useState("");
     const [selectedChat,setSelectedChat] = useState(null);
     const [isUserListExpanded, setIsUserListExpanded] = useState(false);
-
+    const [firstChat, setFirstChat] = useState(null);
 
     const [refresh, setRefresh] = useState(false);
     const navigate = useNavigate();
+
+
+    useEffect(() => {
+        const setFirstChannel = async() => {
+            setSelectedChat(await pullFirstUserChannel());
+            console.log("First channel", selectedChat);
+        }
+        setFirstChannel();
+    }, [refresh]);
 
     updateUserStatus(getCurrentUser());
 
@@ -134,35 +149,17 @@ function TeamPage() {
     const dms = getEffectMessages(team)
     //test
 
-    // fetch user dms
-    // useEffect(() => {
-    //     const getDMs = async () => {
-    //         const userDMss = await getUserDMs();
-    //         const DMList = [];
-    //
-    //         for (const userDM of userDMss) {
-    //             if (userDM.includes(thisUsername)) { // display other username
-    //                 const DMname = getDMname(userDM);
-    //                 DMList.push({ name: DMname, id: userDM });
-    //             }
-    //         }
-    //
-    //         setDms(DMList);
-    //         if(DMList.length === 0){console.log("no dms transferred")}
-    //         // DMList.forEach(dm => {console.log("dm retrieved " + dm.name)})
-    //     };
-    //
-    //     getDMs();
-    // }, [refresh]);
-
     //upon clicking a channel or a dm you would subscribe to the real time messages
-
-
     useEffect(() => {
         console.log("THIS CHAT IS: "+ selectedChat);
         const messagesRef = ref(realtimeDB, 'messages');
         console.log("Filtering messages for channel:", selectedChat);
 
+        if (!selectedChat){
+            setRefresh(prev => !prev);
+            return;
+        }
+        
         const q = query(messagesRef, orderByChild('Location'), equalTo(selectedChat));
 
         const unsubscribe = onValue(q, (snapshot) => {
@@ -229,7 +226,7 @@ function TeamPage() {
         return () => {
             unsubscribe();
         };
-    }, [refresh, team]);
+    }, [team]);
 
 
     //---------------------------------------------------------------
@@ -284,7 +281,6 @@ function TeamPage() {
         }
         else{
             await createChannel(channelName,isDefaultChannel);
-            setRefresh(prev => !prev);
             setChannelName("");
             setAddChannelModalOpen(false);
         }
@@ -295,7 +291,6 @@ function TeamPage() {
         const DMid2 = otherUsername.concat(thisUsername);
         console.log("Possible DMs: " + DMid1 + " | " + DMid2);
         let DMid = DMid1;
-        setRefresh(prev => !prev);
         if(!dms.some(dm => dm.id === DMid1)){
             DMid = DMid2;
         }
@@ -330,7 +325,6 @@ function TeamPage() {
             }
             setDMUsername("");
             setAddDMModalOpen(false);
-            setRefresh(prev => !prev);
         }
     }
 
@@ -452,8 +446,7 @@ function TeamPage() {
         await updateDoc(userRef, {
             channels: arrayRemove(selectedChat),
         });
-
-        setRefresh(prev => !prev )
+        
         console.log("Channel " + selectedChat + " removed successfully from user " + thisUser.uid);
         alert("You have left channel " + selectedChat.replace(team, ""));
     }
@@ -540,7 +533,6 @@ function TeamPage() {
                     className="toggle-btn"
                     onClick={() => {
                         setViewMode(viewMode === "dms" ? "channels" : "dms");
-                        setRefresh(prev => !prev);
                     }}
                     whileHover={{ scale: 1.1 }}
                 >

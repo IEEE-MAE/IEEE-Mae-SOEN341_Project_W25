@@ -214,6 +214,29 @@ export async function getTeamAdmins(teamID) {
     }
 }
 
+export async function pullFirstUserChannel() {
+    const user = getCurrentUser()
+
+    try{
+        //This gets the snapshot of the users doc
+        const userDocRef = doc(db, "users", user.uid);
+        const userDocSnapshot = await getDoc(userDocRef);
+
+        //puts the channels IDs from the user
+        const userData = userDocSnapshot.data();
+        const channel =  userData ? userData.channels[0] : [];
+        if(!channel) {
+            console.log("no channels found");
+            return [];
+        }
+        console.log("********** CHANNEL FOUND: ", channel);
+        return channel;
+    }
+    catch(error){
+        console.log("error fetching user's first  channel: " + error);
+    }
+
+}
 
 
 //
