@@ -132,33 +132,17 @@ function TeamPage() {
     // fetch team channels
     const teamChannels = getEffectChannel(team, "team");
 
-    const dms = getEffectMessages(team)
-    //test
-
     // fetch user dms
-    // useEffect(() => {
-    //     const getDMs = async () => {
-    //         const userDMss = await getUserDMs();
-    //         const DMList = [];
-    //
-    //         for (const userDM of userDMss) {
-    //             if (userDM.includes(thisUsername)) { // display other username
-    //                 const DMname = getDMname(userDM);
-    //                 DMList.push({ name: DMname, id: userDM });
-    //             }
-    //         }
-    //
-    //         setDms(DMList);
-    //         if(DMList.length === 0){console.log("no dms transferred")}
-    //         // DMList.forEach(dm => {console.log("dm retrieved " + dm.name)})
-    //     };
-    //
-    //     getDMs();
-    // }, [refresh]);
+    const dms = getEffectMessages(team)
 
-    //upon clicking a channel or a dm you would subscribe to the real time messages
+    const isEditable = (timestamp) =>{
+        if(!timestamp) return false;
+        const minutesThreshold = 1; // in min
+        return (Date.now() - timestamp) < (minutesThreshold*60*1000);
 
+    }
 
+    // fetch messages based on channel/dm selected
     useEffect(() => {
         console.log("THIS CHAT IS: "+ selectedChat);
         const messagesRef = ref(realtimeDB, 'messages');
@@ -181,7 +165,7 @@ function TeamPage() {
                             request: msg.isRequest,
                             invite: msg.isInvite,
                             refChannel: msg.refChannelID,
-                            replyTo: msg.replyTo || null
+                            replyTo: msg.replyTo || null,
                         }));
                     })
                 ).then(messagesList => {
@@ -397,6 +381,15 @@ function TeamPage() {
         // send invite in message
         const inviteMsg = thisUsername + " has requested to join " + selectedChat.replace(team, "");
         await createMessages(inviteMsg, DMid, true, false, selectedChat); // request = true, invite = false
+    }
+
+    const editMessage = async (newMsg, msgID) => {
+        const updatedMsg= "* " + newMsg;
+        const updates = {
+            Message: updatedMsg,
+        }
+        await update(ref(realtimeDB, `messages/${msgID}`), updates);
+        console.log("updated message: ", msgID);
     }
 
     const handleAccept = async (invite, request, sender, channel, msgID) => {
@@ -678,8 +671,10 @@ function TeamPage() {
                             <strong>{msg.sender}:</strong> {msg.text}
                             <span className="time">{msg.time}</span>
 
-                            {["admin", "superUser"].includes(userRole) && (
-                                <button className="delete-msg-btn" onClick={() => handleDeleteMessage(msg.id)}>×</button>
+                            {/* button to delete message */}
+                            {/* shows up for all messages for admins, for own messages if message was sent recently */}
+                            {(["admin", "superUser"].includes(userRole) || (msg.sender === thisUsername && isEditable(msg.timeSort))) && (
+                                <button className="delete-msg-btn" onClick={()=>handleDeleteMessage(msg.id)}>×</button>
                             )}
 
                             {selectedReplyMessage && selectedReplyMessage.id === msg.id && (
@@ -687,6 +682,12 @@ function TeamPage() {
                             )}
 
                             <button className="reply-msg-btn" onClick={() => handleReplyMessage(msg)}>↩</button>
+
+                            {/*button to edit message, shows up for own messages if message was sent recently */}
+                            {/* clicking this should open an edit window where the new input will be recorded and sent to the function editMessage(newMessage, msg.id) */}
+                            {(msg.sender === thisUsername && isEditable(msg.timeSort)) && (
+                                <button className="delete-msg-btn" onClick={()=>editMessage("THIS WAS EDITED", msg.id)}>✎</button>
+                            )}
 
                             {["admin", "superUser"].includes(userRole) && msg.request && (
                                 <>
