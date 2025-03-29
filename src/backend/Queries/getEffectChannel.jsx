@@ -2,8 +2,9 @@ import { db, auth } from "../../config/firebase.jsx";
 import {doc,setDoc, getDoc, query, collection, where, getDocs, updateDoc, onSnapshot} from 'firebase/firestore';
 import {getCurrentUser} from "../auth.jsx";
 import {useEffect, useState} from "react";
-import {getUsername} from "./getUserFields.jsx";
+import {getUsername, getUserTeam} from "./getUserFields.jsx";
 import {getSuperUserId} from "./getSuperUser.jsx";
+import {getAuth} from "firebase/auth";
 
 export function getEffectChannel(team, type) {
 
@@ -156,4 +157,71 @@ export function getEffectMessages(team) {
 
     return dms;
 }
+
+//local page refresh
+const waitForUser = () => {
+    return new Promise((resolve) => {
+        const check = () => {
+            const user = getAuth().currentUser;
+            if (user) {
+                resolve(user);
+            } else {
+                setTimeout(check, 100); // Try again in 100ms
+            }
+        };
+        check();
+    });
+};
+
+export function getEffectTeam() {
+    const [team, setTeam] = useState();
+
+
+    useEffect(() => {
+        let unsubscribe;
+
+        const checkUserTeam = async () => {
+
+            const user = await waitForUser();
+            //code from getUserFeild;
+            try{
+                //This gets the snapshot of the users doc
+                const userDocRef = doc(db, "users", user.uid);
+                unsubscribe = onSnapshot(userDocRef, (userDocSnapshot) => {
+                    if (userDocSnapshot.exists()) {
+
+                        //puts the team ID from the user into const teamID
+                        const userData = userDocSnapshot.data();
+                        const teamID = userData ? userData.team : null;
+                        if (!teamID) {
+                            console.log("no teamID");
+                            return null;
+                        }
+
+                        //teampage code
+                        if (user) {
+                            setTeam(teamID);
+                        } else {
+                            setTeam(false);
+                        }
+                    } else {
+                        console.log("User doc not found");
+                    }
+                });
+
+            }catch(error){
+                console.log("error fetching user's team: " + error);
+            }
+        };
+        checkUserTeam();
+
+        return () => {
+            if (unsubscribe) unsubscribe();
+        };
+    }, []); // Depend on team so the listener updates when team changes
+
+    return team;
+}
+
+
 
