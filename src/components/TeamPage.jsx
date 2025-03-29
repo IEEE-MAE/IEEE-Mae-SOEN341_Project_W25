@@ -295,13 +295,14 @@ function TeamPage() {
 
     const handleAddAdmin = async () => {
         const hasTeam = await userHasTeam(adminUsername);
-        if(hasTeam){
+        const isInTeam = await userInTeam(adminUsername);
+        if((!isInTeam && !hasTeam)||(isInTeam && hasTeam)){
+            await addAdminToTeam(adminUsername, team);
+            setAdminUsername("");
+        }else{
             alert("This user has a team");
             setAdminUsername("");
-            return;
         }
-        await addAdminToTeam(adminUsername, team);
-        setAdminUsername("");
     }
 
     const handleInviteMemberToChannel = async () => {
