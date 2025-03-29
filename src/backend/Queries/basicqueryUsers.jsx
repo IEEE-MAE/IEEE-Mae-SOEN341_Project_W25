@@ -62,35 +62,3 @@ export const userInTeam = async(username) => {
         console.log("error isUserInTeam: " + error);
     }
 }
-
-
-// export async function pullUser() {
-//     try {
-//         //this pulls the collection
-//         const itemsRef = collection(db, 'teams');
-//         //pulls a snapshot of the collection
-//
-//
-//         const querySnapshot = await getDocs(itemsRef);
-//
-//         const docs = querySnapshot.docs;
-//
-//         const items = [];
-//
-//         //querySnapshot.forEach((doc) => {
-//         for(const doc of docs){
-//             const data = doc.data();
-//             items.push({
-//                 id: doc.id,
-//                 ...data,
-//             });
-//         }
-//         console.log('Retrieved Items:', items);
-//         return items;
-//
-//     } catch (error) {
-//         console.log('error pulling document', error);
-//         return [];
-//     }
-//
-// }

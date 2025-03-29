@@ -1,7 +1,7 @@
-import {doesUserExist} from "./auth.jsx";
+
 import {arrayUnion, collection, doc, getDocs, query, updateDoc, where} from "firebase/firestore";
 import {db} from "../config/firebase.jsx";
-import {getSuperUserChannels, getSuperUserDefaultChannels} from "./Queries/getSuperUser.jsx";
+import {getSuperUserDefaultChannels} from "./Queries/getSuperUser.jsx";
 
 
 const addMemberToTeam = async (username, teamName) => {

@@ -4,7 +4,6 @@ import * as React from "react";
 import { motion } from "framer-motion";
 import {useState} from "react";
 import {createTeam} from "../backend/createTeam.jsx";
-import {getAuth} from "firebase/auth";
 import {doc, getDoc} from "firebase/firestore";
 import {db} from "../config/firebase.jsx";
 import {getCurrentUser} from "../backend/auth.jsx";
