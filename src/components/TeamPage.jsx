@@ -2,14 +2,12 @@ import "../TeamPage.css";
 import { motion } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import { FaUsers, FaComments, FaPlus, FaChevronRight, FaChevronLeft, } from "react-icons/fa";
-import {getOtherUsername, getTeamMembers, getUserDMs, getUsername} from "../backend/Queries/getUserFields.jsx";
-import {getUserChannels} from "../backend/Queries/getUserFields.jsx";
-import {doesUserExist, getCurrentUser, SignOutAuth} from "../backend/auth";
-import {getUserRole, getUserTeam} from "../backend/Queries/getUserFields.jsx";
+import {doesChannelExist, doesUserExist, getCurrentUser, SignOutAuth} from "../backend/auth";
+import {getUsername, getUserRole, getUserTeam} from "../backend/Queries/getUserFields.jsx";
 import { useNavigate } from "react-router-dom";
 import {createMessages} from "../backend/messages.jsx";
 import {db, realtimeDB} from "../config/firebase.jsx";
-import {query, onValue, ref, orderByChild, equalTo, remove, update} from "firebase/database";
+import {query, onValue, ref, orderByChild, equalTo, remove, update} from "firebase/database";  //[no touch]
 import * as React from "react";
 import {createChannel} from "../backend/createChannel.jsx";
 import addMemberToTeam from "../backend/addMemberToTeam.jsx";
@@ -17,14 +15,9 @@ import addAdminToTeam from "../backend/addAdminToTeam.jsx";
 import addMemberToChannel from "../backend/addMemberToChannel.jsx";
 import {createDM} from "../backend/createDM.jsx";
 import personIcon from "../assets/person_24dp_E8EAED_FILL1_wght400_GRAD0_opsz24.svg";
-import {
-    getSuperUserChannels,
-    getSuperUserDefaultChannels,
-    getSuperUserId,
-    getSuperUserUsername
-} from "../backend/Queries/getSuperUser.jsx";
-import {doc, updateDoc, arrayRemove, collection, where, onSnapshot} from "firebase/firestore";
-import {getAuth} from "firebase/auth";
+import {getSuperUserDefaultChannels,getSuperUserUsername} from "../backend/Queries/getSuperUser.jsx";
+import {doc, updateDoc, arrayRemove, collection, where, onSnapshot} from "firebase/firestore";  //[no touch]
+import {getAuth} from "firebase/auth";  //[no touch]
 import {updateUserStatus} from "../backend/updateStatus.jsx";
 import {isUserInChannel, userInTeam} from "../backend/Queries/basicqueryUsers.jsx";
 import {getDMname, getEffectChannel, getEffectMessages} from "../backend/Queries/getEffectChannel.jsx";
@@ -32,26 +25,17 @@ import {getMessageEffect} from "../backend/Queries/getEffectMessage.jsx";
 
 const teams = [{ id: 1, name: "Channels", icon: <FaUsers /> }];
 
-// example names for DM feature (replace with backend implementation)
-const contacts = ["Alice", "Bob", "Charlie"];
-
 function TeamPage() {
     const [selectedTeam, setSelectedTeam] = useState(1); // start with first team
     const [thisUsername, setThisUsername] = useState(""); // logged in username
     const [viewMode, setViewMode] = useState("channels"); // sidebar mode
     const [userRole, setUserRole] = useState(""); // user role
     const [team, setTeam] = useState();
-
-    //const [dms, setDms] = useState([]);
-    //const [teamChannels, setTeamChannels] = useState([]);
     const [users, setUsers] = useState([]);
-
-    //const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
 
     const [isUserInTeam, setIsUserInTeam] = useState(null);
     const [isDefaultChannel, setIsDefaultChannel] = useState(false);
-
     const [isAddMemberModalOpen, setAddMemberModalOpen] = useState(false);
     const [isAddAdminModalOpen, setAddAdminModalOpen] = useState(false);
     const [isAddChannelModalOpen, setAddChannelModalOpen] = useState(false);
@@ -69,12 +53,13 @@ function TeamPage() {
     const messageInputRef = useRef(null);
     const [inputPlaceholder, setInputPlaceholder] = useState("Type a message...");
 
-
     const [refresh, setRefresh] = useState(false);
     const navigate = useNavigate();
 
+    //live update user status
     updateUserStatus(getCurrentUser());
 
+    //local page refresh
     const waitForUser = () => {
         return new Promise((resolve) => {
             const check = () => {
@@ -89,6 +74,7 @@ function TeamPage() {
         });
     };
 
+    //get user team
     useEffect(() => {
         const checkUserTeam = async () => {
             const user = await waitForUser();
@@ -105,6 +91,7 @@ function TeamPage() {
         checkUserTeam();
     }, []);
 
+    //get user role
     useEffect(() => {
         if(!team) return;
         const checkUserRole = async () => {
@@ -121,11 +108,15 @@ function TeamPage() {
         checkUserRole();
     }, [team])
 
+    //page modal config
     useEffect(() => {
         if (isAddChannelModalOpen) {
             setIsDefaultChannel(false); // Reset checkbox when modal opens
         }
     }, [isAddChannelModalOpen]);
+
+
+    //---- realtime updates of channel, DM's, Messages ----
 
     // fetch user teams
     const channels = getEffectChannel(team, "user");
@@ -133,14 +124,15 @@ function TeamPage() {
     // fetch team channels
     const teamChannels = getEffectChannel(team, "team");
 
+    //fetch user DM
     const dms = getEffectMessages(team)
 
+    //fetch all messages for channel
     const messages = getMessageEffect(selectedChat);
-    //test
 
-    // fetch user dms
-    const dms = getEffectMessages(team)
+    //--------------------------------------------------
 
+    //checks if message has passed editing threshold
     const isEditable = (timestamp) =>{
         if(!timestamp) return false;
         const minutesThreshold = 1; // in min
@@ -148,53 +140,7 @@ function TeamPage() {
 
     }
 
-    // useEffect(() => {
-    //     console.log("THIS CHAT IS: "+ selectedChat);
-    //     const messagesRef = ref(realtimeDB, 'messages');
-    //     console.log("Filtering messages for channel:", selectedChat);
-    //
-    //     const q = query(messagesRef, orderByChild('Location'), equalTo(selectedChat));
-    //
-    //     const unsubscribe = onValue(q, (snapshot) => {
-    //         const data = snapshot.val();
-    //         if (data) {
-    //             // Use Promise.all without marking the callback as async
-    //             Promise.all(
-    //                 Object.entries(data).map(([id, msg]) => {
-    //                     return getOtherUsername(msg.Sender).then(username => ({
-    //                         id,
-    //                         sender: username,
-    //                         text: msg.Message,
-    //                         time: new Date(msg.timestamp).toLocaleTimeString(),
-    //                         timeSort: msg.timestamp,
-    //                         request: msg.isRequest,
-    //                         invite: msg.isInvite,
-    //                         refChannel: msg.refChannelID,
-    //                         replyTo: msg.replyTo || null
-    //                     }));
-    //                 })
-    //             ).then(messagesList => {
-    //                 // Sort in ascending order (oldest to newest)
-    //                 messagesList.sort((a, b) => b.timeSort - a.timeSort);
-    //                 console.log("Sorted messagesList:", messagesList);
-    //                 setMessages(messagesList);
-    //             })
-    //                 .catch(err => {
-    //                     console.error("Error processing messages:", err);
-    //                     setMessages([]);
-    //                 });
-    //         } else {
-    //             setMessages([]);
-    //         }
-    //     });
-    //
-    //     return () => {
-    //         unsubscribe();
-    //     };
-    // },[selectedChat]);
-
-    //----------------------UPDATING STATUS LIVE ---------------------
-    // fetch team users
+    //realtime update of team users status
     useEffect(() => {
         if(!team)return;
         const q = query(collection(db, 'users'), where('team', '==', team));
@@ -214,17 +160,13 @@ function TeamPage() {
             }
 
             setUsers(userList);
-
         })
-
         return () => {
             unsubscribe();
         };
     }, [refresh, team]);
 
-
-    //---------------------------------------------------------------
-
+    //validate username
     const validUsername = async (username) => {
         const userExists = await doesUserExist(username);
         if(!userExists) {
@@ -235,6 +177,16 @@ function TeamPage() {
         }
     }
 
+    //validate channel name
+    const validChannelName = async (channelName) => {
+        const channelExists = await doesChannelExist(channelName);
+        if(channelExists) {
+            alert("Channel name is taken. Please try again.");
+            setChannelName("");
+        }
+    }
+
+    //validate channel member
     const validChannelMember = async (username) => {
         await validUsername(username);
         const sameTeam = await userInTeam(username);
@@ -254,7 +206,7 @@ function TeamPage() {
     }
 
 
-    // Function to send a message
+    // sends the message on button: send
     const sendMessage = async () => {
         console.log("THIS CHAT IS: " + selectedChat);
 
@@ -281,6 +233,17 @@ function TeamPage() {
         });
     };
 
+
+    const editMessage = async (newMsg, msgID) => {
+        const updatedMsg= "* " + newMsg;
+        const updates = {
+            Message: updatedMsg,
+        }
+        await update(ref(realtimeDB, `messages/${msgID}`), updates);
+        console.log("updated message: ", msgID);
+    }
+
+    //------------------- Handle Functions ----------------
 
     const handleReplyMessage = (msg) => {
         setSelectedReplyMessage(msg)
@@ -388,14 +351,7 @@ function TeamPage() {
         await createMessages(inviteMsg, DMid, true, false, selectedChat); // request = true, invite = false
     }
 
-    const editMessage = async (newMsg, msgID) => {
-        const updatedMsg= "* " + newMsg;
-        const updates = {
-            Message: updatedMsg,
-        }
-        await update(ref(realtimeDB, `messages/${msgID}`), updates);
-        console.log("updated message: ", msgID);
-    }
+
 
     const handleAccept = async (invite, request, sender, channel, msgID) => {
         console.log("IN HANDLE ACCEPT")
@@ -488,6 +444,7 @@ function TeamPage() {
         console.log("REMOVE MESSAGE: ", messageId);
     }
 
+    //authentication check
     if(!getCurrentUser()){
         return (
             <div className="no-team">
@@ -502,10 +459,7 @@ function TeamPage() {
         );
     }
 
-    // if (isUserInTeam === null) { // Fetching team data, throw loading message
-    //     return <div className="loading">Loading...</div>;
-    // }
-
+    //checks if user has team, alternate display if no team
     if (!isUserInTeam) {
         return (
             <div className="no-team">
@@ -814,6 +768,7 @@ function TeamPage() {
                             placeholder="Enter channel name"
                             value={channelName}
                             onChange={(e) => setChannelName(e.target.value)}
+                            onBlur={() => validChannelName(channelName)}
                         />
                         <div className="checkbox-container">
                             <input

@@ -1,7 +1,5 @@
 import {arrayUnion, collection, doc, getDocs, query, updateDoc, where} from "firebase/firestore";
 import {db} from "../config/firebase.jsx";
-import {getTeamAdmins, getTeamMembers, getUserTeam} from "./Queries/getUserFields.jsx";
-import {getSuperUserId} from "./Queries/getSuperUser.jsx";
 import {isUserInChannel, userInTeam} from "./Queries/basicqueryUsers.jsx";
 
 

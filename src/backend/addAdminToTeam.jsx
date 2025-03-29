@@ -1,4 +1,4 @@
-import {doesUserExist} from "./auth.jsx";
+
 import {arrayUnion, collection, doc, getDocs, query, updateDoc, where} from "firebase/firestore";
 import {db} from "../config/firebase.jsx";
 import {getSuperUserChannels} from "./Queries/getSuperUser.jsx";

@@ -1,8 +1,5 @@
 import {db, realtimeDB} from "../../config/firebase.jsx";
-import {getCurrentUser} from "../auth.jsx";
 import {useEffect, useState} from "react";
-import {getUserChannels, getUsername} from "./getUserFields.jsx";
-import {getSuperUserId} from "./getSuperUser.jsx";
 import {query, ref, orderByChild, equalTo, remove, update} from "firebase/database";
 import {onValue} from "firebase/database";
 import {getOtherUsername} from "./getUserFields.jsx";
@@ -58,16 +55,3 @@ export function getMessageEffect(selectedChat) {
 
     return messages;
 }
-
-/**
-};
-getChannelNames();
-
-return () => {
-    if (unsubscribe) unsubscribe();
-};
-}, [team]); // Depend on team so the listener updates when team changes
-
-return channels;
-}
-**/

@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { doc, updateDoc, getFirestore } from "firebase/firestore";
 import {db} from "../config/firebase.jsx";
-import {getCurrentUser} from "./auth.jsx";
 
 export function updateUserStatus(user) {
     useEffect(() => {

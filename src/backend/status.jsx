@@ -1,7 +1,5 @@
 import { db, realtimeDB } from "../config/firebase.jsx";
-import {collection, addDoc, setDoc, query, getDocs, getDoc, where} from "firebase/firestore"
-import {getAuth} from "firebase/auth";
-import {getUsername, getUserTeam} from "./Queries/getUserFields.jsx";
+import {getUsername} from "./Queries/getUserFields.jsx";
 import {ref, set} from "firebase/database";
 import {getCurrentUser} from "./auth.jsx";
 
