@@ -167,13 +167,16 @@ function TeamPage() {
             setMemberUsername("");
             setAdminUsername("");
             setDMUsername("");
+            return false;
         }
         if(inChannel) {
             alert("This user is already in this channel.");
             setMemberUsername("");
             setAdminUsername("");
             setDMUsername("");
+            return false;
         }
+        return true;
     }
 
 
@@ -291,6 +294,7 @@ function TeamPage() {
 
     const handleInviteMemberToChannel = async () => {
         // create dm between both users to send invite to join
+        if(!validChannelMember(memberUsername)) return;
         if((userRole === "admin" || userRole === "superUser")){
             let DMid= await doesDMexist(memberUsername);
             if(DMid === false){
