@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import { FaUsers, FaComments, FaPlus, FaChevronRight, FaChevronLeft, } from "react-icons/fa";
 import {doesChannelExist, doesUserExist, getCurrentUser, SignOutAuth} from "../backend/auth";
-import {getUsername, getUserRole, getUserTeam} from "../backend/Queries/getUserFields.jsx";
+import {getUsername, getUserRole} from "../backend/Queries/getUserFields.jsx";
 import { useNavigate } from "react-router-dom";
 import {createMessages} from "../backend/messages.jsx";
 import {db, realtimeDB} from "../config/firebase.jsx";
@@ -17,10 +17,9 @@ import {createDM} from "../backend/createDM.jsx";
 import personIcon from "../assets/person_24dp_E8EAED_FILL1_wght400_GRAD0_opsz24.svg";
 import {getSuperUserDefaultChannels,getSuperUserUsername} from "../backend/Queries/getSuperUser.jsx";
 import {doc, updateDoc, arrayRemove, collection, where, onSnapshot} from "firebase/firestore";  //[no touch]
-import {getAuth} from "firebase/auth";  //[no touch]
 import {updateUserStatus} from "../backend/updateStatus.jsx";
 import {isUserInChannel, userInTeam} from "../backend/Queries/basicqueryUsers.jsx";
-import {getDMname, getEffectChannel, getEffectMessages} from "../backend/Queries/getEffectChannel.jsx";
+import {getDMname, getEffectChannel, getEffectMessages, getEffectTeam} from "../backend/Queries/getEffectChannel.jsx";
 import {getMessageEffect} from "../backend/Queries/getEffectMessage.jsx";
 
 const teams = [{ id: 1, name: "Channels", icon: <FaUsers /> }];
@@ -30,11 +29,10 @@ function TeamPage() {
     const [thisUsername, setThisUsername] = useState(""); // logged in username
     const [viewMode, setViewMode] = useState("channels"); // sidebar mode
     const [userRole, setUserRole] = useState(""); // user role
-    const [team, setTeam] = useState();
     const [users, setUsers] = useState([]);
     const [newMessage, setNewMessage] = useState("");
 
-    const [isUserInTeam, setIsUserInTeam] = useState(null);
+
     const [isDefaultChannel, setIsDefaultChannel] = useState(false);
     const [isAddMemberModalOpen, setAddMemberModalOpen] = useState(false);
     const [isAddAdminModalOpen, setAddAdminModalOpen] = useState(false);
@@ -59,42 +57,15 @@ function TeamPage() {
     //live update user status
     updateUserStatus(getCurrentUser());
 
-    //local page refresh
-    const waitForUser = () => {
-        return new Promise((resolve) => {
-            const check = () => {
-                const user = getAuth().currentUser;
-                if (user) {
-                    resolve(user);
-                } else {
-                    setTimeout(check, 100); // Try again in 100ms
-                }
-            };
-            check();
-        });
-    };
-
-    //get user team
-    useEffect(() => {
-        const checkUserTeam = async () => {
-            const user = await waitForUser();
-            const username = await getUsername();
-            setThisUsername(username);
-            if (user) {
-                const userTeam = await getUserTeam();
-                setIsUserInTeam(userTeam);
-                setTeam(userTeam);
-            } else {
-                setIsUserInTeam(false);
-            }
-        };
-        checkUserTeam();
-    }, []);
+    //this does refresh and getsUserTeam live
+    const team = getEffectTeam();
 
     //get user role
     useEffect(() => {
         if(!team) return;
         const checkUserRole = async () => {
+            const username = await getUsername();
+            setThisUsername(username);
             const role = await getUserRole();
             if(role){
                 setUserRole(role);
@@ -460,7 +431,7 @@ function TeamPage() {
     }
 
     //checks if user has team, alternate display if no team
-    if (!isUserInTeam) {
+    if (!team) {
         return (
             <div className="no-team">
                 <h2>Don't Have a Team?</h2>

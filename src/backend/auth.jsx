@@ -3,7 +3,7 @@ import {collection, doc, setDoc, query, getDocs, getDoc, where, updateDoc, array
 import {createUserWithEmailAndPassword,signInWithEmailAndPassword} from "firebase/auth";
 import {getAuth} from "firebase/auth";
 import {getUserTeam} from "./Queries/getUserFields.jsx";
-import {createStatus} from "./status.jsx";
+
 
 
 // get current use
@@ -77,7 +77,6 @@ export const createUser= async (email, password, userName )=>{
         });
         console.log("sign up: " + user.email);
 
-        await createStatus(Date.now(),'online');
     }
     catch(error){
         console.log("Error during signup: " + error);
