@@ -18,7 +18,7 @@ import personIcon from "../assets/person_24dp_E8EAED_FILL1_wght400_GRAD0_opsz24.
 import {getSuperUserDefaultChannels,getSuperUserUsername} from "../backend/Queries/getSuperUser.jsx";
 import {doc, updateDoc, arrayRemove, collection, where, onSnapshot} from "firebase/firestore";  //[no touch]
 import {updateUserStatus} from "../backend/updateStatus.jsx";
-import {isUserInChannel, userInTeam} from "../backend/Queries/basicqueryUsers.jsx";
+import {isUserInChannel, userHasTeam, userInTeam, userNoTeam} from "../backend/Queries/basicqueryUsers.jsx";
 import {getDMname, getEffectChannel, getEffectMessages, getEffectTeam} from "../backend/Queries/getEffectChannel.jsx";
 import {getMessageEffect} from "../backend/Queries/getEffectMessage.jsx";
 
@@ -283,18 +283,31 @@ function TeamPage() {
     }
 
     const handleAddMember = async () => {
+        const hasTeam = await userHasTeam(memberUsername);
+        if(hasTeam){
+            alert("This user has a team");
+            setMemberUsername("");
+            return;
+        }
         await addMemberToTeam(memberUsername, team);
         setMemberUsername("");
     }
 
     const handleAddAdmin = async () => {
+        const hasTeam = await userHasTeam(adminUsername);
+        if(hasTeam){
+            alert("This user has a team");
+            setAdminUsername("");
+            return;
+        }
         await addAdminToTeam(adminUsername, team);
         setAdminUsername("");
     }
 
     const handleInviteMemberToChannel = async () => {
         // create dm between both users to send invite to join
-        if(!validChannelMember(memberUsername)) return;
+        const validMember = await validChannelMember(memberUsername)
+        if(!validMember) return;
         if((userRole === "admin" || userRole === "superUser")){
             let DMid= await doesDMexist(memberUsername);
             if(DMid === false){
@@ -793,7 +806,6 @@ function TeamPage() {
                             placeholder="Enter member username"
                             value={memberUsername}
                             onChange={(e) => setMemberUsername(e.target.value)}
-                            onBlur={() => validChannelMember(memberUsername)}
                         />
                         <button onClick={() => setAddChannelMemberModalOpen(false)}>Cancel</button>
                         <button onClick={() => {

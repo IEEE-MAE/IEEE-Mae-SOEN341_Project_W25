@@ -67,6 +67,8 @@ export async function getUserTeam() {
     }
 }
 
+
+
 export async function getUserRole() {
     const user = getCurrentUser()
 
