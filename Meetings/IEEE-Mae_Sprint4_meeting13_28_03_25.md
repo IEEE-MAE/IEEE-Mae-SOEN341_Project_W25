@@ -6,7 +6,7 @@ Date: Mar 28 2025
 Participants: Alex, Abu, Mac, Mae, Cami
 
 Start: 6:30pm
-End: 
+End: 7:00pm
 
 ### Meeting Notes
 Abu: 
