@@ -18,7 +18,7 @@ import personIcon from "../assets/person_24dp_E8EAED_FILL1_wght400_GRAD0_opsz24.
 import {getSuperUserDefaultChannels,getSuperUserUsername} from "../backend/Queries/getSuperUser.jsx";
 import {doc, updateDoc, arrayRemove, collection, where, onSnapshot} from "firebase/firestore";  //[no touch]
 import {updateUserStatus} from "../backend/updateStatus.jsx";
-import {isUserInChannel, userHasTeam, userInTeam, userNoTeam} from "../backend/Queries/basicqueryUsers.jsx";
+import {isUserInChannel, userHasTeam, userInTeam} from "../backend/Queries/basicqueryUsers.jsx";
 import {getDMname, getEffectChannel, getEffectMessages, getEffectTeam} from "../backend/Queries/getEffectChannel.jsx";
 import {getMessageEffect} from "../backend/Queries/getEffectMessage.jsx";
 
