@@ -62,3 +62,24 @@ export const userInTeam = async(username) => {
         console.log("error isUserInTeam: " + error);
     }
 }
+
+export const userHasTeam = async(username) => {
+    try {
+        const usersRef = collection(db, "users");
+        const q = query(usersRef, where("username", "==", username));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+            console.log("No user found with username:", username);
+            return false;
+        }
+
+        const userData = querySnapshot.docs[0].data();
+        const userTeam = userData ? userData.team : null;
+
+        return userTeam !== null;
+    }
+    catch(error){
+        console.log("error isUserInTeam: " + error);
+    }
+}
