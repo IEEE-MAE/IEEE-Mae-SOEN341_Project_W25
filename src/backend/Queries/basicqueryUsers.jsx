@@ -77,7 +77,7 @@ export const userHasTeam = async(username) => {
         const userData = querySnapshot.docs[0].data();
         const userTeam = userData ? userData.team : null;
 
-        return userTeam !== null;
+        return !!userTeam && typeof userTeam === "string" && userTeam.trim() !== "";
     }
     catch(error){
         console.log("error isUserInTeam: " + error);

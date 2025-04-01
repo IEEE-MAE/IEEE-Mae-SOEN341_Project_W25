@@ -16,11 +16,12 @@ import addMemberToChannel from "../backend/addMemberToChannel.jsx";
 import {createDM} from "../backend/createDM.jsx";
 import personIcon from "../assets/person_24dp_E8EAED_FILL1_wght400_GRAD0_opsz24.svg";
 import {getSuperUserDefaultChannels,getSuperUserUsername} from "../backend/Queries/getSuperUser.jsx";
-import {doc, updateDoc, arrayRemove, collection, where, onSnapshot} from "firebase/firestore";  //[no touch]
+import {doc, updateDoc, arrayRemove, collection, where, onSnapshot, getDoc} from "firebase/firestore";  //[no touch]
 import {updateUserStatus} from "../backend/updateStatus.jsx";
 import {isUserInChannel, userHasTeam, userInTeam} from "../backend/Queries/basicqueryUsers.jsx";
 import {getDMname, getEffectChannel, getEffectMessages, getEffectTeam} from "../backend/Queries/getEffectChannel.jsx";
 import {getMessageEffect} from "../backend/Queries/getEffectMessage.jsx";
+import {createTeam} from "../backend/createTeam.jsx";
 
 const teams = [{ id: 1, name: "Channels", icon: <FaUsers /> }];
 
@@ -40,6 +41,7 @@ function TeamPage() {
     const [isAddDMModalOpen, setAddDMModalOpen] = useState(false);
     const [isAddChannelMemberModalOpen, setAddChannelMemberModalOpen] = useState(false);
     const [isSendRequestModalOpen, setSendRequestModalOpen] = useState(false);
+    const [isCreateTeamModalOpen, setCreateTeamModalOpen] = useState(false);
 
     const [memberUsername, setMemberUsername] = useState("");
     const [adminUsername, setAdminUsername] = useState("");
@@ -53,12 +55,22 @@ function TeamPage() {
 
     const [refresh, setRefresh] = useState(false);
     const navigate = useNavigate();
+    const [teamName, setTeam] = useState("");
+
 
     //live update user status
     updateUserStatus(getCurrentUser());
 
     //this does refresh and getsUserTeam live
     const team = getEffectTeam();
+    const isInTeam = team;
+
+
+    useEffect(() => {
+        if (!isInTeam) {
+            setViewMode("dms");
+        }
+    }, [isInTeam]);
 
     //get user role
     useEffect(() => {
@@ -341,6 +353,40 @@ function TeamPage() {
     }
 
 
+    const handleNewTeam  = async (e) => {
+        e.preventDefault();
+        try {
+            await createTeam(teamName);
+        } catch (error) {
+            console.error("Error creating team:", error);
+        }
+
+        // if user has team, navigate to the team page
+        try {
+
+            if (!user || !user.uid) {
+                throw new Error("User authentication failed.");
+            }
+
+            // Fetch user document from Firestore
+            const userDocRef = doc(db, "users", user.uid);
+            const userDocSnap = await getDoc(userDocRef);
+
+            if (userDocSnap.exists()) {
+                const userData = userDocSnap.data();
+                if (userData.team && Object.keys(userData.team).length > 0) {
+                    navigate("/TeamPage"); // Redirect to team page if user has a team
+                } else {
+                }
+            } else {
+                console.log("User document not found.");
+
+            }
+        } catch (error) {
+            alert("Error during sign in: " + error);
+        }
+    }
+
 
     const handleAccept = async (invite, request, sender, channel, msgID) => {
         console.log("IN HANDLE ACCEPT")
@@ -448,22 +494,9 @@ function TeamPage() {
         );
     }
 
-    //checks if user has team, alternate display if no team
-    if (!team) {
-        return (
-            <div className="no-team">
-                <h2>Don't Have a Team?</h2>
-                <a href="/create-team">Contact the team admin to add you or create a team now</a>
-                <button className="create-team-button" onClick={() => navigate("/createTeam")}>
-                    Create a Team
-                </button>
-            </div>
-        );
-    }
-
    return (
         <div className="team-page">
-            <motion.div
+            {isInTeam && (<motion.div
                 className={`sidebar ${isUserListExpanded ? "expanded" : ""}`}
                 animate={{ width: isUserListExpanded ? "200px" : "80px" }}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
@@ -479,16 +512,16 @@ function TeamPage() {
                 </motion.button>
 
                 <div className="user-list">
-                     <div className="active-user">
+                    <div className="active-user">
 
-                            <span className={`active-user`}> {thisUsername }</span>
-                     </div>
+                        <span className={`active-user`}> {thisUsername }</span>
+                    </div>
 
                     {users.map(user => (
                         <motion.div key={user.id} className="user-item" whileHover={{ scale: 1.1 }}>
                             <img src={user.profilePic} alt={user.name} className="user-icon" />
                             <div className="user-staus-info">
-                            <div className={`user-status ${user.status}`}></div>
+                                <div className={`user-status ${user.status}`}></div>
                             </div>
                             {isUserListExpanded && <span className="username">{user.name}</span>}
                             {isUserListExpanded && <div className = {`last-seen ${user.status}`}>{user.time}</div> }
@@ -496,10 +529,13 @@ function TeamPage() {
                         </motion.div>
                     ))}
                 </div>
-            </motion.div>
+            </motion.div>)}
+
             {/* Right Sidebar (Channels or DMs) */}
             <div className="channel-sidebar">
-                <motion.div
+
+                {isInTeam && (
+                    <motion.div
                     className="toggle-btn"
                     onClick={() => {
                         setViewMode(viewMode === "dms" ? "channels" : "dms");
@@ -511,7 +547,8 @@ function TeamPage() {
                     <span className="view-toggle-text">
                         Switch to {viewMode === "dms" ? "Channels" : "dms"}
                     </span>
-                </motion.div>
+                </motion.div>)}
+
 
                 <h2>{viewMode === "dms" ? "Direct Messages" : ` ${teams.find(t => t.id === selectedTeam)?.name}`}</h2>
 
@@ -586,6 +623,17 @@ function TeamPage() {
                         <FaPlus /> Add DM
                     </motion.button>
                 )}
+                {/* Create a team Button*/}
+                { !isInTeam &&(
+                    <motion.button
+                        className="add-channel-button"
+                        whileHover={{ scale: 1.1 }}
+                        onClick={() => setCreateTeamModalOpen(true)}
+                    >
+                        <FaPlus /> Create A team
+                    </motion.button>
+                )}
+
             </div>
 
             <div className="chat-name">
@@ -794,6 +842,33 @@ function TeamPage() {
                                 handleAddDM();
                             }}>Confirm</button>
                     </div>
+                </div>
+            )}
+
+            {isCreateTeamModalOpen && (
+                <div className="modal-overlay">
+                    <div
+                        className = "modal"
+                    >
+                        <p>Create Your Team Here</p>
+
+                            <div className = "ct-input-group">
+                                <input
+                                    name = "TeamName"
+                                    id = "TeamName"
+                                    placeholder = "Enter your team name"
+                                    onChange = {(e) => setTeam(e.target.value)}
+                                    whileFocus = "focus"
+                                />
+                            </div>
+                            <button onClick={() => setCreateTeamModalOpen(false)}>Cancel</button>
+                            <button onClick={() => {
+                                handleNewTeam();
+                                setCreateTeamModalOpen(false);
+                            }}>Create Team</button>
+
+                    </div>
+
                 </div>
             )}
 

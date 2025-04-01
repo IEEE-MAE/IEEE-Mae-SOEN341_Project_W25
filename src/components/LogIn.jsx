@@ -42,11 +42,11 @@ function LogIn() {
                     if (userData.team && Object.keys(userData.team).length > 0) {
                         navigate("/TeamPage"); // Redirect to team page if user has a team
                     } else {
-                        navigate("/CreateTeam"); // Redirect to create team page otherwise
+                        navigate("/TeamPage"); // Redirect to create team page otherwise
                     }
                 } else {
                     console.log("User document not found.");
-                    navigate("/CreateTeam");
+                    navigate("/TeamPage");
                 }
             } catch (error) {
                 alert("Username or password is incorrect.");
