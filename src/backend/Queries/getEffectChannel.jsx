@@ -95,7 +95,6 @@ export function getEffectMessages(team) {
 
 //replace this
     useEffect(() => {
-        if (!team) return;
         let unsubscribe;
 
 

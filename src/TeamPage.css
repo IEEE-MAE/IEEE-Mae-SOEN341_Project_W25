@@ -149,6 +149,7 @@
     cursor: pointer;
     text-align: center;
     transition: background 0.3s ease;
+    margin: 5px 2px;
 }
 
 .add-channel-button:hover {
