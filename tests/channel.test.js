@@ -30,8 +30,11 @@ jest.mock("../src/backend/auth.jsx", () => ({
   getCurrentUser: jest.fn(),
 }));
 
-jest.mock("../src/backend/Queries/getUserFields.jsx", () => ({
+// Update the getUserFields mock to include getTeamAdmins as a proper function
+jest.mock('../src/backend/Queries/getUserFields.jsx', () => ({
   getUserTeam: jest.fn(),
+  getSuperUserId: jest.fn(),
+  getTeamAdmins: jest.fn().mockResolvedValue(['admin1', 'admin2'])
 }));
 
 jest.mock("../src/backend/Queries/getSuperUser.jsx", () => ({
