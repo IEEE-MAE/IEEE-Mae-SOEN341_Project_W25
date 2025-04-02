@@ -63,14 +63,13 @@ function TeamPage() {
 
     //this does refresh and getsUserTeam live
     const team = getEffectTeam();
-    const isInTeam = team;
 
 
     useEffect(() => {
-        if (!isInTeam) {
+        if (!team) {
             setViewMode("dms");
         }
-    }, [isInTeam]);
+    }, [team]);
 
     //get user role
     useEffect(() => {
@@ -353,37 +352,11 @@ function TeamPage() {
     }
 
 
-    const handleNewTeam  = async (e) => {
-        e.preventDefault();
+    const handleNewTeam  = async () => {
         try {
             await createTeam(teamName);
         } catch (error) {
             console.error("Error creating team:", error);
-        }
-
-        // if user has team, navigate to the team page
-        try {
-
-            if (!user || !user.uid) {
-                throw new Error("User authentication failed.");
-            }
-
-            // Fetch user document from Firestore
-            const userDocRef = doc(db, "users", user.uid);
-            const userDocSnap = await getDoc(userDocRef);
-
-            if (userDocSnap.exists()) {
-                const userData = userDocSnap.data();
-                if (userData.team && Object.keys(userData.team).length > 0) {
-                    navigate("/TeamPage"); // Redirect to team page if user has a team
-                } else {
-                }
-            } else {
-                console.log("User document not found.");
-
-            }
-        } catch (error) {
-            alert("Error during sign in: " + error);
         }
     }
 
@@ -496,7 +469,7 @@ function TeamPage() {
 
    return (
         <div className="team-page">
-            {isInTeam && (<motion.div
+            {team && (<motion.div
                 className={`sidebar ${isUserListExpanded ? "expanded" : ""}`}
                 animate={{ width: isUserListExpanded ? "200px" : "80px" }}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
@@ -534,7 +507,7 @@ function TeamPage() {
             {/* Right Sidebar (Channels or DMs) */}
             <div className="channel-sidebar">
 
-                {isInTeam && (
+                {team && (
                     <motion.div
                     className="toggle-btn"
                     onClick={() => {
@@ -624,7 +597,7 @@ function TeamPage() {
                     </motion.button>
                 )}
                 {/* Create a team Button*/}
-                { !isInTeam &&(
+                { !team &&(
                     <motion.button
                         className="add-channel-button"
                         whileHover={{ scale: 1.1 }}
@@ -863,6 +836,10 @@ function TeamPage() {
                             </div>
                             <button onClick={() => setCreateTeamModalOpen(false)}>Cancel</button>
                             <button onClick={() => {
+                                if(!teamName) {
+                                    alert("Please enter a team name");
+                                    return;
+                                }
                                 handleNewTeam();
                                 setCreateTeamModalOpen(false);
                             }}>Create Team</button>
