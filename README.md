@@ -13,7 +13,7 @@ This website is created with React framework, JavaScript and CSS. The database i
 The aim is to build this project using Agile methodologies. It has been built and continuously improved over several Sprints, each of which has included User Stories, Tasks and Acceptance Tests detailing the work to be completed in the Sprint. The purpose of this project is to become familiar with the software development process.
 
 --- 
-## Team Members and Roles
+### Team Members and Roles
 
 **Camila Marquez** - Scrum Master, Backend and database
   - ID: 40234852
@@ -31,7 +31,7 @@ The aim is to build this project using Agile methodologies. It has been built an
   - ID: 40229547
   - Github: MalcolmPete
 
-**Abdul Rahman Anver Mohamed Rizan** - Lead testing and CI pipeline
+**Abdul Rahman** - Lead testing and CI pipeline
   - ID: 40272256
   - Github: aburiz
 
