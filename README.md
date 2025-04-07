@@ -14,15 +14,15 @@ The aim is to build this project using Agile methodologies. It has been built an
 
 ### Team Members and Roles
 
-Camila Marquez - Scrum Master, Backend support
+Camila Marquez - Scrum Master, Backend and database
 
-Alexandre Gagnon - Backend support
+Alexandre Gagnon - Backend and database
 
 Maëlle Fieffé-Bédard - Lead frontend (UI)
 
 Malcolm Peterson - Lead design
 
-Abdul Rahman Anver Mohamed Rizan - Lead backend (database)
+Abdul Rahman Anver Mohamed Rizan - Lead testing and CI pipeline
 
 Yara Stouhi - Frontend support
 
