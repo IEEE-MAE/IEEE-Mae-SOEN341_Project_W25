@@ -2,7 +2,7 @@ Date: Apr 7, 2025
 
 Start time: 12pm
 
-End time: 
+End time: 12:30pm
 
 ## Meeting Notes:
 - report due **sunday 13 @ midnight**
