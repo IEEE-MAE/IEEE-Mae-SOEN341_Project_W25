@@ -16,27 +16,27 @@ The aim is to build this project using Agile methodologies. It has been built an
 ## Team Members and Roles
 
 **Camila Marquez** - Scrum Master, Backend and database
-  ID: 40234852
-  Github: camilakin-ms
+  - ID: 40234852
+  - Github: camilakin-ms
 
 **Alexandre Gagnon** - Backend and database
-  ID: 40233225
-  Github: ag42786
+  - ID: 40233225
+  - Github: ag42786
 
 **Maëlle Fieffé-Bédard** - Lead frontend (UI)
-  ID: 40231764
-  Github: maellefb
+  - ID: 40231764
+  - Github: maellefb
 
 **Malcolm Peterson** - Lead design
-  ID: 40229547
-  Github: MalcolmPete
+  - ID: 40229547
+  - Github: MalcolmPete
 
 **Abdul Rahman Anver Mohamed Rizan** - Lead testing and CI pipeline
-  ID: 40272256
-  Github: aburiz
+  - ID: 40272256
+  - Github: aburiz
 
 **Yara Stouhi** - Frontend support
-  ID: 40166845
-  Github: yarastouhi
+  - ID: 40166845
+  - Github: yarastouhi
 
 
