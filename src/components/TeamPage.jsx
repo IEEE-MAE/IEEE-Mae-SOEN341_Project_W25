@@ -18,7 +18,7 @@ import {getSuperUserDefaultChannels,getSuperUserUsername} from "../backend/Queri
 import {doc, updateDoc, arrayRemove, collection, where, onSnapshot, getDoc} from "firebase/firestore";  //[no touch]
 import {updateUserStatus} from "../backend/updateStatus.jsx";
 import {isUserInChannel, userHasTeam, userInTeam} from "../backend/Queries/basicqueryUsers.jsx";
-import {getDMname, getEffectChannel, getEffectMessages, getEffectTeam} from "../backend/Queries/getEffectChannel.jsx";
+import {getDMname, getEffectChannel, getEffectMessages, getEffectTeam, useDefaultChannels} from "../backend/Queries/getEffectChannel.jsx";
 import {getMessageEffect} from "../backend/Queries/getEffectMessage.jsx";
 import {createTeam} from "../backend/createTeam.jsx";
 
@@ -112,6 +112,9 @@ function TeamPage() {
 
     //fetch all messages for channel
     const messages = getMessageEffect(selectedChat);
+
+    const defaultChannelIds = useDefaultChannels(team);
+
 
     //--------------------------------------------------
 
@@ -558,14 +561,22 @@ function TeamPage() {
                     {viewMode === "channels" && selectedTeam !== null && channels
                         ? teamChannels.map((teamChannel) => {
                             const isUserChannel = channels.some(channel => channel.id === teamChannel.id);
-                                return (
-                                    <li
-                                        key={teamChannel.id}
-                                        className={`channel-item ${isUserChannel ? "" : "greyed-out"} ${selectedChat === teamChannel.id ? "active" : ""}`}
-                                        onClick={isUserChannel ? () => setSelectedChat(teamChannel.id) : undefined}
-                                    >
-                                        {teamChannel.name}
-                                        {isUserChannel ? (
+                               return (
+                                   <li
+                                       key={teamChannel.id}
+                                       className={` channel-item 
+                                             ${isUserChannel ? "" : "greyed-out"} 
+                                            ${selectedChat === teamChannel.id ? "active" : ""} 
+                                             ${defaultChannelIds.includes(teamChannel.id) ? "default-channel" : ""} 
+                                            
+                                             `}
+                                       onClick={isUserChannel ? () => setSelectedChat(teamChannel.id) : undefined}
+                                   >
+
+                                       {teamChannel.name}
+
+                                       {!defaultChannelIds.includes(teamChannel.id) && (
+                                           (isUserChannel   ? (
                                             ["admin", "superUser"].includes(userRole) && (
                                                 <button
                                                     className="add-button"
@@ -589,7 +600,9 @@ function TeamPage() {
                                             >
                                                 Request Access
                                             </button>
-                                        )}
+                                        )))}
+
+
                                     </li>
                                 );
                     })
