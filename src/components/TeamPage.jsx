@@ -541,6 +541,7 @@ function TeamPage() {
                     className="toggle-btn"
                     onClick={() => {
                         setViewMode(viewMode === "dms" ? "channels" : "dms");
+                        setSelectedChat(null);
                         setRefresh(prev => !prev);
                     }}
                     whileHover={{ scale: 1.1 }}
@@ -595,7 +596,7 @@ function TeamPage() {
                     })
                         : dms.map((contact) => (
                             <li key={contact.id}
-                                className={`channel-item ${selectedChat === contact ? "active" : ""}`}
+                                className={`channel-item ${selectedChat === contact.id ? "active" : ""}`}
                                 onClick={() => setSelectedChat(contact.id)}
                             >{contact.name}</li>
                         ))
