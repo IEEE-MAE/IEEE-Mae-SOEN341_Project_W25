@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import {createMessages} from "../backend/messages.jsx";
 import {db, realtimeDB} from "../config/firebase.jsx";
 import {query, onValue, ref, orderByChild, equalTo, remove, update} from "firebase/database";  //[no touch]
-import * as React from "react";
 import {createChannel} from "../backend/createChannel.jsx";
 import addMemberToTeam from "../backend/addMemberToTeam.jsx";
 import addAdminToTeam from "../backend/addAdminToTeam.jsx";
@@ -52,6 +51,8 @@ function TeamPage() {
     const [selectedReplyMessage, setSelectedReplyMessage] = useState(null);
     const messageInputRef = useRef(null);
     const [inputPlaceholder, setInputPlaceholder] = useState("Type a message...");
+    const [editingMessageID, setEditingMessageID] = useState(null);
+    const [editedMessageText, setEditedMessageText] = useState("");
 
     const [refresh, setRefresh] = useState(false);
     const navigate = useNavigate();
@@ -446,10 +447,10 @@ function TeamPage() {
         await SignOutAuth();
     }
 
-    const handleDeleteMessage = async (messageId) => {
-        const messageRef = ref(realtimeDB, `messages/${messageId}`);
+    const handleDeleteMessage = async (messageID) => {
+        const messageRef = ref(realtimeDB, `messages/${messageID}`);
         await remove(messageRef);
-        console.log("REMOVE MESSAGE: ", messageId);
+        console.log("REMOVE MESSAGE: ", messageID);
     }
 
     //authentication check
@@ -491,7 +492,7 @@ function TeamPage() {
                     </div>
 
                     {users.map(user => (
-                        <motion.div key={user.id} className="user-item" whileHover={{ scale: 1.1 }}>
+                        <motion.div key={user.id} className="user-item">
                             <img src={user.profilePic} alt={user.name} className="user-icon" />
                             <div className="user-staus-info">
                                 <div className={`user-status ${user.status}`}></div>
@@ -637,7 +638,40 @@ function TeamPage() {
                                 </div>
                             )}
 
-                            <strong>{msg.sender}:</strong> {msg.text}
+                            {/* Edit message functionality */}
+                            {editingMessageID === msg.id ? (
+                                <div className="editing-message-box">
+                                    <input
+                                        type="text"
+                                        value={editedMessageText}
+                                        onChange={(e) => setEditedMessageText(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                                editMessage(editedMessageText, msg.id);
+                                                setEditingMessageID(null);
+                                                setEditedMessageText("");
+                                            }
+                                        }}
+                                        autoFocus
+                                    />
+                                    <div className="editing-message-box-buttons">
+                                        <button
+                                            onClick={() => {
+                                                editMessage(editedMessageText, msg.id);
+                                                setEditingMessageID(null);
+                                                setEditedMessageText("");
+                                            }}
+                                        >
+                                            Save
+                                        </button>
+                                        <button onClick={() => setEditingMessageID(null)}>Cancel</button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <>
+                                    <strong>{msg.sender}:</strong> {msg.text}
+                                </>
+                            )}
                             <span className="time">{msg.time}</span>
 
                             {/* button to delete message */}
@@ -655,7 +689,15 @@ function TeamPage() {
                             {/*button to edit message, shows up for own messages if message was sent recently */}
                             {/* clicking this should open an edit window where the new input will be recorded and sent to the function editMessage(newMessage, msg.id) */}
                             {(msg.sender === thisUsername && isEditable(msg.timeSort)) && (
-                                <button className="delete-msg-btn" onClick={()=>editMessage("THIS WAS EDITED", msg.id)}>✎</button>
+                                <button
+                                    className="edit-msg-btn"
+                                    onClick={() => {
+                                        setEditingMessageID(msg.id);
+                                        setEditedMessageText(msg.text.replace("* ", "")); // prefill with original text
+                                    }}
+                                >
+                                    ✎
+                                </button>
                             )}
 
                             {["admin", "superUser"].includes(userRole) && msg.request && (
