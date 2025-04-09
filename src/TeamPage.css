@@ -20,7 +20,6 @@
     font-weight: bold;
 }
 
-
 .channel-sidebar {
     width: 15%;
     backdrop-filter: blur(10px);
@@ -84,7 +83,6 @@
 }
 
 .channel-item:hover {
-    background: rgba(106, 13, 173, 0.5);
     transform: scale(1.05);
     transform-origin: center;
     overflow: visible;
