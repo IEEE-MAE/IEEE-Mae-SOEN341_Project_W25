@@ -652,23 +652,24 @@ function TeamPage() {
 
             </div>
 
-            <div className="chat-name">
-                {/*Chat Name ie who are you chatting with */}
-                {selectedChat
-                    ? (viewMode === "dms"
-                            ? (<p>Chatting with: {getDMname(selectedChat, thisUsername)}</p>)
-                            : (
-                                <>
-                                <p>On channel: {selectedChat.replace(team, "")}<span><button className="leave-button" onClick={()=> handleLeave()}>leave channel</button></span></p>
 
-                                </>
-                            )
-                    )
-                    : "Select a chat"}
-            </div>
             {/* Chat Space */}
             {selectedChat ? (
             <div className="chat-container">
+                <div className="chat-name">
+                    {/*Chat Name ie who are you chatting with */}
+                    {selectedChat
+                        ? (viewMode === "dms"
+                                ? (<p> {getDMname(selectedChat, thisUsername)}</p>)
+                                : (
+                                    <>
+                                        <p>{selectedChat.replace(team, "")}<span><button className="leave-button" onClick={()=> handleLeave()}>leave channel</button></span></p>
+
+                                    </>
+                                )
+                        )
+                        : "Select a chat"}
+                </div>
                 <div className="messages-box">
                 {messages.map((msg) => (
                     <div
@@ -707,6 +708,7 @@ function TeamPage() {
                             >
                             Save
                             </button>
+
                             <button onClick={() => setEditingMessageID(null)}>Cancel</button>
                         </div>
                         </div>

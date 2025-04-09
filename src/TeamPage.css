@@ -206,15 +206,13 @@
 .chat-container {
     display: flex;
     flex-direction: column;
-    width: 72%;
-    height: 85vh;
+    flex-grow: 1;
+    margin: 15px;
     background: rgba(30, 0, 60, 0.9);
     border-radius: 15px;
     padding: 15px;
-    position: absolute;
-    top: 7%;
-    right: 3%;
     justify-content: space-between;
+    transition: margin 0.3s ease-in-out;
 }
 
 
