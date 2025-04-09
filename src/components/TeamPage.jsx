@@ -125,25 +125,48 @@ function TeamPage() {
 
     //realtime update of team users status
     useEffect(() => {
-        if(!team)return;
+        if (!team) return;
+
         const q = query(collection(db, 'users'), where('team', '==', team));
-        const unsubscribe = onSnapshot(q,(querySnapshot)=> {
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
             const userList = [];
             const queryDocs = querySnapshot.docs;
-            for(const doc of queryDocs){
+
+            for (const doc of queryDocs) {
                 const data = doc.data();
+                const lastSeen = new Date(data.last_seen);
+                const now = new Date();
+                const oneDay = 24 * 60 * 60 * 1000;
+                const timeDiff = now - lastSeen;
+
+                let timeDisplay;
+                if (timeDiff < oneDay) {
+                    timeDisplay = lastSeen.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+                } else {
+                    const daysAgo = Math.floor(timeDiff / oneDay);
+                    timeDisplay = daysAgo === 1 ? "Yesterday" : `${daysAgo} days ago`;
+                }
+
                 const userData = {
                     id: doc.id,
                     name: data.username,
                     profilePic: personIcon,
                     status: data.status,
-                    time: new Date(data.last_seen).toLocaleTimeString(),
-                }
+                    time: timeDisplay,
+                };
                 userList.push(userData);
-            }
 
+                userList.sort((a, b) => {
+                    const statusOrder = {
+                        online: 0,
+                        away: 1,
+                        offline: 2
+                    };
+                    return statusOrder[a.status] - statusOrder[b.status];
+                });
+            }
             setUsers(userList);
-        })
+        });
         return () => {
             unsubscribe();
         };
@@ -493,13 +516,18 @@ function TeamPage() {
 
                     {users.map(user => (
                         <motion.div key={user.id} className="user-item">
-                            <img src={user.profilePic} alt={user.name} className="user-icon" />
-                            <div className="user-staus-info">
-                                <div className={`user-status ${user.status}`}></div>
+                            <div className="user-avatar">
+                                {user.name.charAt(0).toUpperCase()}
                             </div>
-                            {isUserListExpanded && <span className="username">{user.name}</span>}
-                            {isUserListExpanded && <div className = {`last-seen ${user.status}`}>{user.time}</div> }
-
+                            {isUserListExpanded && (
+                                <div className="user-text">
+                                    <span className="username">{user.name}</span>
+                                    <span className={`last-seen ${user.status}`}>
+                                        {user.status === "online" ? "Active" : user.time}
+                                    </span>
+                                </div>
+                            )}
+                            <div className={`user-status ${user.status}`}></div>
                         </motion.div>
                     ))}
                 </div>
