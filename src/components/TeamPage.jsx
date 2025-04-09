@@ -492,7 +492,7 @@ function TeamPage() {
                     </div>
 
                     {users.map(user => (
-                        <motion.div key={user.id} className="user-item" whileHover={{ scale: 1.1 }}>
+                        <motion.div key={user.id} className="user-item">
                             <img src={user.profilePic} alt={user.name} className="user-icon" />
                             <div className="user-staus-info">
                                 <div className={`user-status ${user.status}`}></div>

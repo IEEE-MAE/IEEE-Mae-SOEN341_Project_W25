@@ -720,10 +720,6 @@ body.modal-open {
     transition: transform 0.2s ease;
 }
 
-.user-item:hover .user-icon {
-    transform: scale(1.1);
-}
-
 .username {
     font-size: 14px;
     transition: opacity 0.3s ease-in-out;
