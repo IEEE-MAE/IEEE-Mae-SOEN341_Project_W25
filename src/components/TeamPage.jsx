@@ -146,6 +146,7 @@ function TeamPage() {
                     const daysAgo = Math.floor(timeDiff / oneDay);
                     timeDisplay = daysAgo === 1 ? "Yesterday" : `${daysAgo} days ago`;
                 }
+
                 const userData = {
                     id: doc.id,
                     name: data.username,

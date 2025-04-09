@@ -834,8 +834,7 @@ body.modal-open {
     padding-top: 2px;
 }
 
-.last-seen.away,
-.last-seen.offline {
+.last-seen.away, .last-seen.offline {
     visibility: visible;
 }
 
