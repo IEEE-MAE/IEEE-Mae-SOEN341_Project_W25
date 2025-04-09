@@ -194,6 +194,8 @@ function TeamPage() {
 
     // sends the message on button: send
     const sendMessage = async () => {
+        if (!newMessage.trim()) return;
+
         console.log("THIS CHAT IS: " + selectedChat);
 
         const replyPayload = selectedReplyMessage
@@ -206,11 +208,10 @@ function TeamPage() {
             }
             : null;
 
-        await createMessages(newMessage, selectedChat, false, false, null, replyPayload);
+        await createMessages(newMessage.trim(), selectedChat, false, false, null, replyPayload);
 
         setNewMessage("");
         setSelectedReplyMessage(null);
-        setInputPlaceholder("Type a message...");
 
         const user = getCurrentUser();
         const userDocRef = doc(db, "users", user.uid);
@@ -218,7 +219,6 @@ function TeamPage() {
             last_seen: Date.now(),
         });
     };
-
 
     const editMessage = async (newMsg, msgID) => {
         const updatedMsg= "* " + newMsg;
