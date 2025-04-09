@@ -37,7 +37,6 @@
     margin: 10px;
 }
 
-
 .channel-list {
     flex-grow: 1;
     list-style: none;
@@ -710,12 +709,18 @@ body.modal-open {
     width: 100%;
 }
 
-.user-icon {
+.user-avatar {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: white;
-    transition: transform 0.2s ease;
+    background-color: #6A5ACD;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1rem;
+    text-transform: uppercase;
 }
 
 .username {
@@ -812,6 +817,30 @@ body.modal-open {
     height: 30px;
     background: #4d3174;
     border-radius: 30px;
+}
+
+.user-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    line-height: 1.2;
+}
+
+.last-seen {
+    font-size: 11px;
+    color: #bbb;
+    visibility: hidden;
+    padding-top: 2px;
+}
+
+.last-seen.away, .last-seen.offline {
+    visibility: visible;
+}
+
+.last-seen.online {
+    color: #90ee90;
+    visibility: visible;
 }
 
 .checkbox-container {
