@@ -6,6 +6,43 @@ import {getUsername, getUserTeam} from "./getUserFields.jsx";
 import {getSuperUserId} from "./getSuperUser.jsx";
 import {getAuth} from "firebase/auth";
 
+export function useDefaultChannels(team) {
+    const [defaultChannelIds, setDefaultChannelIds] = useState([]);
+
+    useEffect(() => {
+        if (!team) return;
+
+        let unsubscribe;
+
+        const getDefaultChannelIds = async () => {
+            try {
+                const superUserID = await getSuperUserId(team); // <- get superUser's doc
+                const userDocRef = doc(db, "users", superUserID);
+
+                unsubscribe = onSnapshot(userDocRef, (snapshot) => {
+                    if (snapshot.exists()) {
+                        const userData = snapshot.data();
+                        const defaults = userData?.defaultChannels || [];
+                        const teamDefaults = defaults.filter(id => id.includes(team));
+                        setDefaultChannelIds(teamDefaults);
+                    } else {
+                        console.log("SuperUser document does not exist");
+                    }
+                });
+            } catch (err) {
+                console.error("Failed to fetch default channels from superUser:", err);
+            }
+        };
+
+        getDefaultChannelIds();
+
+        return () => {
+            if (unsubscribe) unsubscribe();
+        };
+    }, [team]);
+
+    return defaultChannelIds;
+}
 export function getEffectChannel(team, type) {
 
     const [channels, setChannels] = useState([]);
