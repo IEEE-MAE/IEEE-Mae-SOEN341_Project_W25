@@ -653,124 +653,127 @@ function TeamPage() {
                     : "Select a chat"}
             </div>
             {/* Chat Space */}
+            {selectedChat ? (
             <div className="chat-container">
                 <div className="messages-box">
-                    {messages.map((msg) => (
-                        <div
-                            key={msg.id}
-                            className={`message ${msg.sender === thisUsername ? "you" : "other"}`}
-                        >
-                            {msg.replyTo && (
-                                <div className="reply-preview">
-                                    Replying to {msg.replyTo.sender}: "{msg.replyTo.text.slice(0, 30)}{msg.replyTo.text.length > 30 ? '...' : ''}"
-                                </div>
-                            )}
-
-                            {/* Edit message functionality */}
-                            {editingMessageID === msg.id ? (
-                                <div className="editing-message-box">
-                                    <input
-                                        type="text"
-                                        value={editedMessageText}
-                                        onChange={(e) => setEditedMessageText(e.target.value)}
-                                        onKeyDown={(e) => {
-                                            if (e.key === "Enter") {
-                                                editMessage(editedMessageText, msg.id);
-                                                setEditingMessageID(null);
-                                                setEditedMessageText("");
-                                            }
-                                        }}
-                                        autoFocus
-                                    />
-                                    <div className="editing-message-box-buttons">
-                                        <button
-                                            onClick={() => {
-                                                editMessage(editedMessageText, msg.id);
-                                                setEditingMessageID(null);
-                                                setEditedMessageText("");
-                                            }}
-                                        >
-                                            Save
-                                        </button>
-                                        <button onClick={() => setEditingMessageID(null)}>Cancel</button>
-                                    </div>
-                                </div>
-                            ) : (
-                                <>
-                                    <strong>{msg.sender}:</strong> {msg.text}
-                                </>
-                            )}
-                            <span className="time">{msg.time}</span>
-
-                            {/* button to delete message */}
-                            {/* shows up for all messages for admins, for own messages if message was sent recently */}
-                            {(["admin", "superUser"].includes(userRole) || (msg.sender === thisUsername && isEditable(msg.timeSort))) && (
-                                <button className="delete-msg-btn" onClick={()=>handleDeleteMessage(msg.id)}>×</button>
-                            )}
-
-                            {selectedReplyMessage && selectedReplyMessage.id === msg.id && (
-                                <button className="cancel-reply-btn" onClick={() => setSelectedReplyMessage(null)}>× Cancel Reply</button>
-                            )}
-
-                            <button className="reply-msg-btn" onClick={() => handleReplyMessage(msg)}>↩</button>
-
-                            {/*button to edit message, shows up for own messages if message was sent recently */}
-                            {/* clicking this should open an edit window where the new input will be recorded and sent to the function editMessage(newMessage, msg.id) */}
-                            {(msg.sender === thisUsername && isEditable(msg.timeSort)) && (
-                                <button
-                                    className="edit-msg-btn"
-                                    onClick={() => {
-                                        setEditingMessageID(msg.id);
-                                        setEditedMessageText(msg.text.replace("* ", "")); // prefill with original text
-                                    }}
-                                >
-                                    ✎
-                                </button>
-                            )}
-
-                            {["admin", "superUser"].includes(userRole) && msg.request && (
-                                <>
-                                    <br />
-                                    <button className="accept-btn" onClick={() => handleAccept(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>accept</button>
-                                    <button className="deny-btn" onClick={() => handleDeny(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>deny</button>
-                                </>
-                            )}
-                            {userRole === "member" && msg.invite && (
-                                <>
-                                    <br />
-                                    <button className="accept-btn" onClick={() => handleAccept(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>accept</button>
-                                    <button className="deny-btn" onClick={() => handleDeny(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>deny</button>
-                                </>
-                            )}
+                {messages.map((msg) => (
+                    <div
+                    key={msg.id}
+                    className={`message ${msg.sender === thisUsername ? "you" : "other"}`}
+                    >
+                    {msg.replyTo && (
+                        <div className="reply-preview">
+                        Replying to {msg.replyTo.sender}: "{msg.replyTo.text.slice(0, 30)}{msg.replyTo.text.length > 30 ? '...' : ''}"
                         </div>
-                    ))}
+                    )}
+
+                    {/* Edit message functionality */}
+                    {editingMessageID === msg.id ? (
+                        <div className="editing-message-box">
+                        <input
+                            type="text"
+                            value={editedMessageText}
+                            onChange={(e) => setEditedMessageText(e.target.value)}
+                            onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                editMessage(editedMessageText, msg.id);
+                                setEditingMessageID(null);
+                                setEditedMessageText("");
+                            }
+                            }}
+                            autoFocus
+                        />
+                        <div className="editing-message-box-buttons">
+                            <button
+                            onClick={() => {
+                                editMessage(editedMessageText, msg.id);
+                                setEditingMessageID(null);
+                                setEditedMessageText("");
+                            }}
+                            >
+                            Save
+                            </button>
+                            <button onClick={() => setEditingMessageID(null)}>Cancel</button>
+                        </div>
+                        </div>
+                    ) : (
+                        <>
+                        <strong>{msg.sender}:</strong> {msg.text}
+                        </>
+                    )}
+                    <span className="time">{msg.time}</span>
+
+                    {(["admin", "superUser"].includes(userRole) || (msg.sender === thisUsername && isEditable(msg.timeSort))) && (
+                        <button className="delete-msg-btn" onClick={() => handleDeleteMessage(msg.id)}>×</button>
+                    )}
+
+                    {selectedReplyMessage && selectedReplyMessage.id === msg.id && (
+                        <button className="cancel-reply-btn" onClick={() => setSelectedReplyMessage(null)}>× Cancel Reply</button>
+                    )}
+
+                    <button className="reply-msg-btn" onClick={() => handleReplyMessage(msg)}>↩</button>
+
+                    {(msg.sender === thisUsername && isEditable(msg.timeSort)) && (
+                        <button
+                        className="edit-msg-btn"
+                        onClick={() => {
+                            setEditingMessageID(msg.id);
+                            setEditedMessageText(msg.text.replace("* ", ""));
+                        }}
+                        >
+                        ✎
+                        </button>
+                    )}
+
+                    {["admin", "superUser"].includes(userRole) && msg.request && (
+                        <>
+                        <br />
+                        <button className="accept-btn" onClick={() => handleAccept(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>accept</button>
+                        <button className="deny-btn" onClick={() => handleDeny(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>deny</button>
+                        </>
+                    )}
+                    {userRole === "member" && msg.invite && (
+                        <>
+                        <br />
+                        <button className="accept-btn" onClick={() => handleAccept(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>accept</button>
+                        <button className="deny-btn" onClick={() => handleDeny(msg.invite, msg.request, msg.sender, msg.refChannel, msg.id)}>deny</button>
+                        </>
+                    )}
+                    </div>
+                ))}
                 </div>
 
                 <div className="message-input">
-                    {selectedReplyMessage && (
-                        <div className="replying-to">
-                            <span>
-                                Replying to {selectedReplyMessage.sender}: "{selectedReplyMessage.text}"
-                            </span>
-                            <button className="cancel-reply-btn" onClick={() => setSelectedReplyMessage(null)}>×</button>
-                        </div>
-                    )}
-                    <input
-                        type="text"
-                        value={newMessage}
-                        ref={messageInputRef}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                                sendMessage();
-                            }
-                        }}
-                        placeholder={inputPlaceholder}
-                        className="input-field"
-                    />
-                    <button onClick={sendMessage} className="send-button">Send</button>
+                {selectedReplyMessage && (
+                    <div className="replying-to">
+                    <span>
+                        Replying to {selectedReplyMessage.sender}: "{selectedReplyMessage.text}"
+                    </span>
+                    <button className="cancel-reply-btn" onClick={() => setSelectedReplyMessage(null)}>×</button>
+                    </div>
+                )}
+                <input
+                    type="text"
+                    value={newMessage}
+                    ref={messageInputRef}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                        sendMessage();
+                    }
+                    }}
+                    placeholder={inputPlaceholder}
+                    className="input-field"
+                />
+                <button onClick={sendMessage} className="send-button">Send</button>
                 </div>
             </div>
+            ) : (
+            <div className="chat-container no-chat-selected">
+                <p>Please select a channel or DM to start chatting.</p>
+            </div>
+            )}
+
 
             {/* Top Navigation Bar */}
             <div className="top-nav">
