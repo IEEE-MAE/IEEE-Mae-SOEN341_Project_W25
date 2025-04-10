@@ -1,5 +1,5 @@
 
-import {arrayUnion, collection, doc, getDocs, query, updateDoc, where} from "firebase/firestore";
+import {arrayUnion, collection, getDocs, query, updateDoc, where} from "firebase/firestore";
 import {db} from "../config/firebase.jsx";
 import {getSuperUserDefaultChannels} from "./Queries/getSuperUser.jsx";
 

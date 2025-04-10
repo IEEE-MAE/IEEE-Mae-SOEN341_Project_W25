@@ -1,6 +1,6 @@
 import {getCurrentUser} from "./auth.jsx";
 import {getUsername} from "./Queries/getUserFields.jsx";
-import {arrayUnion, doc, getDoc, updateDoc} from "firebase/firestore";
+import {arrayUnion, doc,updateDoc} from "firebase/firestore";
 import {db} from "../config/firebase.jsx";
 import {pullUser} from "./Queries/basicqueryUsers.jsx";
 

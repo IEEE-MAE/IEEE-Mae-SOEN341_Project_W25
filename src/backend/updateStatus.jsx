@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { doc, updateDoc, getFirestore } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import {db} from "../config/firebase.jsx";
 
 export function updateUserStatus(user) {
