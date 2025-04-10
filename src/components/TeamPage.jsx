@@ -21,6 +21,7 @@ import {isUserInChannel, userHasTeam, userInTeam} from "../backend/Queries/basic
 import {getDMname, useGetEffectChannel, useGetEffectMessages, useGetEffectTeam, useDefaultChannels,} from "../backend/Queries/getEffectChannel.jsx";
 import {useGetMessageEffect} from "../backend/Queries/getEffectMessage.jsx";
 import {createTeam} from "../backend/createTeam.jsx";
+import { ToastContainer, toast } from 'react-toastify';
 
 const teams = [{ id: 1, name: "Channels", icon: <FaUsers /> }];
 
@@ -179,7 +180,7 @@ function TeamPage() {
     const validUsername = async (username) => {
         const userExists = await doesUserExist(username);
         if(!userExists) {
-            alert("Username doesn't exist. Please try again.");
+            toast.error("Username doesn't exist. Please try again.");
             setMemberUsername("");
             setAdminUsername("");
             setDMUsername("");
@@ -190,7 +191,7 @@ function TeamPage() {
     const validChannelName = async (channelName) => {
         const channelExists = await doesChannelExist(channelName);
         if(channelExists) {
-            alert("Channel name is taken. Please try again.");
+            toast.error("Channel name is taken. Please try again.");
             setChannelName("");
         }
     }
@@ -201,14 +202,14 @@ function TeamPage() {
         const sameTeam = await userInTeam(username);
         const inChannel = await isUserInChannel(username, selectedChat);
         if(!sameTeam) {
-            alert("This user is not in your team.");
+            toast.error("This user is not in your team.");
             setMemberUsername("");
             setAdminUsername("");
             setDMUsername("");
             return false;
         }
         if(inChannel) {
-            alert("This user is already in this channel.");
+            toast.error("This user is already in this channel.");
             setMemberUsername("");
             setAdminUsername("");
             setDMUsername("");
@@ -265,7 +266,7 @@ function TeamPage() {
 
     const handleAddChannel = async () => {
         if(channelName==="" || channelName === null){
-            alert("Please enter a channel name");
+            toast.error("Please enter a channel name");
             setChannelName("");
         }
         else{
@@ -300,7 +301,7 @@ function TeamPage() {
         }
 
         if(dmUsername==="" || dmUsername === null){
-            alert("Please enter a username");
+            toast.error("Please enter a username");
             setDMUsername("");
         }
         else{
@@ -311,7 +312,7 @@ function TeamPage() {
             }
             else{
                 console.log("DM already exists");
-                alert("You already have a DM with this person!");
+                toast.error("You already have a DM with this person!");
                 setSelectedChat(DMexist);
             }
             setDMUsername("");
@@ -323,7 +324,7 @@ function TeamPage() {
     const handleAddMember = async () => {
         const hasTeam = await userHasTeam(memberUsername);
         if(hasTeam){
-            alert("This user has a team");
+            toast.error("This user has a team");
             setMemberUsername("");
             return;
         }
@@ -338,7 +339,7 @@ function TeamPage() {
             await addAdminToTeam(adminUsername, team);
             setAdminUsername("");
         }else{
-            alert("This user has a team");
+            toast.error("This user has a team");
             setAdminUsername("");
         }
     }
@@ -358,7 +359,7 @@ function TeamPage() {
             setMemberUsername("");
         }
         else{
-            alert("You don't have permission to invite people to this channel!");
+            toast.error("You don't have permission to invite people to this channel!");
             setMemberUsername("");
         }
     }
@@ -448,12 +449,12 @@ function TeamPage() {
 
         if(defaultChannels.includes(selectedChat)){
 
-            alert("You cannot leave a default channel");
+            toast.error("You cannot leave a default channel");
             return;
         }
 
         if(userRole === "admin" || userRole === "superUser"){
-            alert("You are an owner of this channel and therefore cannot leave it");
+            toast.error("You are an owner of this channel and therefore cannot leave it");
             return;
         }
 
@@ -466,7 +467,7 @@ function TeamPage() {
 
         setRefresh(prev => !prev )
         console.log("Channel " + selectedChat + " removed successfully from user " + thisUser.uid);
-        alert("You have left channel " + selectedChat.replace(team, ""));
+        toast.success("You have left channel " + selectedChat.replace(team, ""));
     }
 
     const handleSignOut = async () =>{
@@ -925,7 +926,7 @@ function TeamPage() {
                             <button onClick={() => setCreateTeamModalOpen(false)}>Cancel</button>
                             <button onClick={() => {
                                 if(!teamName) {
-                                    alert("Please enter a team name");
+                                    toast.success("Please enter a team name");
                                     return;
                                 }
                                 handleNewTeam();
@@ -972,6 +973,7 @@ function TeamPage() {
                     </div>
                 </div>
             )}
+        <ToastContainer position="top-right" autoClose={3000} />
         </div>
     );
 }

@@ -852,3 +852,7 @@ body.modal-open {
     font-size: 0.8rem; /* Make text larger */
     cursor: pointer;
 }
+
+.custom-button{
+    width: 260px; /* Fix button width */
+}
