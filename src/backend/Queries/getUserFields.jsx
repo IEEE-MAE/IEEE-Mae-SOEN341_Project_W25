@@ -1,5 +1,5 @@
-import { db, auth } from "../../config/firebase.jsx";
-import {doc, setDoc, getDoc, query, collection, where, getDocs, updateDoc} from 'firebase/firestore';
+import { db } from "../../config/firebase.jsx";
+import {doc, getDoc, query, collection, where, getDocs} from 'firebase/firestore';
 import {getCurrentUser} from "../auth.jsx";
 
 

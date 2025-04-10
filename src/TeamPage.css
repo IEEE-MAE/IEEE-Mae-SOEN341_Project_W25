@@ -368,6 +368,7 @@
     align-items: center;
     justify-content: center;
     z-index: 1000;
+    pointer-events: all; /* Ensures modal buttons remain clickable */
 }
 
 /* Modal Box */
@@ -450,9 +451,6 @@ body.modal-open {
     pointer-events: none; /* Prevents clicks outside modal */
 }
 
-.modal {
-    pointer-events: all; /* Ensures modal buttons remain clickable */
-}
 
 .add-dm-button{
     width: 100%;
@@ -785,19 +783,19 @@ body.modal-open {
     background: #e82720;
 }
 
-.last-seen
-{
-    font-size: 10px;
+.last-seen {
+    font-size: 11px;
+    color: #bbb;
     visibility: hidden;
+    padding-top: 2px;
 }
 
-.last-seen.away
-{
+.last-seen.away, .last-seen.offline {
     visibility: visible;
 }
 
-.last-seen.offline
-{
+.last-seen.online {
+    color: #90ee90;
     visibility: visible;
 }
 
@@ -834,21 +832,6 @@ body.modal-open {
     line-height: 1.2;
 }
 
-.last-seen {
-    font-size: 11px;
-    color: #bbb;
-    visibility: hidden;
-    padding-top: 2px;
-}
-
-.last-seen.away, .last-seen.offline {
-    visibility: visible;
-}
-
-.last-seen.online {
-    color: #90ee90;
-    visibility: visible;
-}
 
 .checkbox-container {
     display: flex;

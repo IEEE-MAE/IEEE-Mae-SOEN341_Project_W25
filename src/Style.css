@@ -60,6 +60,7 @@ h1 {
     align-items: center;
     gap: 15px; /* Ensure space between buttons */
     margin-top: 20px;
+    margin-right: 5px;
 }
 
 /* Button Styling */
@@ -233,9 +234,6 @@ form input::placeholder {
     color: white !important;
 }
 
-button {
-    margin-right: 5px;
-}
 
 /* Ensure List Styling in Team Page */
 #list {

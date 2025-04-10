@@ -1,4 +1,4 @@
-import {collection, getDocs, where, query, doc, getDoc} from 'firebase/firestore';
+import {collection, getDocs, where, query} from 'firebase/firestore';
 import {db} from "../../config/firebase.jsx";
 import {getUserTeam} from "./getUserFields.jsx";
 

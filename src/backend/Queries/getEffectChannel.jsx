@@ -1,8 +1,8 @@
 import { db, auth } from "../../config/firebase.jsx";
-import {doc,setDoc, getDoc, query, collection, where, getDocs, updateDoc, onSnapshot} from 'firebase/firestore';
+import {doc, onSnapshot} from 'firebase/firestore';
 import {getCurrentUser} from "../auth.jsx";
 import {useEffect, useState} from "react";
-import {getUsername, getUserTeam} from "./getUserFields.jsx";
+import {getUsername} from "./getUserFields.jsx";
 import {getSuperUserId} from "./getSuperUser.jsx";
 import {getAuth} from "firebase/auth";
 
@@ -43,7 +43,7 @@ export function useDefaultChannels(team) {
 
     return defaultChannelIds;
 }
-export function getEffectChannel(team, type) {
+export function useGetEffectChannel(team, type) {
 
     const [channels, setChannels] = useState([]);
     //replace this
@@ -126,7 +126,7 @@ export const getDMname = (DMid,thisUsername) =>{
     }
 };
 
-export function getEffectMessages(team) {
+export function useGetEffectMessages(team) {
     const [dms, setDms] = useState([]);
 
 
@@ -209,7 +209,7 @@ const waitForUser = () => {
     });
 };
 
-export function getEffectTeam() {
+export function useGetEffectTeam() {
     const [team, setTeam] = useState();
 
 
