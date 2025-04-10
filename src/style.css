@@ -74,13 +74,12 @@ button {
     text-transform: uppercase;
     cursor: pointer;
     transition: background-color 150ms ease;
-    width: 260px; /* Fix button width */
     text-align: center;
 }
 
-button:hover {
+/* button:hover {
     background-color: var(--text-color);
-}
+} */
 
 button:focus {
     outline: none;
@@ -288,3 +287,5 @@ button {
     z-index: -1; /* Ensures background stays behind content */
     overflow: hidden;
 }
+
+

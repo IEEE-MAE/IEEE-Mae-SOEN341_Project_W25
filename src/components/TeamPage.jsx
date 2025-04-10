@@ -21,6 +21,9 @@ import {isUserInChannel, userHasTeam, userInTeam} from "../backend/Queries/basic
 import {getDMname, getEffectChannel, getEffectMessages, getEffectTeam, useDefaultChannels} from "../backend/Queries/getEffectChannel.jsx";
 import {getMessageEffect} from "../backend/Queries/getEffectMessage.jsx";
 import {createTeam} from "../backend/createTeam.jsx";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const teams = [{ id: 1, name: "Channels", icon: <FaUsers /> }];
 
@@ -179,7 +182,7 @@ function TeamPage() {
     const validUsername = async (username) => {
         const userExists = await doesUserExist(username);
         if(!userExists) {
-            alert("Username doesn't exist. Please try again.");
+            toast.error("Username doesn't exist. Please try again.");
             setMemberUsername("");
             setAdminUsername("");
             setDMUsername("");
@@ -973,6 +976,7 @@ function TeamPage() {
                     </div>
                 </div>
             )}
+        <ToastContainer position="top-right" autoClose={3000} />
         </div>
     );
 }

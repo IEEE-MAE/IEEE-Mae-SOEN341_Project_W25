@@ -5,6 +5,9 @@ import {AnimatePresence} from "framer-motion";
 import LandingPage from "./components/LandingPage.jsx";
 import Iridescence from "./assets/Iridescence.jsx";
 import TeamPage from "./components/TeamPage.jsx";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 function AnimatedRoutes(){
     return(
