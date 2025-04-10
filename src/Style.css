@@ -78,10 +78,6 @@ button {
     text-align: center;
 }
 
-/* button:hover {
-    background-color: var(--text-color);
-} */
-
 button:focus {
     outline: none;
     background-color: var(--text-color);

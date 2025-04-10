@@ -22,8 +22,6 @@ import {getDMname, useGetEffectChannel, useGetEffectMessages, useGetEffectTeam, 
 import {useGetMessageEffect} from "../backend/Queries/getEffectMessage.jsx";
 import {createTeam} from "../backend/createTeam.jsx";
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
 
 const teams = [{ id: 1, name: "Channels", icon: <FaUsers /> }];
 
