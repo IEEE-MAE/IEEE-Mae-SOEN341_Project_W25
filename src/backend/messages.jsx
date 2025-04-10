@@ -1,4 +1,4 @@
-import { db, realtimeDB } from "../config/firebase.jsx";
+import {realtimeDB } from "../config/firebase.jsx";
 import { getCurrentUser } from "./auth.jsx";
 import { ref, push } from "firebase/database";
 

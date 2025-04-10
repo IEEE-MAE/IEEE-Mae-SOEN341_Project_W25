@@ -3,7 +3,7 @@ import {doesUserExist, createUser} from "../backend/auth.jsx";
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import {motion} from "framer-motion";
-import "../style.css"; // Ensure proper styling
+import "../Style.css"; // Ensure proper styling
 
 const pageVariants ={
     initial: { opacity: 0, scale: 0.95 },
@@ -16,14 +16,14 @@ function SignUp() {
     // Holds user input username, email, password, and password verification
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
-    const [firstpass, setFirstpass] = useState("");
+    const [firstPass, setFirstPass] = useState("");
     const [password, setPassword] = useState("");
 
     const navigate = useNavigate();
 
     // Confirms password match
     const confirmPass = () => {
-        if (firstpass !== password) {
+        if (firstPass !== password) {
             alert("Passwords don't match");
             setPassword("");
         }
@@ -43,7 +43,7 @@ function SignUp() {
         // stops passing inputs to browser and clearing form
         e.preventDefault();
 
-        if (firstpass !== password) {
+        if (firstPass !== password) {
             alert("Passwords don't match");
             setPassword("");
             return;
@@ -95,7 +95,7 @@ function SignUp() {
                                     <path d="M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h40v-80q0-83 58.5-141.5T480-920q83 0 141.5 58.5T680-720v80h40q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Zm240-200q33 0 56.5-23.5T560-360q0-33-23.5-56.5T480-440q-33 0-56.5 23.5T400-360q0 33 23.5 56.5T480-280ZM360-640h240v-80q0-50-35-85t-85-35q-50 0-85 35t-35 85v80Z" />
                                 </svg>
                             </label>
-                            <input required type="password" name="password" id="passwordInput" placeholder="Password" onChange={(e) => setFirstpass(e.target.value)} />
+                            <input required type="password" name="password" id="passwordInput" placeholder="Password" onChange={(e) => setFirstPass(e.target.value)} />
                         </div>
                         <div>
                             <label htmlFor="repeatPasswordInput">

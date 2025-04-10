@@ -1,6 +1,6 @@
 import { Renderer, Program, Mesh, Color, Triangle } from "ogl";
 import { useEffect, useRef } from "react";
-import "/src/style.css";
+import "/src/Style.css";
 //iridescence background template from reactbits (https://www.reactbits.dev/backgrounds/iridescence)
 
 // const vertexShader = `
