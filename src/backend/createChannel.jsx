@@ -1,9 +1,7 @@
-import { db, auth } from "../config/firebase.jsx";
-import {doc,setDoc, getDoc, updateDoc, query, collection, where, getDocs, arrayUnion} from 'firebase/firestore';
+import { db } from "../config/firebase.jsx";
+import { arrayUnion, doc, updateDoc} from 'firebase/firestore';
 import {getTeamAdmins, getTeamMembers, getUserTeam} from "./Queries/getUserFields.jsx";
 import {getSuperUserId} from "./Queries/getSuperUser.jsx";
-
-
 
 
 export const createChannel = async (channelName, defaultChannel) => {
@@ -38,14 +36,14 @@ export const createChannel = async (channelName, defaultChannel) => {
     //check team
     const teamID = await getUserTeam();
     if (!teamID) {
-        console.log("ERROR: No team ID found.");
+        console.log("ERROR: No team ID found.")
         return;
     }
 
     //get superUser id
     const superUserID = await getSuperUserId(teamID);
     if (!superUserID) {
-        console.log("ERROR: No superUser ID found.");
+        console.log("ERROR: No superUser ID found.")
         return;
     }
 
@@ -53,7 +51,7 @@ export const createChannel = async (channelName, defaultChannel) => {
     //update superUser channels
     const channelID = teamID.concat(channelName);
     await updateDoc(doc(db, "users", superUserID), {
-        channels: arrayUnion(channelID),
+        channels: arrayUnion(channelID)
     });
 
     //----- copy superUser's updated channel list to every admin of the team -----
@@ -61,12 +59,12 @@ export const createChannel = async (channelName, defaultChannel) => {
 
     //gets list of admins in Admins
     const Admins = await getTeamAdmins(teamID);
-    console.log("Admins: ", Admins);
+    console.log("Admins: ", Admins)
 
     for (const adminId of Admins) {
         const userDocRef = doc(db, "users", adminId);
         await updateDoc(userDocRef, {
-            channels: arrayUnion(channelID),
+            channels: arrayUnion(channelID)
         });
     }
 
@@ -75,14 +73,14 @@ export const createChannel = async (channelName, defaultChannel) => {
     if (defaultChannel) {
         //update superUser channels
         await updateDoc(doc(db, "users", superUserID), {
-            defaultChannels: arrayUnion(channelID),
+            defaultChannels: arrayUnion(channelID)
         });
 
         //updates all admins
         for (const adminId of Admins) {
             const userDocRef = doc(db, "users", adminId);
             await updateDoc(userDocRef, {
-                defaultChannels: arrayUnion(channelID),
+                defaultChannels: arrayUnion(channelID)
             });
         }
 
@@ -94,12 +92,9 @@ export const createChannel = async (channelName, defaultChannel) => {
         for (const memberId of Members) {
             const userDocRef = doc(db, "users", memberId);
             await updateDoc(userDocRef, {
-                channels: arrayUnion(channelID),
+                channels: arrayUnion(channelID)
             });
         }
 
     }
 }
-
-
-

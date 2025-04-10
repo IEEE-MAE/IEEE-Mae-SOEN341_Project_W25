@@ -5,7 +5,7 @@ import { SignInAuth } from "../backend/auth.jsx";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../config/firebase.jsx";
-import "../style.css";
+import "../Style.css";
 
 const pageVariants = {
     initial: { opacity: 0, scale: 0.95 },
