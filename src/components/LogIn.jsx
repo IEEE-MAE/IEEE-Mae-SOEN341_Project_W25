@@ -38,14 +38,6 @@ function LogIn() {
                 const userDocSnap = await getDoc(userDocRef);
 
                 if (userDocSnap.exists()) {
-                    const userData = userDocSnap.data();
-                    if (userData.team && Object.keys(userData.team).length > 0) {
-                        navigate("/TeamPage"); // Redirect to team page if user has a team
-                    } else {
-                        navigate("/TeamPage"); // Redirect to create team page otherwise
-                    }
-                } else {
-                    console.log("User document not found.");
                     navigate("/TeamPage");
                 }
             } catch (error) {
