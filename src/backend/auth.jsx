@@ -1,7 +1,6 @@
 import {db, auth} from "../config/firebase.jsx";
 import {collection, doc, setDoc, query, getDocs, where, updateDoc} from "firebase/firestore"
-import {createUserWithEmailAndPassword,signInWithEmailAndPassword} from "firebase/auth";
-import {getAuth} from "firebase/auth";
+import {createUserWithEmailAndPassword,signInWithEmailAndPassword,getAuth} from "firebase/auth";
 import {getUserTeam} from "./Queries/getUserFields.jsx";
 
 
@@ -33,10 +32,6 @@ export const doesUserExist = async (userName) => {
     }catch(err){
         console.log("Error fetching username:", err);
     }
-    //
-    // const userDocRef = doc(db, "users", userName);
-    // const userDocSnap = await getDoc(userDocRef);
-    // return userDocSnap.exists(); // return true if user exists (username is taken)
 }
 
 // query to see if channel id is taken

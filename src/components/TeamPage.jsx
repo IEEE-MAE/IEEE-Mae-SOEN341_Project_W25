@@ -7,7 +7,7 @@ import {getUsername, getUserRole} from "../backend/Queries/getUserFields.jsx";
 import { useNavigate } from "react-router-dom";
 import {createMessages} from "../backend/messages.jsx";
 import {db, realtimeDB} from "../config/firebase.jsx";
-import {query, onValue, ref, orderByChild, equalTo, remove, update} from "firebase/database";  //[no touch]
+import {query, ref, remove, update} from "firebase/database";  //[no touch]
 import {createChannel} from "../backend/createChannel.jsx";
 import addMemberToTeam from "../backend/addMemberToTeam.jsx";
 import addAdminToTeam from "../backend/addAdminToTeam.jsx";
@@ -18,14 +18,14 @@ import {getSuperUserDefaultChannels,getSuperUserUsername} from "../backend/Queri
 import {doc, updateDoc, arrayRemove, collection, where, onSnapshot, getDoc} from "firebase/firestore";  //[no touch]
 import {updateUserStatus} from "../backend/updateStatus.jsx";
 import {isUserInChannel, userHasTeam, userInTeam} from "../backend/Queries/basicqueryUsers.jsx";
-import {getDMname, getEffectChannel, getEffectMessages, getEffectTeam, useDefaultChannels} from "../backend/Queries/getEffectChannel.jsx";
-import {getMessageEffect} from "../backend/Queries/getEffectMessage.jsx";
+import {getDMname, useGetEffectChannel, useGetEffectMessages, useGetEffectTeam, useDefaultChannels,} from "../backend/Queries/getEffectChannel.jsx";
+import {useGetMessageEffect} from "../backend/Queries/getEffectMessage.jsx";
 import {createTeam} from "../backend/createTeam.jsx";
 
 const teams = [{ id: 1, name: "Channels", icon: <FaUsers /> }];
 
 function TeamPage() {
-    const [selectedTeam, setSelectedTeam] = useState(1); // start with first team
+    const [selectedTeam] = useState(1); // start with first team
     const [thisUsername, setThisUsername] = useState(""); // logged in username
     const [viewMode, setViewMode] = useState("channels"); // sidebar mode
     const [userRole, setUserRole] = useState(""); // user role
@@ -63,7 +63,7 @@ function TeamPage() {
     updateUserStatus(getCurrentUser());
 
     //this does refresh and getsUserTeam live
-    const team = getEffectTeam();
+    const team = useGetEffectTeam();
 
 
     useEffect(() => {
@@ -102,16 +102,16 @@ function TeamPage() {
     //---- realtime updates of channel, DM's, Messages ----
 
     // fetch user teams
-    const channels = getEffectChannel(team, "user");
+    const channels = useGetEffectChannel(team, "user");
 
     // fetch team channels
-    const teamChannels = getEffectChannel(team, "team");
+    const teamChannels = useGetEffectChannel(team, "team");
 
     //fetch user DM
-    const dms = getEffectMessages(team)
+    const dms = useGetEffectMessages(team)
 
     //fetch all messages for channel
-    const messages = getMessageEffect(selectedChat);
+    const messages = useGetMessageEffect(selectedChat);
 
     const defaultChannelIds = useDefaultChannels(team);
 
@@ -920,7 +920,6 @@ function TeamPage() {
                                     id = "TeamName"
                                     placeholder = "Enter your team name"
                                     onChange = {(e) => setTeam(e.target.value)}
-                                    whileFocus = "focus"
                                 />
                             </div>
                             <button onClick={() => setCreateTeamModalOpen(false)}>Cancel</button>

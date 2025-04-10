@@ -1,11 +1,10 @@
-import {db, realtimeDB} from "../../config/firebase.jsx";
+import { realtimeDB} from "../../config/firebase.jsx";
 import {useEffect, useState} from "react";
-import {query, ref, orderByChild, equalTo, remove, update} from "firebase/database";
-import {onValue} from "firebase/database";
+import {query, ref, orderByChild, equalTo,onValue} from "firebase/database";
 import {getOtherUsername} from "./getUserFields.jsx";
 
 
-export function getMessageEffect(selectedChat) {
+export function useGetMessageEffect(selectedChat) {
     const [messages, setMessages] = useState([]);
 
     useEffect(() => {
