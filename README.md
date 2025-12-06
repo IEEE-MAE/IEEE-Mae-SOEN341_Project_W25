@@ -1,4 +1,6 @@
-# IEEE-Mae-SOEN341_Project_W25
+# Chathaven
+Your team space to message, collaborate, and communicate.
+-----
 
 ### Description of the Project
 ChatHaven is a live-messaging platform that allows teams to message via channels and direct messaging between users. 
